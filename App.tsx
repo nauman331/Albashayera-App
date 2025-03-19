@@ -50,17 +50,19 @@ const App = () => {
 
 // Tabs for Unauthenticated Users (No Bottom Navigation & No Headers)
 const UnauthenticatedTabs = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<string | null>> }) => (
-  <Tab.Navigator
-  initialRouteName="Auth"
-  screenOptions={{ headerShown: false }}>
+  <Tab.Navigator initialRouteName="Auth" screenOptions={{ headerShown: false }}>
     <Tab.Screen
       name="Auth"
-      component={LazyWrapper(Auth)}
+      component={LazyWrapper(Auth)} // Fixed: Passing as a reference
       options={{ tabBarStyle: { display: "none" } }}
     />
     <Tab.Screen
       name="Login"
-      children={(props) => <Login {...props} setToken={setToken} />}
+      children={(props) => (
+        <Suspense fallback={<Text>Loading...</Text>}>
+          <Login {...props} setToken={setToken} />
+        </Suspense>
+      )}
       options={{ tabBarStyle: { display: "none" } }}
     />
     <Tab.Screen
@@ -91,13 +93,13 @@ const AuthenticatedTabs = () => (
 
 // Function to wrap lazy-loaded components with Suspense
 function LazyWrapper(Component: React.ComponentType<any>) {
-  return (props: any) => (
-    <Suspense fallback={<Text>Loading...</Text>}>
-      <Component {...props} />
-    </Suspense>
-  );
+  return function WrappedComponent(props: any) {
+    return (
+      <Suspense fallback={<Text>Loading...</Text>}>
+        <Component {...props} />
+      </Suspense>
+    );
+  };
 }
 
 export default App;
-
-
