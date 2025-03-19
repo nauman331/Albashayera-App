@@ -11,6 +11,7 @@ const Auth = lazy(() => import("./src/screens/Auth"));
 const Login = lazy(() => import("./src/screens/Login"));
 const Register = lazy(() => import("./src/screens/Register"));
 const Otp = lazy(() => import("./src/screens/Otp"));
+const Forgot = lazy(() => import("./src/screens/Forgot"));
 const Home = lazy(() => import("./src/screens/Home"));
 const Profile = lazy(() => import("./src/screens/Profile"));
 
@@ -19,6 +20,7 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Otp: { email: string };
+  Forgot: undefined;
   Home: undefined;
   Profile: undefined;
 };
@@ -39,7 +41,7 @@ const App = () => {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        {token ? <AuthenticatedTabs /> : <UnauthenticatedTabs />}
+        {token ? <AuthenticatedTabs /> : <UnauthenticatedTabs setToken={setToken} />}
       </NavigationContainer>
       <Toast />
     </SafeAreaProvider>
@@ -47,8 +49,10 @@ const App = () => {
 };
 
 // Tabs for Unauthenticated Users (No Bottom Navigation & No Headers)
-const UnauthenticatedTabs = () => (
-  <Tab.Navigator screenOptions={{ headerShown: false }}>
+const UnauthenticatedTabs = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<string | null>> }) => (
+  <Tab.Navigator
+  initialRouteName="Auth"
+  screenOptions={{ headerShown: false }}>
     <Tab.Screen
       name="Auth"
       component={LazyWrapper(Auth)}
@@ -56,7 +60,7 @@ const UnauthenticatedTabs = () => (
     />
     <Tab.Screen
       name="Login"
-      component={LazyWrapper(Login)}
+      children={(props) => <Login {...props} setToken={setToken} />}
       options={{ tabBarStyle: { display: "none" } }}
     />
     <Tab.Screen
@@ -69,12 +73,17 @@ const UnauthenticatedTabs = () => (
       component={LazyWrapper(Otp)}
       options={{ tabBarStyle: { display: "none" } }}
     />
+    <Tab.Screen
+      name="Forgot"
+      component={LazyWrapper(Forgot)}
+      options={{ tabBarStyle: { display: "none" } }}
+    />
   </Tab.Navigator>
 );
 
 // Tabs for Authenticated Users (Bottom Navigation Visible)
 const AuthenticatedTabs = () => (
-  <Tab.Navigator>
+  <Tab.Navigator initialRouteName="Home">
     <Tab.Screen name="Home" component={LazyWrapper(Home)} />
     <Tab.Screen name="Profile" component={LazyWrapper(Profile)} />
   </Tab.Navigator>

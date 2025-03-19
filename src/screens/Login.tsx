@@ -4,51 +4,47 @@ import Form from '../components/Form';
 import { backendURL } from '../utils/exports';
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../App';
 
-const Login = () => {
+const Login = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<string | null>> }) => {
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Home'>>();
 
   const handleLogin = async (formData: Record<string, string>) => {
-      try {
-        setLoading(true)
-        const response = await fetch(`${backendURL}/user/login`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
+    try {
+      setLoading(true)
+      const response = await fetch(`${backendURL}/user/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const res_data = await response.json();
+      if (response.ok) {
+        Toast.show({
+          type: "success",
+          text1: 'Welcome',
+          text2: 'User logged In successfully 👋'
         });
-  
-        const res_data = await response.json();
-        if (response.ok) {
-          Toast.show({
-            type: "success",
-            text1: 'Welcome',
-            text2: 'User logged In successfully 👋'
-          });
-          await AsyncStorage.setItem("@token", res_data.token);
-          navigation.navigate("Home");
-        } else {
-          Toast.show({
-            type: "error",
-            text1: "Error",
-            text2: res_data.message
-          });
-        }
-      } catch (error) {
+        await AsyncStorage.setItem("@token", res_data.token);
+        setToken(res_data.token);
+      } else {
         Toast.show({
           type: "error",
           text1: "Error",
-          text2: "Error while logging In"
+          text2: res_data.message
         });
-      } finally {
-        setLoading(false)
       }
-  
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Error while logging In"
+      });
+    } finally {
+      setLoading(false)
+    }
+
   };
 
   return (

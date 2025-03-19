@@ -10,7 +10,7 @@ type OtpScreenRouteProp = RouteProp<RootStackParamList, 'Otp'>;
 
 const Otp = () => {
   const route = useRoute<OtpScreenRouteProp>(); 
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Home'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Login'>>();
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -26,7 +26,7 @@ const Otp = () => {
       const res_data = await response.json();
       if (response.ok) {
         Toast.show({ type: 'success', text1: 'Success', text2: res_data.message });
-        navigation.replace('Home');
+        navigation.navigate('Login');
       } else {
         Toast.show({ type: 'error', text1: 'Error', text2: res_data?.message || 'OTP verification failed' });
       }

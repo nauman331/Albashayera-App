@@ -88,7 +88,14 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) =
           )}
         </View>
       ))}
-
+{
+        buttonLabel === "Login" && 
+        <View style={{ width: '100%', alignItems: 'flex-end' }}>
+        <TouchableOpacity onPress={() => navigation.navigate('Forgot')}>
+        <Text style={styles.forgotLink}> Forgotten Password?</Text>
+      </TouchableOpacity>
+      </View>
+}
       {/* Submit Button */}
       <TouchableOpacity style={styles.button} onPress={() => onSubmit({ ...formData, contact: phoneNumber })}>
         <Text style={styles.buttonText}>{loading ? "Submitting..." : buttonLabel}</Text>
@@ -178,6 +185,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#010153',
+  },
+  forgotLink: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: '#010153',
+    marginVertical: 10,
+    alignSelf: "flex-end",
   },
   buttonText: {
     color: '#fff',
