@@ -27,7 +27,7 @@ const Auth = () => {
       {/* Bottom Section: Button & Register */}
       <View style={styles.bottomContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.buttonText}>Get Started</Text>
+          <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
 
         <View style={styles.registerContainer}>
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '90%',
-    backgroundColor: '#007bff',
+    backgroundColor: '#010153',
     paddingVertical: 15,
     borderRadius: 30,
     alignItems: 'center',
@@ -101,6 +101,6 @@ const styles = StyleSheet.create({
   registerLink: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#007bff',
+    color: '#010153',
   },
 });

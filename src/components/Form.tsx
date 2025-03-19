@@ -5,21 +5,18 @@ import PhoneInput from 'react-native-phone-number-input';
 import logo from "../assets/images/Logo.png";
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
 
 interface FormProps {
   fields: { name: string; placeholder: string; secureTextEntry?: boolean; type?: KeyboardTypeOptions; }[];
   buttonLabel: string;
+  loading: boolean;
   onSubmit: (formData: Record<string, string>) => void;
 }
 
-type RootStackParamList = {
-  Login: undefined;
-  Register: undefined;
-};
-
 type AuthScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit }) => {
+const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) => {
   const navigation = useNavigation<AuthScreenNavigationProp>();
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [passwordVisible, setPasswordVisible] = useState<Record<string, boolean>>({});
@@ -46,14 +43,13 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit }) => {
       {fields.map((field) => (
         <View key={field.name} style={styles.inputContainer}>
           {field.name === 'phone' ? (
-              <PhoneInput
+            <PhoneInput
               ref={phoneInputRef}
               defaultValue={phoneNumber}
               defaultCode="AE"
               layout="second"
               onChangeFormattedText={(text) => {
                 setPhoneNumber(text);
-                handleChange(field.name, text);
               }}
               containerStyle={{
                 width: '100%',
@@ -70,9 +66,9 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit }) => {
                 fontSize: 16,
                 color: 'black',
                 height: 50,
-              }} 
+              }}
             />
-            
+
           ) : (
             <TextInput
               keyboardType={field.secureTextEntry ? 'default' : field.type}
@@ -94,8 +90,8 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit }) => {
       ))}
 
       {/* Submit Button */}
-      <TouchableOpacity style={styles.button} onPress={() => onSubmit({ ...formData, phone: phoneNumber })}>
-        <Text style={styles.buttonText}>{buttonLabel}</Text>
+      <TouchableOpacity style={styles.button} onPress={() => onSubmit({ ...formData, contact: phoneNumber })}>
+        <Text style={styles.buttonText}>{loading ? "Submitting..." : buttonLabel}</Text>
       </TouchableOpacity>
 
       {
@@ -135,8 +131,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-
-
   inputContainer: {
     width: '100%',
     flexDirection: 'row',
@@ -162,7 +156,7 @@ const styles = StyleSheet.create({
   button: {
     width: '100%',
     height: 50,
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#010153',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 12,
@@ -183,7 +177,7 @@ const styles = StyleSheet.create({
   registerLink: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#007bff',
+    color: '#010153',
   },
   buttonText: {
     color: '#fff',
