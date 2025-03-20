@@ -5,6 +5,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Text } from "react-native";
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Icon } from "react-native-vector-icons/Icon";
 
 // Lazy Load Screens
 const Auth = lazy(() => import("./src/screens/Auth"));
@@ -85,7 +86,16 @@ const UnauthenticatedTabs = ({ setToken }: { setToken: React.Dispatch<React.SetS
 
 // Tabs for Authenticated Users (Bottom Navigation Visible)
 const AuthenticatedTabs = () => (
-  <Tab.Navigator initialRouteName="Home">
+  <Tab.Navigator
+    screenOptions={{
+      headerLeft: () => (
+        <Icon name="menu" size={30} />
+      ),
+      headerRight: () => (
+        <Icon name="bell" size={30} />
+      )
+    }}
+    initialRouteName="Home">
     <Tab.Screen name="Home" component={LazyWrapper(Home)} />
     <Tab.Screen name="Profile" component={LazyWrapper(Profile)} />
   </Tab.Navigator>
