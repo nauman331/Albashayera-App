@@ -46,8 +46,12 @@ const App = () => {
 
   useEffect(() => {
     const fetchToken = async () => {
-      const storedToken = await AsyncStorage.getItem("@token");
-      setToken(storedToken);
+      try {
+        const storedToken = await AsyncStorage.getItem("@token");
+        setToken(storedToken);
+      } catch (error) {
+        console.error("Error fetching token:", error);
+      }
     };
     fetchToken();
   }, []);
@@ -55,7 +59,7 @@ const App = () => {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        {token ? <DrawerNavigator /> : <UnauthenticatedTabs setToken={setToken} />}
+        {token ? <DrawerNavigator setToken={setToken} /> : <UnauthenticatedTabs setToken={setToken} />}
       </NavigationContainer>
       <Toast />
     </SafeAreaProvider>
@@ -81,9 +85,9 @@ const UnauthenticatedTabs = ({ setToken }: { setToken: React.Dispatch<React.SetS
 );
 
 // Authenticated Users - Drawer Navigator
-const DrawerNavigator = () => (
+const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<string | null>> }) => (
   <Drawer.Navigator
-    drawerContent={(props) => <CustomDrawerContent {...props} />}
+    drawerContent={(props) => <CustomDrawerContent {...props} setToken={setToken} />}
     screenOptions={{ headerShown: false }}
   >
     <Drawer.Screen name="Main" component={AuthenticatedTabs} />
@@ -115,11 +119,14 @@ const AuthenticatedTabs = ({ navigation }: any) => (
 );
 
 // Custom Drawer Content
-const CustomDrawerContent = ({ navigation }: any) => {
-
+const CustomDrawerContent = ({ navigation, setToken }: any) => {
   const handleLogout = async () => {
-    await AsyncStorage.removeItem("@token");
-    navigation.replace("Auth");
+    try {
+      await AsyncStorage.removeItem("@token");
+      setToken(null);
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
   };
 
   return (
@@ -160,7 +167,6 @@ const LazyWrapper = (Component: React.FC) => (props: any) => (
   </Suspense>
 );
 
-// Styles
 const styles = StyleSheet.create({
   drawerContainer: {
     flex: 1,
