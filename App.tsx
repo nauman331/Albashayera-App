@@ -15,6 +15,8 @@ const Otp = lazy(() => import("./src/screens/Otp"));
 const Forgot = lazy(() => import("./src/screens/Forgot"));
 const Home = lazy(() => import("./src/screens/Home"));
 const Profile = lazy(() => import("./src/screens/Profile"));
+const Vehicles = lazy(() => import("./src/screens/Vehicles"));
+const Auctions = lazy(() => import("./src/screens/Auctions"));
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -51,11 +53,10 @@ const App = () => {
 
 // Tabs for Unauthenticated Users (No Bottom Navigation & No Headers)
 const UnauthenticatedTabs = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<string | null>> }) => (
-  <Tab.Navigator initialRouteName="Auth" screenOptions={{ headerShown: false }}>
+  <Tab.Navigator initialRouteName="Auth" screenOptions={{ headerShown: false, tabBarStyle: { display: "none" } }}>
     <Tab.Screen
       name="Auth"
-      component={LazyWrapper(Auth)} // Fixed: Passing as a reference
-      options={{ tabBarStyle: { display: "none" } }}
+      component={LazyWrapper(Auth)}
     />
     <Tab.Screen
       name="Login"
@@ -64,22 +65,18 @@ const UnauthenticatedTabs = ({ setToken }: { setToken: React.Dispatch<React.SetS
           <Login {...props} setToken={setToken} />
         </Suspense>
       )}
-      options={{ tabBarStyle: { display: "none" } }}
     />
     <Tab.Screen
       name="Register"
       component={LazyWrapper(Register)}
-      options={{ tabBarStyle: { display: "none" } }}
     />
     <Tab.Screen
       name="Otp"
       component={LazyWrapper(Otp)}
-      options={{ tabBarStyle: { display: "none" } }}
     />
     <Tab.Screen
       name="Forgot"
       component={LazyWrapper(Forgot)}
-      options={{ tabBarStyle: { display: "none" } }}
     />
   </Tab.Navigator>
 );
@@ -98,6 +95,8 @@ const AuthenticatedTabs = () => (
     initialRouteName="Home">
     <Tab.Screen name="Home" component={LazyWrapper(Home)} />
     <Tab.Screen name="Profile" component={LazyWrapper(Profile)} />
+    <Tab.Screen name="Vehicles" component={LazyWrapper(Vehicles)} />
+    <Tab.Screen name="Auctions" component={LazyWrapper(Auctions)} />
   </Tab.Navigator>
 );
 
