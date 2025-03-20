@@ -21,6 +21,22 @@ const Vehicles = lazy(() => import("./src/screens/Vehicles"));
 const Auctions = lazy(() => import("./src/screens/Auctions"));
 const Wallet = lazy(() => import("./src/screens/Wallet"));
 const Orders = lazy(() => import("./src/screens/Orders"));
+const Dashboard = lazy(() => import("./src/screens/Dashboard"));
+
+export type RootStackParamList = {
+  Auth: undefined;
+  Login: undefined;
+  Register: undefined;
+  Otp: { email: string };
+  Forgot: undefined;
+  Home: undefined;
+  Profile: undefined;
+  Vehicles: undefined;
+  Auctions: undefined;
+  Wallet: undefined;
+  Orders: undefined;
+  Dashboard: undefined;
+};
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -100,17 +116,6 @@ const AuthenticatedTabs = ({ navigation }: any) => (
 
 // Custom Drawer Content
 const CustomDrawerContent = ({ navigation }: any) => {
-  const [username, setUsername] = useState("User");
-
-  useEffect(() => {
-    const fetchUsername = async () => {
-      const storedUsername = await AsyncStorage.getItem("@username");
-      if (storedUsername) {
-        setUsername(storedUsername);
-      }
-    };
-    fetchUsername();
-  }, []);
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem("@token");
@@ -122,7 +127,7 @@ const CustomDrawerContent = ({ navigation }: any) => {
       {/* Profile Section */}
       <View style={styles.profileSection}>
         <Image source={{ uri: "https://via.placeholder.com/80" }} style={styles.profileImage} />
-        <Text style={styles.username}>{username}</Text>
+        <Text style={styles.username}>username</Text>
       </View>
 
       {/* Drawer Items */}
