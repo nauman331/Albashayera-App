@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,23 +12,101 @@ import {
   ScrollView,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import * as ImagePicker from "react-native-image-picker";
+import { getToken } from "../utils/asyncStorage";
 
 const Profile = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [name, setName] = useState("John Doe");
-  const [email, setEmail] = useState("johndoe@example.com");
-  const [bio, setBio] = useState("Web Developer | Tech Enthusiast");
-  const [profileImage, setProfileImage] = useState(
-    "https://randomuser.me/api/portraits/men/75.jpg"
-  );
+  const [user, setUser] = useState<any>(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [contact, setContact] = useState("");
+  const [address, setAddress] = useState("");
+  const [profileImage, setProfileImage] = useState("");
 
-  return (
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = await getToken();
+      if (token) {
+        const userDataString = await AsyncStorage.getItem("@userdata");
+        if (userDataString) {
+          const userData = JSON.parse(userDataString);
+          setUser(userData);
+          setName(userData.firstName);
+          setEmail(userData.email);
+          setContact(userData.contact);
+          setAddress(userData.address);
+          setProfileImage(userData.avatarImage);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const pickImage = () => {
+    ImagePicker.launchImageLibrary({ mediaType: "photo" }, (response) => {
+      if (response.assets && response.assets.length > 0) {
+        setProfileImage(response.assets[0].uri ?? "");
+      }
+    });
+  };
+
+  // Function to update profile
+  const updateProfile = async () => {
+    try {
+      const token = await getToken();
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+
+      const updatedUser = {
+        firstName: name,
+        email,
+        contact,
+        address,
+        avatarImage: profileImage, // Later, replace this with Cloudinary upload
+      };
+
+      const response = await fetch("https://your-api.com/update-profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedUser),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setUser((prevUser: any) => ({ ...prevUser, ...updatedUser }));
+        await AsyncStorage.setItem(
+          "@userdata",
+          JSON.stringify({ ...user, ...updatedUser })
+        );
+        setModalVisible(false);
+      } else {
+        console.error("Update failed:", result.message);
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+  };
+
+  return user ? (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.profileCard}>
-        <Image source={{ uri: profileImage }} style={styles.avatar} />
-        <Text style={styles.name}>{name}</Text>
-        <Text style={styles.email}>{email}</Text>
-        <Text style={styles.bio}>{bio}</Text>
+        <TouchableOpacity onPress={pickImage}>
+          <Image source={{ uri: profileImage }} style={styles.avatar} />
+          <Icon name="photo-camera" size={25} color="#fff" style={styles.cameraIcon} />
+        </TouchableOpacity>
+        <Text style={styles.name}>{user.firstName} {user.lastName}</Text>
+        <Text style={styles.email}>{user.email}</Text>
+        <Text style={styles.contact}>{user.contact}</Text>
+        <Text style={styles.address}>{user.address}</Text>
+
         <TouchableOpacity
           style={styles.editButton}
           onPress={() => setModalVisible(true)}
@@ -42,6 +121,11 @@ const Profile = () => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Edit Profile</Text>
+
+            <TouchableOpacity onPress={pickImage}>
+              <Image source={{ uri: profileImage }} style={styles.modalAvatar} />
+            </TouchableOpacity>
+
             <TextInput
               style={styles.input}
               placeholder="Name"
@@ -57,15 +141,21 @@ const Profile = () => {
             />
             <TextInput
               style={styles.input}
-              placeholder="Bio"
-              value={bio}
-              onChangeText={setBio}
+              placeholder="Contact"
+              value={contact}
+              onChangeText={setContact}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Address"
+              value={address}
+              onChangeText={setAddress}
             />
 
             <View style={styles.buttonRow}>
               <TouchableOpacity
                 style={styles.saveButton}
-                onPress={() => setModalVisible(false)}
+                onPress={updateProfile}
               >
                 <Text style={styles.saveText}>Save</Text>
               </TouchableOpacity>
@@ -80,6 +170,8 @@ const Profile = () => {
         </View>
       </Modal>
     </ScrollView>
+  ) : (
+    <Text>Loading....</Text>
   );
 };
 
@@ -97,16 +189,27 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 15,
     elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
   },
   avatar: {
     width: 100,
     height: 100,
     borderRadius: 50,
     marginBottom: 15,
+  },
+  modalAvatar: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 15,
+    alignSelf: "center",
+  },
+  cameraIcon: {
+    position: "absolute",
+    bottom: 5,
+    right: 5,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    borderRadius: 15,
+    padding: 5,
   },
   name: {
     fontSize: 22,
@@ -117,11 +220,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#666",
   },
-  bio: {
+  contact: {
     fontSize: 14,
     color: "#888",
     marginTop: 8,
     textAlign: "center",
+  },
+  address: {
+    fontSize: 14,
+    color: "#555",
+    marginTop: 8,
   },
   editButton: {
     flexDirection: "row",
@@ -137,25 +245,29 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginLeft: 5,
   },
+
+  // ✨ MODAL STYLES ✨
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
   },
   modalContainer: {
-    width: "80%",
     backgroundColor: "#fff",
-    borderRadius: 10,
+    width: "90%",
     padding: 20,
+    borderRadius: 15,
+    elevation: 10,
     alignItems: "center",
   },
   modalTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 15,
     color: "#333",
+    marginBottom: 15,
   },
+
   input: {
     width: "100%",
     borderBottomWidth: 1,
@@ -193,5 +305,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
 
 export default Profile;
