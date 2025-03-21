@@ -7,19 +7,26 @@ import Wallet from "../../screens/Wallet";
 import Orders from "../../screens/Orders";
 import { TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-
+import LiveButton from "../LiveButton";
 
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<string | null>> }) => (
   <Drawer.Navigator
-  screenOptions={{
-    headerRight: () => (
-      <TouchableOpacity style={{ marginRight: 15 }}>
-        <Icon name="notifications" size={30} color="black" />
-      </TouchableOpacity>
-    ),
-  }}
+    screenOptions={{
+      headerTitle: () => <LiveButton />,
+      headerTitleAlign: "center",
+      headerRight: () => (
+        <TouchableOpacity style={{ marginRight: 15 }}>
+          <Icon name="notifications" size={30} color="#010153" />
+        </TouchableOpacity>
+      ),
+      headerLeftContainerStyle: { paddingLeft: 15 },
+      headerRightContainerStyle: { paddingRight: 15 },
+      headerTitleStyle: { flex: 1, textAlign: "center" },
+      headerShadowVisible: true,
+      headerTintColor: "#010153",
+    }}
     drawerContent={(props) => <CustomDrawerContent {...props} setToken={setToken} />}
   >
     <Drawer.Screen name="Home" component={AuthenticatedTabs} />
