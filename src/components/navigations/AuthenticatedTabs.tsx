@@ -9,7 +9,7 @@ import Auctions from "../../screens/Auctions";
 
 const Tab = createBottomTabNavigator();
 
-const AuthenticatedTabs = ({ navigation }: any) => (
+const AuthenticatedTabs = () => (
   <Tab.Navigator
     screenOptions={{
       headerShown: false
