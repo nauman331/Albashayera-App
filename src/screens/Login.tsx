@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Form from '../components/Form';
 import { backendURL } from '../utils/exports';
 import Toast from 'react-native-toast-message';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {saveToken} from "../utils/asyncStorage"
 
 const Login = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<string | null>> }) => {
   const [loading, setLoading] = useState(false);
@@ -26,7 +26,7 @@ const Login = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<str
           text1: 'Welcome',
           text2: 'User logged In successfully 👋'
         });
-        await AsyncStorage.setItem("@token", res_data.token);
+        await saveToken(res_data.token)
         setToken(res_data.token);
       } else {
         Toast.show({
