@@ -1,7 +1,5 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { TouchableOpacity } from "react-native";
-import { DrawerActions } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import LazyWrapper from "../LazyWrapper";
 import Home from "../../screens/Home";
@@ -11,12 +9,11 @@ import Auctions from "../../screens/Auctions";
 
 const Tab = createBottomTabNavigator();
 
-const AuthenticatedTabs = ({ navigation }: any) => (
+const AuthenticatedTabs = () => (
     <Tab.Navigator
         screenOptions={{
             headerShown: false,
         }}
-
         initialRouteName="Home"
     >
         <Tab.Screen name="Home" component={LazyWrapper(Home)} options={{ tabBarIcon: ({ color }) => <Icon name="home" size={24} color={color} /> }} />

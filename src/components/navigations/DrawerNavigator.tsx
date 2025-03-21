@@ -12,7 +12,7 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
   <Drawer.Navigator
     drawerContent={(props) => <CustomDrawerContent {...props} setToken={setToken} />}
   >
-    <Drawer.Screen name="HomeTabs" component={AuthenticatedTabs} />
+    <Drawer.Screen name="Home" component={AuthenticatedTabs} />
     <Drawer.Screen name="Dashboard" component={Dashboard} />
     <Drawer.Screen name="Wallet" component={Wallet} />
     <Drawer.Screen name="Orders" component={Orders} />
