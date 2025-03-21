@@ -15,12 +15,6 @@ type TabBarButtonProps = {
   onPress?: (event: GestureResponderEvent) => void;
 };
 
-const CustomTabBarButton: React.FC<TabBarButtonProps> = ({ children, onPress }) => (
-  <TouchableOpacity style={styles.floatingButton} onPress={onPress} activeOpacity={0.6}>
-    <View style={styles.buttonInner}>{children}</View>
-  </TouchableOpacity>
-);
-
 const AuthenticatedTabs = () => (
   <Tab.Navigator
     screenOptions={{
@@ -38,21 +32,10 @@ const AuthenticatedTabs = () => (
       }}
     />
     <Tab.Screen
-      name="Dashboard"
-      component={Dashboard}
-      options={{
-        tabBarIcon: ({ color }) => <Icon name="dashboard" size={26} color={color} />,
-      }}
-    />
-    <Tab.Screen
       name="Vehicles"
       component={Vehicles}
       options={{
-        tabBarButton: (props) => (
-          <CustomTabBarButton {...props}>
-            <Icon name="directions-car" size={32} color="white" />
-          </CustomTabBarButton>
-        ),
+        tabBarIcon: ({ color }) => <Icon name="dashboard" size={26} color={color} />,
       }}
     />
     <Tab.Screen
@@ -77,27 +60,19 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignItems: "center",
     justifyContent: "center",
-    bottom: 15,
+    bottom: 0,
     left: 20,
     right: 20,
     elevation: 8,
     backgroundColor: "#fff",
-    borderRadius: 30,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
     height: 65,
     shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    borderTopWidth: 0,
+    shadowOpacity: 0.9,
+    shadowRadius: 60,
+    borderWidth: 0,
     paddingBottom: Platform.OS === "android" ? 8 : 20,
-  },
-  floatingButton: {
-    top: -36,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#010153",
-    width: 70,
-    height: 70,
-    borderRadius: 35,
   },
   buttonInner: {
     justifyContent: "center",

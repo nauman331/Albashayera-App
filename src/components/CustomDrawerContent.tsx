@@ -1,10 +1,29 @@
-import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import DrawerItem from "./DrawerItem";
-import { removeToken } from "../utils/asyncStorage";
+import { removeToken, getToken } from "../utils/asyncStorage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CustomDrawerContent = ({ navigation, setToken }: any) => {
+  const [user, setUser] = useState<any>(null);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = await getToken();
+      if (token) {
+        const userDataString = await AsyncStorage.getItem("@userdata"); // Get data as string
+        if (userDataString) {
+          const userData = JSON.parse(userDataString); // Parse JSON
+          setUser(userData);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+
+
   const handleLogout = async () => {
     try {
       await removeToken();
@@ -17,9 +36,16 @@ const CustomDrawerContent = ({ navigation, setToken }: any) => {
   return (
     <View style={styles.drawerContainer}>
       <View style={styles.profileSection}>
-        <Image source={{ uri: "https://via.placeholder.com/80" }} style={styles.profileImage} />
-        <Text style={styles.username}>Username</Text>
+        {user ? (
+          <>
+            <Image source={{ uri: user.avatarImage }} style={styles.profileImage} />
+            <Text style={styles.username}>{user.firstName} {user.lastName}</Text>
+          </>
+        ) : (
+          <Text style={styles.username}>Loading...</Text> // Prevents crash if user is null
+        )}
       </View>
+
 
       <View style={styles.menuContainer}>
         <DrawerItem icon="home" text="Home" onPress={() => navigation.jumpTo("Home")} />
