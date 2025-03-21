@@ -22,7 +22,8 @@ const CustomDrawerContent = ({ navigation, setToken }: any) => {
       </View>
 
       <View style={styles.menuContainer}>
-        <DrawerItem icon="home" text="Dashboard" onPress={() => navigation.jumpTo("Dashboard")} />
+        <DrawerItem icon="home" text="Home" onPress={() => navigation.jumpTo("Home")} />
+        <DrawerItem icon="dashboard" text="Dashboard" onPress={() => navigation.jumpTo("Dashboard")} />
         <DrawerItem icon="account-balance-wallet" text="Wallet" onPress={() => navigation.jumpTo("Wallet")} />
         <DrawerItem icon="shopping-cart" text="Orders" onPress={() => navigation.jumpTo("Orders")} />
       </View>
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   profileSection: {
-    backgroundColor: "#007AFF",
+    backgroundColor: "#010153",
     alignItems: "center",
     paddingVertical: 40,
     borderRadius: 10,
