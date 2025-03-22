@@ -1,19 +1,13 @@
 import React from "react";
-import { View, TouchableOpacity, StyleSheet, Platform, GestureResponderEvent } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import Home from "../../screens/Home";
+import Icon from "react-native-vector-icons/FontAwesome5";
 import Profile from "../../screens/Profile";
 import Vehicles from "../../screens/Vehicles";
 import Auctions from "../../screens/Auctions";
 import Dashboard from "../../screens/Dashboard";
 
 const Tab = createBottomTabNavigator();
-
-type TabBarButtonProps = {
-  children: React.ReactNode;
-  onPress?: (event: GestureResponderEvent) => void;
-};
 
 const AuthenticatedTabs = () => (
   <Tab.Navigator
@@ -25,8 +19,8 @@ const AuthenticatedTabs = () => (
     }}
   >
     <Tab.Screen
-      name="Home"
-      component={Home}
+      name="Dashboard"
+      component={Dashboard}
       options={{
         tabBarIcon: ({ color }) => <Icon name="home" size={26} color={color} />,
       }}
@@ -35,7 +29,7 @@ const AuthenticatedTabs = () => (
       name="Vehicles"
       component={Vehicles}
       options={{
-        tabBarIcon: ({ color }) => <Icon name="dashboard" size={26} color={color} />,
+        tabBarIcon: ({ color }) => <Icon name="car" size={26} color={color} />,
       }}
     />
     <Tab.Screen
@@ -49,7 +43,7 @@ const AuthenticatedTabs = () => (
       name="Profile"
       component={Profile}
       options={{
-        tabBarIcon: ({ color }) => <Icon name="person" size={26} color={color} />,
+        tabBarIcon: ({ color }) => <Icon name="user" size={26} color={color} />,
       }}
     />
   </Tab.Navigator>

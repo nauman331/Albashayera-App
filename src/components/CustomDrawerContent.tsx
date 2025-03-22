@@ -211,7 +211,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
 // Menu Items Array
 const menuItems = [
   { route: "Dashboard", label: "Dashboard", icon: "home" },
-  { route: "Orders", label: "Orders", icon: "balance-scale" },
+  { route: "Orders", label: "Orders", icon: "shopping-cart" },
   { route: "Wallet", label: "Wallet", icon: "wallet" },
   { route: "Vehicles", label: "Vehicles", icon: "car", isExpandable: true },
   { route: "Auctions", label: "Auctions", icon: "gavel", isExpandable: true },
