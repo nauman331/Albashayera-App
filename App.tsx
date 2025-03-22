@@ -7,6 +7,15 @@ import UnauthenticatedTabs from "./src/components/navigations/UnauthenticatedTab
 import DrawerNavigator from "./src/components/navigations/DrawerNavigator";
 import { backendURL } from "./src/utils/exports";
 
+export type RootStackParamList = {
+  Auth: undefined;
+  Login: undefined;
+  Register: undefined;
+  Otp: { email: string };
+  Dashboard: undefined;
+  Profile: undefined;
+};
+
 const App = () => {
   const [token, setToken] = useState<string | null>(null);
 

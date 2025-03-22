@@ -104,15 +104,15 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
                   <View style={styles.subMenu}>
                     <TouchableOpacity
                       style={styles.subMenuItem}
-                      onPress={() => navigation.navigate("My Vehicles")}
+                      onPress={() => navigation.navigate("AuctionVehicles")}
                     >
-                      <Text style={styles.subMenuText}>My Vehicles</Text>
+                      <Text style={styles.subMenuText}>Auction Vehicles</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.subMenuItem}
-                      onPress={() => navigation.navigate("Add Vehicle")}
+                      onPress={() => navigation.navigate("BuyNowVehicle")}
                     >
-                      <Text style={styles.subMenuText}>Add Vehicle</Text>
+                      <Text style={styles.subMenuText}>Buy Now Vehicles</Text>
                     </TouchableOpacity>
                   </View>
                 )}
@@ -121,15 +121,15 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
                   <View style={styles.subMenu}>
                     <TouchableOpacity
                       style={styles.subMenuItem}
-                      onPress={() => navigation.navigate("Ongoing Auctions")}
+                      onPress={() => navigation.navigate("AuctionEvents")}
                     >
-                      <Text style={styles.subMenuText}>Ongoing Auctions</Text>
+                      <Text style={styles.subMenuText}>Auctions Events</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.subMenuItem}
-                      onPress={() => navigation.navigate("Auction History")}
+                      onPress={() => navigation.navigate("LiveAuction")}
                     >
-                      <Text style={styles.subMenuText}>Auction History</Text>
+                      <Text style={styles.subMenuText}>Live Auction</Text>
                     </TouchableOpacity>
                   </View>
                 )}
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     width: 5,
-    height: "100%",
+    height: 45,
     backgroundColor: "transparent",
   },
   activeIndicatorActive: {
@@ -275,6 +275,8 @@ const styles = StyleSheet.create({
   subMenu: {
     paddingLeft: 40,
     backgroundColor: "#f5f5f5",
+    flex: 1,
+    gap: 5
   },
   subMenuItem: {
     paddingVertical: 10,
