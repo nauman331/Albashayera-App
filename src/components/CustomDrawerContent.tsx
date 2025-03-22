@@ -1,13 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import DrawerItem from "./DrawerItem";
-import { removeToken, getToken } from "../utils/asyncStorage";
+import { DrawerContentScrollView } from "@react-navigation/drawer";
+import { useNavigationState } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/FontAwesome5";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getToken, removeToken } from "../utils/asyncStorage";
 
-const CustomDrawerContent = ({ navigation, setToken }: any) => {
+interface CustomDrawerContentProps {
+  navigation: any;
+  setToken: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, setToken }) => {
+  const [vehiclesExpanded, setVehiclesExpanded] = useState(false);
+  const [auctionsExpanded, setAuctionsExpanded] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [isModalVisible, setModalVisible] = useState(false); // Logout modal state
+  const [isModalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -24,42 +32,158 @@ const CustomDrawerContent = ({ navigation, setToken }: any) => {
     fetchUserData();
   }, []);
 
+  const currentRoute = useNavigationState((state) => {
+    if (!state || !state.routes || state.index === undefined) return null;
+    return state.routes[state.index]?.name;
+  });
+
   const handleLogout = async () => {
     try {
       await removeToken();
-      setToken(null);
-      setModalVisible(false); // Close modal after logout
+      setToken(null)
+      setModalVisible(false);
     } catch (error) {
       console.error("Error logging out:", error);
     }
   };
 
   return (
-    <View style={styles.drawerContainer}>
-      <View style={styles.profileSection}>
-        {user ? (
-          <>
-            <Image source={{ uri: user.avatarImage }} style={styles.profileImage} />
-            <Text style={styles.username}>{user.firstName} {user.lastName}</Text>
-          </>
+    <View style={{ flex: 1 }}>
+      {/* Profile Section */}
+      {
+        user ? (
+          <View style={styles.profileSection}>
+            <Image
+              source={{ uri: user.avatarImage }}
+              style={styles.profileImage}
+            />
+            <View>
+              <Text style={styles.profileName}>{user.firstName} {user.lastName}</Text>
+              <Text style={styles.profileEmail}>{user.email}</Text>
+            </View>
+          </View>
+
         ) : (
-          <Text style={styles.username}>Loading...</Text> // Prevents crash if user is null
+          <Text style={styles.profileName}>Loading...</Text>
         )}
+
+      <DrawerContentScrollView>
+        {/* Menu Items */}
+        {menuItems.map((item, index) => {
+          if (item.isExpandable) {
+            return (
+              <View key={index}>
+                <TouchableOpacity
+                  style={[styles.menuItem, currentRoute === item.route && styles.activeMenuItem]}
+                  onPress={() => {
+                    if (item.label === "Vehicles") {
+                      setVehiclesExpanded(!vehiclesExpanded);
+                    } else if (item.label === "Auctions") {
+                      setAuctionsExpanded(!auctionsExpanded);
+                    }
+                  }}
+                >
+                  <View
+                    style={[styles.activeIndicator, currentRoute === item.route && styles.activeIndicatorActive]}
+                  />
+                  <Icon
+                    name={item.icon}
+                    size={20}
+                    color={currentRoute === item.route ? "#010153" : "#000"}
+                  />
+                  <Text
+                    style={[styles.menuText, currentRoute === item.route && styles.activeMenuText]}
+                  >
+                    {item.label}
+                  </Text>
+                  <Icon name={vehiclesExpanded || auctionsExpanded ? "chevron-up" : "chevron-down"} size={15} color="#000" />
+                </TouchableOpacity>
+
+                {/* Submenu Items */}
+                {item.label === "Vehicles" && vehiclesExpanded && (
+                  <View style={styles.subMenu}>
+                    <TouchableOpacity
+                      style={styles.subMenuItem}
+                      onPress={() => navigation.navigate("My Vehicles")}
+                    >
+                      <Text style={styles.subMenuText}>My Vehicles</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.subMenuItem}
+                      onPress={() => navigation.navigate("Add Vehicle")}
+                    >
+                      <Text style={styles.subMenuText}>Add Vehicle</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+
+                {item.label === "Auctions" && auctionsExpanded && (
+                  <View style={styles.subMenu}>
+                    <TouchableOpacity
+                      style={styles.subMenuItem}
+                      onPress={() => navigation.navigate("Ongoing Auctions")}
+                    >
+                      <Text style={styles.subMenuText}>Ongoing Auctions</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.subMenuItem}
+                      onPress={() => navigation.navigate("Auction History")}
+                    >
+                      <Text style={styles.subMenuText}>Auction History</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+            );
+          } else {
+            return (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.menuItem,
+                  currentRoute === item.route && styles.activeMenuItem,
+                ]}
+                onPress={() => navigation.navigate(item.route)}
+              >
+                <View
+                  style={[
+                    styles.activeIndicator,
+                    currentRoute === item.route && styles.activeIndicatorActive,
+                  ]}
+                />
+                <Icon
+                  name={item.icon}
+                  size={20}
+                  color={currentRoute === item.route ? "#010153" : "#000"}
+                />
+                <Text
+                  style={[styles.menuText, currentRoute === item.route && styles.activeMenuText]}
+                >
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          }
+        })}
+      </DrawerContentScrollView>
+
+      {/* Bottom Section */}
+      <View style={styles.bottomSection}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("Profile")}>
+          <Icon name="user" size={20} color="#000" />
+          <Text style={styles.menuText}>Profile</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("ContactUs")}>
+          <Icon name="phone" size={20} color="#000" />
+          <Text style={styles.menuText}>Contact Us</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.menuItem} onPress={() => setModalVisible(true)}>
+          <Icon name="sign-out-alt" size={20} color="#000" />
+          <Text style={styles.menuText}>Logout</Text>
+        </TouchableOpacity>
       </View>
-
-      <View style={styles.menuContainer}>
-        <DrawerItem icon="home" text="Home" onPress={() => navigation.jumpTo("Home")} />
-        <DrawerItem icon="dashboard" text="Dashboard" onPress={() => navigation.jumpTo("Dashboard")} />
-        <DrawerItem icon="account-balance-wallet" text="Wallet" onPress={() => navigation.jumpTo("Wallet")} />
-        <DrawerItem icon="shopping-cart" text="Orders" onPress={() => navigation.jumpTo("Orders")} />
-      </View>
-
-      <TouchableOpacity style={styles.logoutButton} onPress={() => setModalVisible(true)}>
-        <Icon name="exit-to-app" size={24} color="#D9534F" />
-        <Text style={styles.logoutText}>Logout</Text>
-      </TouchableOpacity>
-
-      {/* Stylish Logout Modal */}
       <Modal visible={isModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
@@ -84,7 +208,86 @@ const CustomDrawerContent = ({ navigation, setToken }: any) => {
   );
 };
 
+// Menu Items Array
+const menuItems = [
+  { route: "Dashboard", label: "Dashboard", icon: "home" },
+  { route: "Orders", label: "Orders", icon: "balance-scale" },
+  { route: "Wallet", label: "Wallet", icon: "wallet" },
+  { route: "Vehicles", label: "Vehicles", icon: "car", isExpandable: true },
+  { route: "Auctions", label: "Auctions", icon: "gavel", isExpandable: true },
+];
+
 const styles = StyleSheet.create({
+  profileSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#010153",
+    padding: 15,
+    height: 150
+  },
+  profileImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: "#fff",
+    marginRight: 15,
+  },
+  profileName: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  profileEmail: {
+    fontSize: 13,
+    color: "#f8f8f8",
+  },
+  menuItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    position: "relative",
+  },
+  menuText: {
+    fontSize: 15,
+    marginLeft: 15,
+    flex: 1,
+    color: "#333",
+  },
+  activeMenuItem: {
+    backgroundColor: "#E5E5FF",
+  },
+  activeMenuText: {
+    color: "#010153",
+    fontWeight: "bold",
+  },
+  activeIndicator: {
+    position: "absolute",
+    left: 0,
+    width: 5,
+    height: "100%",
+    backgroundColor: "transparent",
+  },
+  activeIndicatorActive: {
+    backgroundColor: "#010153",
+  },
+  subMenu: {
+    paddingLeft: 40,
+    backgroundColor: "#f5f5f5",
+  },
+  subMenuItem: {
+    paddingVertical: 10,
+  },
+  subMenuText: {
+    fontSize: 14,
+    color: "#666",
+  },
+  bottomSection: {
+    paddingVertical: 15,
+    borderTopWidth: 1,
+    borderColor: "#ccc",
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark background overlay
@@ -138,51 +341,6 @@ const styles = StyleSheet.create({
   confirmText: {
     fontSize: 16,
     color: "#fff",
-  },
-
-  drawerContainer: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    paddingVertical: 20,
-    paddingHorizontal: 15,
-  },
-  profileSection: {
-    backgroundColor: "#010153",
-    alignItems: "center",
-    paddingVertical: 40,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  profileImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 2,
-    borderColor: "white",
-  },
-  username: {
-    color: "white",
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 10,
-  },
-  menuContainer: {
-    flex: 1,
-    marginTop: 10,
-  },
-  logoutButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 15,
-    borderRadius: 10,
-    backgroundColor: "#F8D7DA",
-    marginBottom: 20,
-  },
-  logoutText: {
-    fontSize: 16,
-    color: "#D9534F",
-    marginLeft: 10,
-    fontWeight: "600",
   },
 });
 

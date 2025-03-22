@@ -66,7 +66,7 @@ const Profile = () => {
         email,
         contact,
         address,
-        avatarImage: profileImage, // Later, replace this with Cloudinary upload
+        avatarImage: profileImage,
       };
 
       const response = await fetch("https://your-api.com/update-profile", {
@@ -133,6 +133,7 @@ const Profile = () => {
               onChangeText={setName}
             />
             <TextInput
+            
               style={styles.input}
               placeholder="Email"
               value={email}
