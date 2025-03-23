@@ -13,7 +13,12 @@ export type RootStackParamList = {
   Register: undefined;
   Otp: { email: string };
   Dashboard: undefined;
+  Orders: undefined;
+  Wallet: undefined;
   Profile: undefined;
+  Auctions: undefined;
+  AuctionVehicles: undefined;
+  BuyNowVehicles: undefined;
 };
 
 const App = () => {

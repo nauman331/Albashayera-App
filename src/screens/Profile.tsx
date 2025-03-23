@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   editButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#ff4500",
+    backgroundColor: "#010153",
     padding: 10,
     borderRadius: 20,
     marginTop: 15,
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   saveButton: {
-    backgroundColor: "#ff4500",
+    backgroundColor: "#010153",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,

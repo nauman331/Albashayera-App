@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from "react-native";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
 import { useNavigationState } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/FontAwesome5";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getToken, removeToken } from "../utils/asyncStorage";
 
@@ -96,7 +96,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
                   >
                     {item.label}
                   </Text>
-                  <Icon name={vehiclesExpanded || auctionsExpanded ? "chevron-up" : "chevron-down"} size={15} color="#000" />
+                  <Icon name={vehiclesExpanded || auctionsExpanded ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={15} color="#000" />
                 </TouchableOpacity>
 
                 {/* Submenu Items */}
@@ -110,7 +110,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.subMenuItem}
-                      onPress={() => navigation.navigate("BuyNowVehicle")}
+                      onPress={() => navigation.navigate("BuyNowVehicles")}
                     >
                       <Text style={styles.subMenuText}>Buy Now Vehicles</Text>
                     </TouchableOpacity>
@@ -170,7 +170,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
       {/* Bottom Section */}
       <View style={styles.bottomSection}>
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("Profile")}>
-          <Icon name="user" size={20} color="#000" />
+          <Icon name="person" size={20} color="#000" />
           <Text style={styles.menuText}>Profile</Text>
         </TouchableOpacity>
 
@@ -180,7 +180,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.menuItem} onPress={() => setModalVisible(true)}>
-          <Icon name="sign-out-alt" size={20} color="#000" />
+          <Icon name="exit-to-app" size={20} color="#000" />
           <Text style={styles.menuText}>Logout</Text>
         </TouchableOpacity>
       </View>
@@ -210,10 +210,10 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
 
 // Menu Items Array
 const menuItems = [
-  { route: "Dashboard", label: "Dashboard", icon: "home" },
-  { route: "Orders", label: "Orders", icon: "shopping-cart" },
-  { route: "Wallet", label: "Wallet", icon: "wallet" },
-  { route: "Vehicles", label: "Vehicles", icon: "car", isExpandable: true },
+  { route: "Dashboard", label: "Dashboard", icon: "dashboard" },
+  { route: "Orders", label: "Orders", icon: "receipt" },
+  { route: "Wallet", label: "Wallet", icon: "account-balance-wallet" },
+  { route: "Vehicles", label: "Vehicles", icon: "directions-car", isExpandable: true },
   { route: "Auctions", label: "Auctions", icon: "gavel", isExpandable: true },
 ];
 
