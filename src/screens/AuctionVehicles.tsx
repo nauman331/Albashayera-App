@@ -22,6 +22,7 @@ const AuctionVehicles: React.FC = () => {
     maxYear: "",
     selectedDriveType: "",
     selectedDoors: "",
+    selectedCylinders: "",
     selectedFuelTypes: [] as string[],
     selectedTransmissions: [] as string[],
   });
@@ -163,6 +164,17 @@ const AuctionVehicles: React.FC = () => {
                   <Picker.Item label="Honda" value="Honda" />
                 </Picker>
               </View>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  style={styles.picker}
+                  dropdownIconColor="black"
+                  selectedValue={filters.selectedCylinders}
+                  onValueChange={(value) => setFilters({ ...filters, selectedCylinders: value })}>
+                  <Picker.Item label="Select Drive Type" value="" />
+                  <Picker.Item label="Toyota" value="Toyota" />
+                  <Picker.Item label="Honda" value="Honda" />
+                </Picker>
+              </View>
 
               <View style={styles.pickerContainer}>
                 <Picker
@@ -210,6 +222,7 @@ const AuctionVehicles: React.FC = () => {
                       maxYear: "",
                       selectedDriveType: "",
                       selectedDoors: "",
+                      selectedCylinders: "",
                       selectedFuelTypes: [] as string[],
                       selectedTransmissions: [] as string[],
                     });
