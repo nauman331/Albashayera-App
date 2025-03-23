@@ -17,7 +17,8 @@ const AuctionVehicles: React.FC = () => {
   const filteredCars = Array.isArray(cars)
     ? cars.filter(item =>
       !item.isSold &&
-      !(item.sellingType === "auction" && (!item.auctionLot || item.auctionLot.statusText === "Compeleted"))
+      item.sellingType === "auction" &&
+      !(!item.auctionLot || item.auctionLot.statusText === "Compeleted")
     )
     : [];
 
