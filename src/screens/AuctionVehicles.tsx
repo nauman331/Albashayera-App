@@ -2,7 +2,10 @@ import { StyleSheet, Text, View, FlatList, Image, Pressable } from "react-native
 import React from "react";
 import useFetchCarsAndCategories from "../hooks/useFetchCarsAndCategories";
 import { useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import fuel from "../assets/images/fuel.png";
+import speedometer from "../assets/images/speedometer.png"
+import gearbox from "../assets/images/gearbox.png"
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 
 const AuctionVehicles: React.FC = () => {
   const { cars, loading, error } = useFetchCarsAndCategories();
@@ -13,9 +16,9 @@ const AuctionVehicles: React.FC = () => {
 
   const filteredCars = Array.isArray(cars)
     ? cars.filter(item =>
-        !item.isSold &&
-        !(item.sellingType === "auction" && (!item.auctionLot || item.auctionLot.statusText === "Compeleted"))
-      )
+      !item.isSold &&
+      !(item.sellingType === "auction" && (!item.auctionLot || item.auctionLot.statusText === "Compeleted"))
+    )
     : [];
 
   return (
@@ -27,7 +30,7 @@ const AuctionVehicles: React.FC = () => {
       ) : (
         <FlatList
           data={filteredCars}
-          keyExtractor={(item) => item?.id?.toString() ?? Math.random().toString()}
+          keyExtractor={(item) => item?._id?.toString() ?? Math.random().toString()}
           renderItem={({ item }) => (
             <View style={styles.card}>
               {item?.carImages.length > 0 ? (
@@ -41,26 +44,26 @@ const AuctionVehicles: React.FC = () => {
               <View style={styles.cardContent}>
                 <Text style={styles.carName}>{item?.listingTitle || "Unknown Car"}</Text>
                 <Text style={styles.description}>{item.description || "No Description"}</Text>
-                <View style={{ borderBottomColor: 'gray', borderBottomWidth: 1, marginVertical: 10 }} />
+                <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
                 <View style={styles.detailsRow}>
                   <View style={styles.detailItem}>
-                    <Icon name="road-variant" size={18} color="#444" />
+                    <Image source={speedometer} />
                     <Text style={styles.detailText}>{item?.mileage ?? "N/A"} MI</Text>
                   </View>
                   <View style={styles.detailItem}>
-                    <Icon name="gas-station" size={18} color="#444" />
+                    <Image source={fuel} />
                     <Text style={styles.detailText}>{item?.fuelType?.vehicleFuelTypes || "Unknown"}</Text>
                   </View>
                   <View style={styles.detailItem}>
-                    <Icon name="car-shift-pattern" size={18} color="#444" />
+                    <Image source={gearbox} />
                     <Text style={styles.detailText}>{item?.transmission?.vehicleTransimission || "N/A"}</Text>
                   </View>
                 </View>
-                <View style={{ borderBottomColor: 'gray', borderBottomWidth: 1, marginVertical: 10 }} />
+                <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
                 <View style={styles.footer}>
                   <Text style={styles.price}>AED {item.startingBid || "N/A"}</Text>
                   <Pressable>
-                    <Text style={styles.viewDetails}>View Details →</Text>
+                    <Text style={styles.viewDetails}>View Details <FontAwesome6 name="arrow-up-right-from-square" /></Text>
                   </Pressable>
                 </View>
               </View>
@@ -75,7 +78,7 @@ const AuctionVehicles: React.FC = () => {
 export default AuctionVehicles;
 
 const styles = StyleSheet.create({
-  container: { padding: 15, backgroundColor: "#F5F5F5", flex: 1 },
+  container: { padding: 30, backgroundColor: "#F5F5F5", flex: 1 },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
   loadingText: { textAlign: "center", marginTop: 20, fontSize: 16 },
   errorText: { textAlign: "center", marginTop: 20, fontSize: 16, color: "red" },
@@ -122,6 +125,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  price: { fontSize: 16, fontWeight: "bold" },
+  price: { fontSize: 20, fontWeight: "bold" },
   viewDetails: { fontSize: 14, color: "#007BFF", fontWeight: "600" },
 });
