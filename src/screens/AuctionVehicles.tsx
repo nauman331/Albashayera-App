@@ -7,7 +7,6 @@ import speedometer from "../assets/images/speedometer.png";
 import gearbox from "../assets/images/gearbox.png";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { Picker } from "@react-native-picker/picker";
-import CheckBox from "@react-native-community/checkbox";
 
 const AuctionVehicles: React.FC = () => {
   const { cars, loading, error } = useFetchCarsAndCategories();
@@ -23,8 +22,6 @@ const AuctionVehicles: React.FC = () => {
     selectedDriveType: "",
     selectedDoors: "",
     selectedCylinders: "",
-    selectedFuelTypes: [] as string[],
-    selectedTransmissions: [] as string[],
   });
 
 
@@ -40,21 +37,6 @@ const AuctionVehicles: React.FC = () => {
       !(!item.auctionLot || item.auctionLot.statusText === "Compeleted")
     )
     : [];
-
-
-
-  const handleCheckboxToggle = (type: keyof typeof filters, value: string) => {
-    setFilters((prev) => {
-      if (!Array.isArray(prev[type])) return prev; // Ensure it's an array before modifying
-
-      const updatedList = prev[type].includes(value)
-        ? (prev[type] as string[]).filter((item) => item !== value)
-        : [...(prev[type] as string[]), value];
-
-      return { ...prev, [type]: updatedList };
-    });
-  };
-
 
   const applyFilters = async () => {
     try {
@@ -125,6 +107,17 @@ const AuctionVehicles: React.FC = () => {
                   <Picker.Item label="Honda" value="Honda" />
                 </Picker>
               </View>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  style={styles.picker}
+                  dropdownIconColor="black"
+                  selectedValue={filters.selectedDriveType}
+                  onValueChange={(value) => setFilters({ ...filters, selectedDriveType: value })}>
+                  <Picker.Item label="Select Drive Type" value="" />
+                  <Picker.Item label="Toyota" value="Toyota" />
+                  <Picker.Item label="Honda" value="Honda" />
+                </Picker>
+              </View>
 
               {/*  Year */}
               <View style={styles.inputContainer}>
@@ -157,17 +150,6 @@ const AuctionVehicles: React.FC = () => {
                 <Picker
                   style={styles.picker}
                   dropdownIconColor="black"
-                  selectedValue={filters.selectedDriveType}
-                  onValueChange={(value) => setFilters({ ...filters, selectedDriveType: value })}>
-                  <Picker.Item label="Select Drive Type" value="" />
-                  <Picker.Item label="Toyota" value="Toyota" />
-                  <Picker.Item label="Honda" value="Honda" />
-                </Picker>
-              </View>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  style={styles.picker}
-                  dropdownIconColor="black"
                   selectedValue={filters.selectedCylinders}
                   onValueChange={(value) => setFilters({ ...filters, selectedCylinders: value })}>
                   <Picker.Item label="Select Drive Type" value="" />
@@ -188,29 +170,6 @@ const AuctionVehicles: React.FC = () => {
                 </Picker>
               </View>
 
-              {/* Checkboxes */}
-              <Text style={styles.checkboxTitle}>Fuel Type</Text>
-              {["Petrol", "Diesel", "Electric"].map((type) => (
-                <View key={type} style={styles.checkboxContainer}>
-                  <CheckBox
-                    tintColors={{ true: 'black', false: 'black' }}
-                    value={filters.selectedFuelTypes.includes(type)}
-                    onValueChange={() => handleCheckboxToggle("selectedFuelTypes", type)} />
-                  <Text>{type}</Text>
-                </View>
-              ))}
-
-              <Text style={styles.checkboxTitle}>Transmission</Text>
-              {["Automatic", "Manual"].map((type) => (
-                <View key={type} style={styles.checkboxContainer}>
-                  <CheckBox
-                    tintColors={{ true: 'black', false: 'black' }}
-                    value={filters.selectedTransmissions.includes(type)}
-                    onValueChange={() => handleCheckboxToggle("selectedTransmissions", type)} />
-                  <Text>{type}</Text>
-                </View>
-              ))}
-
               <View style={styles.buttonContainer}>
                 <Pressable
                   onPress={() => {
@@ -223,8 +182,6 @@ const AuctionVehicles: React.FC = () => {
                       selectedDriveType: "",
                       selectedDoors: "",
                       selectedCylinders: "",
-                      selectedFuelTypes: [] as string[],
-                      selectedTransmissions: [] as string[],
                     });
                     setFilterVisible(false);
                   }}
