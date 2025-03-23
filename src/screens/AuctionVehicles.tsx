@@ -26,6 +26,21 @@ const AuctionVehicles: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Auction Vehicles</Text>
 
+      <View style={styles.filterSection}>
+        <View style={styles.leftFilter}>
+          <Text>Select Auction</Text>
+        </View>
+
+        <View style={styles.rightFilter}>
+          <Text style={{fontSize: 20, color: "#010153"}}>Filter </Text>
+          <FontAwesome6
+            name="arrow-right-arrow-left"
+            size={20}
+            color="#010153"
+            style={{ transform: [{ rotate: "90deg" }] }}
+          />
+        </View>
+      </View>
       {filteredCars.length === 0 ? (
         <Text style={styles.noCarsText}>No Available Cars</Text>
       ) : (
@@ -79,19 +94,34 @@ const AuctionVehicles: React.FC = () => {
 export default AuctionVehicles;
 
 const styles = StyleSheet.create({
-  container: { padding: 30, backgroundColor: "#F5F5F5", flex: 1 },
+  container: { padding: 25, backgroundColor: "#F5F5F5", flex: 1 },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
   loadingText: { textAlign: "center", marginTop: 20, fontSize: 16 },
   errorText: { textAlign: "center", marginTop: 20, fontSize: 16, color: "red" },
   noCarsText: { textAlign: "center", fontSize: 16, color: "#666", marginTop: 10 },
-
+  filterSection: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginVertical: 20
+  },
+  leftFilter: { backgroundColor: "red" },
+  rightFilter: {
+     flexDirection: "row", 
+     borderWidth: 2,
+      paddingVertical: 10, 
+      borderColor: "#010153",
+      borderRadius: 100,
+      paddingHorizontal: 20
+    },
   card: {
     backgroundColor: "#fff",
     borderRadius: 10,
     overflow: "hidden",
-    marginBottom: 15,
+    marginBottom: 55,
     elevation: 3,
-    shadowColor: "#000",
+    shadowColor: "#aaa",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
