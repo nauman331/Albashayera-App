@@ -9,19 +9,19 @@ import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { Picker } from "@react-native-picker/picker";
 
 const AuctionVehicles: React.FC = () => {
-  const { cars, loading, error } = useFetchCarsAndCategories();
+  const { cars, loading, error, categoriesData } = useFetchCarsAndCategories();
   const navigation = useNavigation();
 
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [filters, setFilters] = useState({
     minPrice: "",
     maxPrice: "",
-    selectedMake: "",
-    minYear: "",
-    maxYear: "",
-    selectedDriveType: "",
-    selectedDoors: "",
-    selectedCylinders: "",
+    carMake: "",
+    yearMin: "",
+    yearMax: "",
+    driveType: "",
+    doors: "",
+    cylinders: "",
   });
 
 
@@ -48,6 +48,11 @@ const AuctionVehicles: React.FC = () => {
     }
   };
 
+  const generateOptions = (key: any, labelKey: any) =>
+    categoriesData?.[key]?.map((item: any) => ({
+      label: item[labelKey],
+      value: item._id,
+    })) || [];
 
   return (
     <View style={styles.container}>
@@ -100,22 +105,26 @@ const AuctionVehicles: React.FC = () => {
                 <Picker
                   style={styles.picker}
                   dropdownIconColor="black"
-                  selectedValue={filters.selectedMake}
-                  onValueChange={(value) => setFilters({ ...filters, selectedMake: value })}>
+                  selectedValue={filters.carMake}
+                  onValueChange={(value) => setFilters({ ...filters, carMake: value })}
+                >
                   <Picker.Item label="Select Car Make" value="" />
-                  <Picker.Item label="Toyota" value="Toyota" />
-                  <Picker.Item label="Honda" value="Honda" />
+                  {generateOptions("vehicle-make", "vehicleMake").map((option: any) => (
+                    <Picker.Item key={option.value} label={option.label} value={option.value} />
+                  ))}
                 </Picker>
               </View>
+
               <View style={styles.pickerContainer}>
                 <Picker
                   style={styles.picker}
                   dropdownIconColor="black"
-                  selectedValue={filters.selectedDriveType}
-                  onValueChange={(value) => setFilters({ ...filters, selectedDriveType: value })}>
+                  selectedValue={filters.driveType}
+                  onValueChange={(value) => setFilters({ ...filters, driveType: value })}>
                   <Picker.Item label="Select Drive Type" value="" />
-                  <Picker.Item label="Toyota" value="Toyota" />
-                  <Picker.Item label="Honda" value="Honda" />
+                  {generateOptions("drive-type", "driveType").map((option: any) => (
+                    <Picker.Item key={option.value} label={option.label} value={option.value} />
+                  ))}
                 </Picker>
               </View>
 
@@ -125,11 +134,12 @@ const AuctionVehicles: React.FC = () => {
                   <Picker
                     style={styles.picker}
                     dropdownIconColor="black"
-                    selectedValue={filters.minYear}
-                    onValueChange={(value) => setFilters({ ...filters, minYear: value })}>
+                    selectedValue={filters.yearMin}
+                    onValueChange={(value) => setFilters({ ...filters, yearMin: value })}>
                     <Picker.Item label="Min Year" value="" />
-                    <Picker.Item label="2010" value="2010" />
-                    <Picker.Item label="2015" value="2015" />
+                    {generateOptions("vehicle-year", "vehicleYear").map((option: any) => (
+                      <Picker.Item key={option.value} label={option.label} value={option.value} />
+                    ))}
                   </Picker>
                 </View>
 
@@ -137,11 +147,12 @@ const AuctionVehicles: React.FC = () => {
                   <Picker
                     style={styles.picker}
                     dropdownIconColor="black"
-                    selectedValue={filters.maxYear}
-                    onValueChange={(value) => setFilters({ ...filters, maxYear: value })}>
+                    selectedValue={filters.yearMax}
+                    onValueChange={(value) => setFilters({ ...filters, yearMax: value })}>
                     <Picker.Item label="Max Year" value="" />
-                    <Picker.Item label="2020" value="2020" />
-                    <Picker.Item label="2023" value="2023" />
+                    {generateOptions("vehicle-year", "vehicleYear").map((option: any) => (
+                      <Picker.Item key={option.value} label={option.label} value={option.value} />
+                    ))}
                   </Picker>
                 </View>
               </View>
@@ -150,11 +161,12 @@ const AuctionVehicles: React.FC = () => {
                 <Picker
                   style={styles.picker}
                   dropdownIconColor="black"
-                  selectedValue={filters.selectedCylinders}
-                  onValueChange={(value) => setFilters({ ...filters, selectedCylinders: value })}>
+                  selectedValue={filters.cylinders}
+                  onValueChange={(value) => setFilters({ ...filters, cylinders: value })}>
                   <Picker.Item label="Select Drive Type" value="" />
-                  <Picker.Item label="Toyota" value="Toyota" />
-                  <Picker.Item label="Honda" value="Honda" />
+                  {generateOptions("vehicle-cylinder", "vehicleCylinders").map((option: any) => (
+                    <Picker.Item key={option.value} label={option.label} value={option.value} />
+                  ))}
                 </Picker>
               </View>
 
@@ -162,11 +174,12 @@ const AuctionVehicles: React.FC = () => {
                 <Picker
                   style={styles.picker}
                   dropdownIconColor="black"
-                  selectedValue={filters.selectedDoors}
-                  onValueChange={(value) => setFilters({ ...filters, selectedDoors: value })}>
-                  <Picker.Item label="Select Car Make" value="" />
-                  <Picker.Item label="Toyota" value="Toyota" />
-                  <Picker.Item label="Honda" value="Honda" />
+                  selectedValue={filters.doors}
+                  onValueChange={(value) => setFilters({ ...filters, doors: value })}>
+                  <Picker.Item label="Select Car Doors" value="" />
+                  {generateOptions("vehicle-door", "vehicleDoor").map((option: any) => (
+                    <Picker.Item key={option.value} label={option.label} value={option.value} />
+                  ))}
                 </Picker>
               </View>
 
@@ -176,12 +189,12 @@ const AuctionVehicles: React.FC = () => {
                     setFilters({
                       minPrice: "",
                       maxPrice: "",
-                      selectedMake: "",
-                      minYear: "",
-                      maxYear: "",
-                      selectedDriveType: "",
-                      selectedDoors: "",
-                      selectedCylinders: "",
+                      carMake: "",
+                      yearMin: "",
+                      yearMax: "",
+                      driveType: "",
+                      doors: "",
+                      cylinders: "",
                     });
                     setFilterVisible(false);
                   }}
