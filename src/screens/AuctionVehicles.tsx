@@ -17,12 +17,11 @@ const AuctionVehicles: React.FC = () => {
   const [filters, setFilters] = useState({
     minPrice: "",
     maxPrice: "",
-    selectedMake: "All",
+    selectedMake: "",
     minYear: "",
     maxYear: "",
-    selectedDriveType: "All",
-    selectedDoors: "All",
-    selectedCylinder: "All",
+    selectedDriveType: "",
+    selectedDoors: "",
     selectedFuelTypes: [] as string[],
     selectedTransmissions: [] as string[],
   });
@@ -58,8 +57,7 @@ const AuctionVehicles: React.FC = () => {
 
   const applyFilters = async () => {
     try {
-      const queryParams = new URLSearchParams(filters as any).toString();
-      const response = await fetch(`https://your-api.com/get-cars?${queryParams}`);
+      const response = await fetch(`https://your-api.com/get-cars`);
       const data = await response.json();
       console.log("Filtered Cars:", data);
     } catch (error) {
@@ -96,31 +94,96 @@ const AuctionVehicles: React.FC = () => {
             <ScrollView>
               <Text style={styles.modalTitle}>Filter Cars</Text>
 
-              <TextInput style={styles.input} placeholder="Min Price" keyboardType="numeric" value={filters.minPrice} onChangeText={(value) => setFilters({ ...filters, minPrice: value })} />
-              <TextInput style={styles.input} placeholder="Max Price" keyboardType="numeric" value={filters.maxPrice} onChangeText={(value) => setFilters({ ...filters, maxPrice: value })} />
+              {/* Prices */}
 
-              <Picker selectedValue={filters.selectedMake} onValueChange={(value) => setFilters({ ...filters, selectedMake: value })}>
-                <Picker.Item label="Select Car Make" value="" />
-                <Picker.Item label="Toyota" value="Toyota" />
-                <Picker.Item label="Honda" value="Honda" />
-              </Picker>
+              <View style={styles.inputContainer}>
+                <TextInput style={styles.input}
+                  placeholderTextColor="black"
+                  placeholder="Min Price"
+                  keyboardType="numeric"
+                  value={filters.minPrice}
+                  onChangeText={(value) => setFilters({ ...filters, minPrice: value })} />
+                <TextInput style={styles.input}
+                  placeholderTextColor="black"
+                  placeholder="Max Price"
+                  keyboardType="numeric"
+                  value={filters.maxPrice}
+                  onChangeText={(value) => setFilters({ ...filters, maxPrice: value })} />
+              </View>
 
-              <Picker selectedValue={filters.minYear} onValueChange={(value) => setFilters({ ...filters, minYear: value })}>
-                <Picker.Item label="Min Year" value="" />
-                <Picker.Item label="2010" value="2010" />
-                <Picker.Item label="2015" value="2015" />
-              </Picker>
+              {/* Selects */}
 
-              <Picker selectedValue={filters.maxYear} onValueChange={(value) => setFilters({ ...filters, maxYear: value })}>
-                <Picker.Item label="Max Year" value="" />
-                <Picker.Item label="2020" value="2020" />
-                <Picker.Item label="2023" value="2023" />
-              </Picker>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  style={styles.picker}
+                  dropdownIconColor="black"
+                  selectedValue={filters.selectedMake}
+                  onValueChange={(value) => setFilters({ ...filters, selectedMake: value })}>
+                  <Picker.Item label="Select Car Make" value="" />
+                  <Picker.Item label="Toyota" value="Toyota" />
+                  <Picker.Item label="Honda" value="Honda" />
+                </Picker>
+              </View>
 
+              {/*  Year */}
+              <View style={styles.inputContainer}>
+                <View style={styles.pickerContainerYear}>
+                  <Picker
+                    style={styles.picker}
+                    dropdownIconColor="black"
+                    selectedValue={filters.minYear}
+                    onValueChange={(value) => setFilters({ ...filters, minYear: value })}>
+                    <Picker.Item label="Min Year" value="" />
+                    <Picker.Item label="2010" value="2010" />
+                    <Picker.Item label="2015" value="2015" />
+                  </Picker>
+                </View>
+
+                <View style={styles.pickerContainerYear}>
+                  <Picker
+                    style={styles.picker}
+                    dropdownIconColor="black"
+                    selectedValue={filters.maxYear}
+                    onValueChange={(value) => setFilters({ ...filters, maxYear: value })}>
+                    <Picker.Item label="Max Year" value="" />
+                    <Picker.Item label="2020" value="2020" />
+                    <Picker.Item label="2023" value="2023" />
+                  </Picker>
+                </View>
+              </View>
+
+              <View style={styles.pickerContainer}>
+                <Picker
+                  style={styles.picker}
+                  dropdownIconColor="black"
+                  selectedValue={filters.selectedDriveType}
+                  onValueChange={(value) => setFilters({ ...filters, selectedDriveType: value })}>
+                  <Picker.Item label="Select Drive Type" value="" />
+                  <Picker.Item label="Toyota" value="Toyota" />
+                  <Picker.Item label="Honda" value="Honda" />
+                </Picker>
+              </View>
+
+              <View style={styles.pickerContainer}>
+                <Picker
+                  style={styles.picker}
+                  dropdownIconColor="black"
+                  selectedValue={filters.selectedDoors}
+                  onValueChange={(value) => setFilters({ ...filters, selectedDoors: value })}>
+                  <Picker.Item label="Select Car Make" value="" />
+                  <Picker.Item label="Toyota" value="Toyota" />
+                  <Picker.Item label="Honda" value="Honda" />
+                </Picker>
+              </View>
+
+              {/* Checkboxes */}
               <Text style={styles.checkboxTitle}>Fuel Type</Text>
               {["Petrol", "Diesel", "Electric"].map((type) => (
                 <View key={type} style={styles.checkboxContainer}>
-                  <CheckBox value={filters.selectedFuelTypes.includes(type)} onValueChange={() => handleCheckboxToggle("selectedFuelTypes", type)} />
+                  <CheckBox
+                    tintColors={{ true: 'black', false: 'black' }}
+                    value={filters.selectedFuelTypes.includes(type)}
+                    onValueChange={() => handleCheckboxToggle("selectedFuelTypes", type)} />
                   <Text>{type}</Text>
                 </View>
               ))}
@@ -128,7 +191,10 @@ const AuctionVehicles: React.FC = () => {
               <Text style={styles.checkboxTitle}>Transmission</Text>
               {["Automatic", "Manual"].map((type) => (
                 <View key={type} style={styles.checkboxContainer}>
-                  <CheckBox value={filters.selectedTransmissions.includes(type)} onValueChange={() => handleCheckboxToggle("selectedTransmissions", type)} />
+                  <CheckBox
+                    tintColors={{ true: 'black', false: 'black' }}
+                    value={filters.selectedTransmissions.includes(type)}
+                    onValueChange={() => handleCheckboxToggle("selectedTransmissions", type)} />
                   <Text>{type}</Text>
                 </View>
               ))}
@@ -139,12 +205,11 @@ const AuctionVehicles: React.FC = () => {
                     setFilters({
                       minPrice: "",
                       maxPrice: "",
-                      selectedMake: "All",
+                      selectedMake: "",
                       minYear: "",
                       maxYear: "",
-                      selectedDriveType: "All",
-                      selectedDoors: "All",
-                      selectedCylinder: "All",
+                      selectedDriveType: "",
+                      selectedDoors: "",
                       selectedFuelTypes: [] as string[],
                       selectedTransmissions: [] as string[],
                     });
@@ -152,12 +217,12 @@ const AuctionVehicles: React.FC = () => {
                   }}
                   style={styles.clearButton}
                 >
-                  <Text style={styles.buttonText}>Clear</Text>
+                  <Text style={styles.buttonText}>Clear All Filters</Text>
                 </Pressable>
 
 
                 <Pressable onPress={applyFilters} style={styles.applyButton}>
-                  <Text style={styles.buttonText}>Apply</Text>
+                  <Text style={styles.buttonText}>Apply Selected Filters</Text>
                 </Pressable>
               </View>
             </ScrollView>
@@ -232,14 +297,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginVertical: 20
   },
-  leftFilter: { backgroundColor: "red" },
+  leftFilter: { backgroundColor: "#aaa" },
   rightFilter: {
     flexDirection: "row",
     borderWidth: 2,
-    paddingVertical: 10,
+    paddingVertical: 2,
     borderColor: "#010153",
     borderRadius: 100,
-    paddingHorizontal: 20
+    paddingHorizontal: 10
   },
   card: {
     backgroundColor: "#fff",
@@ -284,16 +349,69 @@ const styles = StyleSheet.create({
   },
   price: { fontSize: 20, fontWeight: "bold" },
   viewDetails: { fontSize: 14, color: "#007BFF", fontWeight: "600" },
-
   filterButton: { flexDirection: "row", alignItems: "center", padding: 10, backgroundColor: "#ddd", borderRadius: 5 },
   modalOverlay: { flex: 1, justifyContent: "center", backgroundColor: "rgba(0,0,0,0.5)" },
-  modalContent: { backgroundColor: "#fff", padding: 20, borderRadius: 10 },
-  modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
-  input: { borderWidth: 1, borderColor: "#ccc", padding: 10, marginBottom: 10, borderRadius: 5 },
-  checkboxTitle: { fontSize: 16, fontWeight: "bold", marginTop: 10 },
+  modalContent: { backgroundColor: "#fff", padding: 20, borderRadius: 10, },
+  modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 20 },
+  inputContainer: {
+    flexDirection: "row",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "space-between"
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "black",
+    color: "black",
+    padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+    width: "45%"
+  },
+  checkboxTitle: { fontSize: 16, fontWeight: "bold", marginTop: 10, },
   checkboxContainer: { flexDirection: "row", alignItems: "center", marginBottom: 5 },
-  buttonContainer: { flexDirection: "row", justifyContent: "space-between", marginTop: 10 },
-  clearButton: { padding: 10, backgroundColor: "red", borderRadius: 5 },
-  applyButton: { padding: 10, backgroundColor: "green", borderRadius: 5 },
-  buttonText: { color: "#fff", fontWeight: "bold" }
+  buttonContainer: { marginTop: 10, gap: 10 },
+  clearButton: {
+    padding: 10,
+    borderWidth: 2,
+    backgroundColor: "red",
+    borderRadius: 100,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  applyButton: {
+    padding: 10, backgroundColor: "#010153", borderRadius: 100, alignItems: "center",
+    justifyContent: "center"
+  },
+  buttonText: { color: "#fff", fontWeight: "bold" },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 5,
+    overflow: 'hidden',
+    marginVertical: 5,
+  },
+  picker: {
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 5,
+    color: 'black',
+    paddingHorizontal: 10,
+    marginVertical: 5,
+  },
+  pickerItem: {
+    color: 'black',
+  },
+  checkboxText: {
+    color: 'black',
+    marginLeft: 8,
+  },
+  pickerContainerYear: {
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 5,
+    overflow: 'hidden',
+    marginVertical: 5,
+    width: "45%"
+  }
 });                
