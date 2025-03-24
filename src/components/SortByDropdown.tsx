@@ -34,7 +34,7 @@ const SortByDropdown: React.FC<SortByDropdownProps> = ({ onChange, preselected, 
                             fullAuctionDate: new Date(`${auction.auctionDate} ${auction.auctionTime}`),
                         }))
                         .sort((a: { fullAuctionDate: { getTime: () => number; }; }, b: { fullAuctionDate: { getTime: () => number; }; }) => a.fullAuctionDate.getTime() - b.fullAuctionDate.getTime())
-                        .filter((auction: { statusText: string; }) => auction.statusText?.toLowerCase() !== "completed");
+                        .filter((auction: { statusText: string; }) => auction.statusText?.toLowerCase() !== "compeleted");
 
                     setOptions(sortedOptions);
 

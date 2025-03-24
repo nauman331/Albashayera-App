@@ -53,7 +53,7 @@ const AuctionVehicles: React.FC = () => {
     ? responseCars.filter(item =>
       !item.isSold &&
       item.sellingType === "auction" &&
-      item.auctionLot && item.auctionLot.statusText !== "Completed"
+      item.auctionLot && item.auctionLot.statusText !== "Compeleted"
     )
     : [];
 
@@ -287,7 +287,7 @@ const AuctionVehicles: React.FC = () => {
               )}
 
               <View style={styles.cardContent}>
-                <Text style={styles.carName}>{item?.listingTitle || "Unknown Car"} {item.isSold ? "sold" : "not"}</Text>
+                <Text style={styles.carName}>{item?.listingTitle || "Unknown Car"}</Text>
                 <Text style={styles.description}>{item.description || "No Description"}</Text>
                 <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
                 <View style={styles.detailsRow}>
