@@ -9,6 +9,8 @@ import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { Picker } from "@react-native-picker/picker";
 import SortByDropdown from "../components/SortByDropdown";
 import { backendURL } from "../utils/exports";
+import Toast from 'react-native-toast-message';
+
 
 
 const AuctionVehicles: React.FC = () => {
@@ -19,9 +21,18 @@ const AuctionVehicles: React.FC = () => {
   const [filterLoading, setFilterLoading] = useState(false)
   const [auctionTitle, setAuctionTitle] = useState("");
   const [responseCars, setResponseCars] = useState([] as any)
-  const [filters, setFilters] = useState({
-    minPrice: "",
-    maxPrice: "",
+  const [filters, setFilters] = useState<{
+    minPrice: string | number;
+    maxPrice: string | number;
+    carMake: string;
+    yearMin: string;
+    yearMax: string;
+    driveType: string;
+    doors: string;
+    cylinders: string;
+  }>({
+    minPrice: 1,
+    maxPrice: 10000,
     carMake: "",
     yearMin: "",
     yearMax: "",
@@ -29,6 +40,7 @@ const AuctionVehicles: React.FC = () => {
     doors: "",
     cylinders: "",
   });
+
 
   const toggleFilterModal = () => setFilterVisible(!isFilterVisible);
 
@@ -74,15 +86,14 @@ const AuctionVehicles: React.FC = () => {
       if (result.success && result.data.length > 0) {
         const filteredCars = result.data.sort((a: any, b: any) => Number(a.lotNo) - Number(b.lotNo));
         setResponseCars(filteredCars);
-        setFilterVisible(false);
       } else {
-        Alert.alert("No cars found with the applied filters.");
         setResponseCars([]);
       }
     } catch (error) {
-      Alert.alert("Error applying filter:");
+      Toast.show({ type: 'error', text1: 'Error', text2: 'Error in applying filters' });
     } finally {
       setFilterLoading(false);
+      setFilterVisible(false);
     }
   };
 
@@ -144,14 +155,14 @@ const AuctionVehicles: React.FC = () => {
                   placeholderTextColor="black"
                   placeholder="Min Price"
                   keyboardType="numeric"
-                  value={filters.minPrice}
-                  onChangeText={(value) => setFilters({ ...filters, minPrice: value })} />
+                  value={filters.minPrice !== undefined ? String(filters.minPrice) : ""}
+                  onChangeText={(value) => setFilters({ ...filters, minPrice: value ? Number(value) : 0 })} />
                 <TextInput style={styles.input}
                   placeholderTextColor="black"
                   placeholder="Max Price"
                   keyboardType="numeric"
-                  value={filters.maxPrice}
-                  onChangeText={(value) => setFilters({ ...filters, maxPrice: value })} />
+                  value={filters.maxPrice !== undefined ? String(filters.maxPrice) : ""}
+                  onChangeText={(value) => setFilters({ ...filters, maxPrice: value ? Number(value) : 0 })} />
               </View>
 
               {/* Selects */}
@@ -271,10 +282,13 @@ const AuctionVehicles: React.FC = () => {
 
       {/* Display Cars */}
       {filteredCars.length === 0 ? (
-        <Text style={styles.noCarsText}>No Available Cars</Text>
+        <View style={styles.notfound}>
+          <Text style={styles.notfoundText}>No Cars Found</Text>
+          <Image source={require("../assets/images/towing.png")} style={styles.carImage} />
+        </View>
       ) : (
         <FlatList
-          data={responseCars.length > 0 ? responseCars : filteredCars}
+          data={filteredCars}
           keyExtractor={(item) => item?._id?.toString() ?? Math.random().toString()}
           renderItem={({ item }) => (
             <View style={styles.card}>
@@ -453,5 +467,16 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginVertical: 5,
     width: "45%"
+  },
+  notfound: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40
+  },
+  notfoundText: {
+    fontWeight: "bold",
+    fontSize: 30,
+    marginBottom: 30
   }
 });                
