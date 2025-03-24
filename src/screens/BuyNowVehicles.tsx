@@ -18,7 +18,6 @@ const BuyNowVehicles: React.FC = () => {
 
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [filterLoading, setFilterLoading] = useState(false)
-  const [auctionTitle, setAuctionTitle] = useState("");
   const [responseCars, setResponseCars] = useState([] as any)
   const [filters, setFilters] = useState<{
     minPrice: string | number;
@@ -45,18 +44,8 @@ const BuyNowVehicles: React.FC = () => {
 
 
   useEffect(() => {
-    if (auctionTitle) {
-      setResponseCars(
-        cars?.filter((car) =>
-          car.auctionLot?.auctionTitle
-            ?.toLowerCase()
-            .includes(auctionTitle?.toLowerCase())
-        ) || []
-      );
-    } else {
-      setResponseCars(cars);
-    }
-  }, [auctionTitle, cars]);
+    setResponseCars(cars);
+  }, [cars]);
 
 
 
@@ -101,11 +90,6 @@ const BuyNowVehicles: React.FC = () => {
       label: item[labelKey],
       value: item._id,
     })) || [];
-
-
-  const handleFilterChange = (selectedAuction: any) => {
-    setAuctionTitle(selectedAuction);
-  };
 
   if (loading) {
     return <Text style={styles.loadingText}>Loading...</Text>;
