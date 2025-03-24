@@ -49,8 +49,8 @@ const AuctionVehicles: React.FC = () => {
 
 
 
-  const filteredCars = Array.isArray(cars)
-    ? cars.filter(item =>
+  const filteredCars = Array.isArray(responseCars)
+    ? responseCars.filter(item =>
       !item.isSold &&
       item.sellingType === "auction" &&
       item.auctionLot && item.auctionLot.statusText !== "Completed"
@@ -287,7 +287,7 @@ const AuctionVehicles: React.FC = () => {
               )}
 
               <View style={styles.cardContent}>
-                <Text style={styles.carName}>{item?.listingTitle || "Unknown Car"}</Text>
+                <Text style={styles.carName}>{item?.listingTitle || "Unknown Car"} {item.isSold ? "sold" : "not"}</Text>
                 <Text style={styles.description}>{item.description || "No Description"}</Text>
                 <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
                 <View style={styles.detailsRow}>
@@ -324,7 +324,7 @@ export default AuctionVehicles;
 
 
 const styles = StyleSheet.create({
-  container: { padding: 25, backgroundColor: "#F5F5F5", flex: 1 },
+  container: { padding: 20, backgroundColor: "#F5F5F5", flex: 1 },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
   loadingText: { textAlign: "center", marginTop: 20, fontSize: 16 },
   errorText: { textAlign: "center", marginTop: 20, fontSize: 16, color: "red" },
