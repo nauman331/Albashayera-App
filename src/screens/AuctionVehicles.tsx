@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, FlatList, Image, Pressable, Modal, TextInput, ScrollView } from "react-native";
-import React, { useState } from "react";
+import { StyleSheet, Text, View, FlatList, Image, Pressable, Modal, TextInput, ScrollView, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
 import useFetchCarsAndCategories from "../hooks/useFetchCarsAndCategories";
 import { useNavigation } from "@react-navigation/native";
 import fuel from "../assets/images/fuel.png";
@@ -7,12 +7,18 @@ import speedometer from "../assets/images/speedometer.png";
 import gearbox from "../assets/images/gearbox.png";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { Picker } from "@react-native-picker/picker";
+import SortByDropdown from "../components/SortByDropdown";
+import { backendURL } from "../utils/exports";
+
 
 const AuctionVehicles: React.FC = () => {
   const { cars, loading, error, categoriesData } = useFetchCarsAndCategories();
   const navigation = useNavigation();
 
   const [isFilterVisible, setFilterVisible] = useState(false);
+  const [filterLoading, setFilterLoading] = useState(false)
+  const [auctionTitle, setAuctionTitle] = useState("");
+  const [responseCars, setResponseCars] = useState([] as any)
   const [filters, setFilters] = useState({
     minPrice: "",
     maxPrice: "",
@@ -24,35 +30,80 @@ const AuctionVehicles: React.FC = () => {
     cylinders: "",
   });
 
-
   const toggleFilterModal = () => setFilterVisible(!isFilterVisible);
 
-  if (loading) return <Text style={styles.loadingText}>Loading...</Text>;
-  if (error) return <Text style={styles.errorText}>Error: {error}</Text>;
+
+  useEffect(() => {
+    if (auctionTitle) {
+      setResponseCars(
+        cars?.filter((car) =>
+          car.auctionLot?.auctionTitle
+            ?.toLowerCase()
+            .includes(auctionTitle?.toLowerCase())
+        ) || []
+      );
+    } else {
+      setResponseCars(cars);
+    }
+  }, [auctionTitle, cars]);
+
+
 
   const filteredCars = Array.isArray(cars)
     ? cars.filter(item =>
       !item.isSold &&
       item.sellingType === "auction" &&
-      !(!item.auctionLot || item.auctionLot.statusText === "Compeleted")
+      item.auctionLot && item.auctionLot.statusText !== "Completed"
     )
     : [];
 
+
+
   const applyFilters = async () => {
     try {
-      const response = await fetch(`https://your-api.com/get-cars`);
-      const data = await response.json();
-      console.log("Filtered Cars:", data);
+      setFilterLoading(true);
+      const response = await fetch(`${backendURL}/car/filter`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(filters),
+      });
+
+      const result = await response.json();
+      if (result.success && result.data.length > 0) {
+        const filteredCars = result.data.sort((a: any, b: any) => Number(a.lotNo) - Number(b.lotNo));
+        setResponseCars(filteredCars);
+        setFilterVisible(false);
+      } else {
+        Alert.alert("No cars found with the applied filters.");
+        setResponseCars([]);
+      }
     } catch (error) {
-      console.error("Error fetching cars:", error);
+      Alert.alert("Error applying filter:");
+    } finally {
+      setFilterLoading(false);
     }
   };
+
 
   const generateOptions = (key: any, labelKey: any) =>
     categoriesData?.[key]?.map((item: any) => ({
       label: item[labelKey],
       value: item._id,
     })) || [];
+
+
+  const handleFilterChange = (selectedAuction: any) => {
+    setAuctionTitle(selectedAuction);
+  };
+
+  if (loading) {
+    return <Text style={styles.loadingText}>Loading...</Text>;
+  }
+  if (error) {
+    return <Text style={styles.errorText}>Error: {error}</Text>;
+  }
 
   return (
     <View style={styles.container}>
@@ -61,14 +112,18 @@ const AuctionVehicles: React.FC = () => {
       {/* Filters Section */}
       <View style={styles.filterSection}>
         <View style={styles.leftFilter}>
-          <Text>Select Auction</Text>
+          <SortByDropdown
+            onChange={handleFilterChange}
+            preselected={auctionTitle}
+            backendURL={backendURL}
+          />
         </View>
 
         <Pressable onPress={toggleFilterModal} style={styles.rightFilter}>
-          <Text style={{ fontSize: 20, color: "#010153" }}>Filters </Text>
+          <Text style={{ fontSize: 15, color: "#010153" }}>Filters </Text>
           <FontAwesome6
             name="arrow-right-arrow-left"
-            size={20}
+            size={15}
             color="#010153"
             style={{ transform: [{ rotate: "90deg" }] }}
           />
@@ -196,6 +251,7 @@ const AuctionVehicles: React.FC = () => {
                       doors: "",
                       cylinders: "",
                     });
+                    setResponseCars(cars);
                     setFilterVisible(false);
                   }}
                   style={styles.clearButton}
@@ -205,7 +261,7 @@ const AuctionVehicles: React.FC = () => {
 
 
                 <Pressable onPress={applyFilters} style={styles.applyButton}>
-                  <Text style={styles.buttonText}>Apply Selected Filters</Text>
+                  <Text style={styles.buttonText}>{filterLoading ? "Applying Filters..." : "Apply Selected Filters"}</Text>
                 </Pressable>
               </View>
             </ScrollView>
@@ -218,7 +274,7 @@ const AuctionVehicles: React.FC = () => {
         <Text style={styles.noCarsText}>No Available Cars</Text>
       ) : (
         <FlatList
-          data={filteredCars}
+          data={responseCars.length > 0 ? responseCars : filteredCars}
           keyExtractor={(item) => item?._id?.toString() ?? Math.random().toString()}
           renderItem={({ item }) => (
             <View style={styles.card}>
@@ -278,11 +334,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginVertical: 20
+    marginBottom: 20
   },
-  leftFilter: { backgroundColor: "#aaa" },
+  leftFilter: { width: "60%" },
   rightFilter: {
     flexDirection: "row",
+    width: "30%",
     borderWidth: 2,
     paddingVertical: 2,
     borderColor: "#010153",
