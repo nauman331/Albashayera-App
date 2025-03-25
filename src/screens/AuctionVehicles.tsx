@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, Image, Pressable, Modal, TextInput, ScrollView, Alert } from "react-native";
+import { StyleSheet, Text, View, FlatList, Image, Pressable, Modal, TextInput, ScrollView, Alert, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import useFetchCarsAndCategories from "../hooks/useFetchCarsAndCategories";
 import { useNavigation } from "@react-navigation/native";
@@ -10,12 +10,14 @@ import { Picker } from "@react-native-picker/picker";
 import SortByDropdown from "../components/SortByDropdown";
 import { backendURL } from "../utils/exports";
 import Toast from 'react-native-toast-message';
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../App";
 
 
 
 const AuctionVehicles: React.FC = () => {
   const { cars, loading, error, categoriesData } = useFetchCarsAndCategories();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, "CarDetails">>();
 
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [filterLoading, setFilterLoading] = useState(false)
@@ -109,9 +111,12 @@ const AuctionVehicles: React.FC = () => {
     setAuctionTitle(selectedAuction);
   };
 
-  if (loading) {
-    return <Text style={styles.loadingText}>Loading...</Text>;
-  }
+  if (loading)
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    );
   if (error) {
     return <Text style={styles.errorText}>Error: {error}</Text>;
   }
@@ -287,48 +292,54 @@ const AuctionVehicles: React.FC = () => {
           <Image source={require("../assets/images/towing.png")} style={styles.carImage} />
         </View>
       ) : (
+
         <FlatList
           data={filteredCars}
           keyExtractor={(item) => item?._id?.toString() ?? Math.random().toString()}
           renderItem={({ item }) => (
-            <View style={styles.card}>
-              {item?.carImages.length > 0 ? (
-                <Image source={{ uri: item.carImages?.[0] }} style={styles.carImage} />
-              ) : (
-                <View style={styles.imagePlaceholder}>
-                  <Text style={styles.placeholderText}>No Image</Text>
-                </View>
-              )}
+            <Pressable onPress={() => navigation.navigate('CarDetails', { carId: item._id })}>
+              <View style={styles.card}>
+                <Pressable onPress={() => navigation.navigate('CarDetails', { carId: item._id })}>
+                  {item?.carImages.length > 0 ? (
+                    <Image source={{ uri: item.carImages?.[0] }} style={styles.carImage} />
+                  ) : (
+                    <View style={styles.imagePlaceholder}>
+                      <Text style={styles.placeholderText}>No Image</Text>
+                    </View>
+                  )}
+                </Pressable>
 
-              <View style={styles.cardContent}>
-                <Text style={styles.carName}>{item?.listingTitle || "Unknown Car"}</Text>
-                <Text style={styles.description}>{item.description || "No Description"}</Text>
-                <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
-                <View style={styles.detailsRow}>
-                  <View style={styles.detailItem}>
-                    <Image source={speedometer} />
-                    <Text style={styles.detailText}>{item?.mileage ?? "N/A"} MI</Text>
+                <View style={styles.cardContent}>
+                  <Text style={styles.carName}>{item?.listingTitle || "Unknown Car"}</Text>
+                  <Text style={styles.description}>{item.description || "No Description"}</Text>
+                  <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
+                  <View style={styles.detailsRow}>
+                    <View style={styles.detailItem}>
+                      <Image source={speedometer} />
+                      <Text style={styles.detailText}>{item?.mileage ?? "N/A"} MI</Text>
+                    </View>
+                    <View style={styles.detailItem}>
+                      <Image source={fuel} />
+                      <Text style={styles.detailText}>{item?.fuelType?.vehicleFuelTypes || "Unknown"}</Text>
+                    </View>
+                    <View style={styles.detailItem}>
+                      <Image source={gearbox} />
+                      <Text style={styles.detailText}>{item?.transmission?.vehicleTransimission || "N/A"}</Text>
+                    </View>
                   </View>
-                  <View style={styles.detailItem}>
-                    <Image source={fuel} />
-                    <Text style={styles.detailText}>{item?.fuelType?.vehicleFuelTypes || "Unknown"}</Text>
+                  <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
+                  <View style={styles.footer}>
+                    <Text style={styles.price}>AED {item.startingBid || "N/A"}</Text>
+                    <Pressable onPress={() => navigation.navigate('CarDetails', { carId: item._id })}>
+                      <Text style={styles.viewDetails}>View Details <FontAwesome6 name="arrow-up-right-from-square" /></Text>
+                    </Pressable>
                   </View>
-                  <View style={styles.detailItem}>
-                    <Image source={gearbox} />
-                    <Text style={styles.detailText}>{item?.transmission?.vehicleTransimission || "N/A"}</Text>
-                  </View>
-                </View>
-                <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
-                <View style={styles.footer}>
-                  <Text style={styles.price}>AED {item.startingBid || "N/A"}</Text>
-                  <Pressable>
-                    <Text style={styles.viewDetails}>View Details <FontAwesome6 name="arrow-up-right-from-square" /></Text>
-                  </Pressable>
                 </View>
               </View>
-            </View>
+            </Pressable>
           )}
         />
+
       )}
     </View>
   );
@@ -340,7 +351,7 @@ export default AuctionVehicles;
 const styles = StyleSheet.create({
   container: { padding: 20, backgroundColor: "#F5F5F5", flex: 1 },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
-  loadingText: { textAlign: "center", marginTop: 20, fontSize: 16 },
+  loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   errorText: { textAlign: "center", marginTop: 20, fontSize: 16, color: "red" },
   noCarsText: { textAlign: "center", fontSize: 16, color: "#666", marginTop: 10 },
   filterSection: {

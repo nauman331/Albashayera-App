@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, Image, Pressable, Modal, TextInput, ScrollView, Alert } from "react-native";
+import { StyleSheet, Text, View, FlatList, Image, Pressable, Modal, TextInput, ScrollView, Alert, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import useFetchCarsAndCategories from "../hooks/useFetchCarsAndCategories";
 import { useNavigation } from "@react-navigation/native";
@@ -91,9 +91,12 @@ const BuyNowVehicles: React.FC = () => {
       value: item._id,
     })) || [];
 
-  if (loading) {
-    return <Text style={styles.loadingText}>Loading...</Text>;
-  }
+   if (loading)
+          return (
+              <View style={styles.loader}>
+                  <ActivityIndicator size="large" color="blue" />
+              </View>
+          );
   if (error) {
     return <Text style={styles.errorText}>Error: {error}</Text>;
   }
@@ -312,7 +315,7 @@ export default BuyNowVehicles;
 const styles = StyleSheet.create({
   container: { padding: 20, backgroundColor: "#F5F5F5", flex: 1 },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
-  loadingText: { textAlign: "center", marginTop: 20, fontSize: 16 },
+  loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   errorText: { textAlign: "center", marginTop: 20, fontSize: 16, color: "red" },
   noCarsText: { textAlign: "center", fontSize: 16, color: "#666", marginTop: 10 },
   rightFilter: {

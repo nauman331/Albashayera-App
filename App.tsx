@@ -7,7 +7,7 @@ import Toast from "react-native-toast-message";
 import UnauthenticatedTabs from "./src/components/navigations/UnauthenticatedTabs";
 import DrawerNavigator from "./src/components/navigations/DrawerNavigator";
 import { backendURL } from "./src/utils/exports";
-import NoInternetScreen from "./src/screens/NoInternetScreen"; 
+import NoInternetScreen from "./src/screens/NoInternetScreen";
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -21,6 +21,7 @@ export type RootStackParamList = {
   Auctions: undefined;
   AuctionVehicles: undefined;
   BuyNowVehicles: undefined;
+  CarDetails: { carId: string };
 };
 
 const App = () => {
