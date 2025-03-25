@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Dimensions, TouchableOpacity, TextInput } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Dimensions, TouchableOpacity, TextInput, Animated } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { Image } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { backendURL } from '../utils/exports';
 import CarOverview from '../components/CarOverview';
 import FeatureCategory from '../components/FeatureCategory';
+import VimeoPlayer from '../components/VimeoPlayer';
 
 type CarDetailsScreenProps = {
     route: RouteProp<{ params: { carId: string } }, 'params'>;
@@ -18,9 +19,25 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
     const [car, setCar] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [bid, setBid] = useState(0)
+    const [bid, setBid] = useState(0);
+    const [vimeoLive, setVimeoLive] = useState(false);
     const [featuresData, setFeaturesData] = useState<{ category: string; features: string[] }[]>([]);
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+    const glowAnim = useRef(new Animated.Value(0.4)).current;
 
+    const currentBidData = {
+        carId: car?._id || "",
+        bidAmount: "",
+        auctionStatus: true,
+    }
+    const socket = true;
+    const token = "Hello"
+    const currentCarColor = {
+        color: "green",
+        carId: car?._id || ""
+    }
+
+    const currentBalance = 20;
 
 
     const getCarDetails = async () => {
@@ -57,6 +74,53 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
         getCarDetails();
     }, [carId]);
 
+    useEffect(() => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(scaleAnim, {
+                    toValue: 1.1,
+                    duration: 800,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(scaleAnim, {
+                    toValue: 1,
+                    duration: 800,
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start();
+
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(glowAnim, {
+                    toValue: 1,
+                    duration: 800,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(glowAnim, {
+                    toValue: 0.4,
+                    duration: 800,
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start();
+    }, []);
+
+    const openLive = () => {
+        setVimeoLive(!vimeoLive)
+        if (!token) {
+            //   toast.error("Please login first to View Live Event");
+        } else if (currentBalance < 1) {
+            //   toast.error("Live can't be opened due to empty wallet");
+        } else {
+            // setVimeoLive(!vimeoLive);
+        }
+    };
+    useEffect(() => {
+        if (car && car.sellingType === "auction")
+            setBid(car.startingBid)
+    }, [car])
+
     if (loading || !car)
         return (
             <View style={styles.loader}>
@@ -79,17 +143,6 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
         if (car) setBid(bid - car.bidMargin);
     };
 
-    const currentBidData = {
-        carId: car?._id || "",
-        bidAmount: "",
-        auctionStatus: true,
-    }
-    const socket = true;
-    const token = ""
-    const currentCarColor = {
-        color: "green",
-        carId: car?._id || ""
-    }
 
     const handlePlaceBid = () => {
         if (socket && token && car?._id) {
@@ -113,7 +166,9 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
         <ScrollView style={styles.container}>
 
             {/* Car top section */}
-
+            {
+                vimeoLive && <VimeoPlayer />
+            }
             {car?.carImages?.length > 0 && (
                 <Carousel
                     loop
@@ -252,7 +307,19 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                         <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>Place Bid</Text>
                     </View>
                 )}
+
             </View>
+            {/* LIVE BUTTON */}
+            <TouchableOpacity onPress={openLive} activeOpacity={0.8}>
+                <Animated.View
+                    style={[
+                        styles.liveButton,
+                        { transform: [{ scale: scaleAnim }], shadowOpacity: glowAnim },
+                    ]}
+                >
+                    <Text style={styles.liveText}>VIEW LIVE AUCTION</Text>
+                </Animated.View>
+            </TouchableOpacity>
 
             {/* Car Overview */}
             <CarOverview car={car} />
@@ -371,6 +438,28 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textDecorationLine: "line-through",
         color: "#888"
+    },
+    liveButton: {
+        backgroundColor: "#22C55E",
+        paddingVertical: 12,
+        paddingHorizontal: 26,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: "#16A34A",
+        shadowColor: "#22C55E",
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 0 },
+        elevation: 10,
+        alignItems: "center",
+        justifyContent: "center",
+        marginVertical: 20
+    },
+    liveText: {
+        color: "#FFFFFF",
+        fontWeight: "bold",
+        fontSize: 16,
+        letterSpacing: 1,
+        textTransform: "uppercase",
     },
 });
 
