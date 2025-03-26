@@ -15,6 +15,17 @@ type CarDetailsScreenProps = {
     route: RouteProp<{ params: { carId: string } }, 'params'>;
 };
 
+interface BidData {
+    carId: string;
+    bidAmount: number;
+    auctionStatus: boolean;
+}
+
+interface CarColor {
+    carId: string;
+    color: string;
+}
+
 const { width } = Dimensions.get('window');
 
 const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
@@ -25,22 +36,14 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
     const [error, setError] = useState('');
     const [bid, setBid] = useState(0);
     const [currentBalance, setCurrentBalance] = useState(0)
+    const [currentBidData, setCurrentBidData] = useState<BidData | null>(null);
+    const [currentCarColor, setCurrentCarColor] = useState<CarColor | null>(null);
     const [vimeoLive, setVimeoLive] = useState(false);
     const [token, setToken] = useState<string | null>(null);
     const [featuresData, setFeaturesData] = useState<{ category: string; features: string[] }[]>([]);
     const scaleAnim = useRef(new Animated.Value(1)).current;
     const glowAnim = useRef(new Animated.Value(0.4)).current;
 
-    const currentBidData = {
-        carId: car?._id || "",
-        bidAmount: "",
-        auctionStatus: true,
-    }
-
-    const currentCarColor = {
-        color: "green",
-        carId: car?._id || ""
-    }
 
     const handlePlaceBid = () => {
         if (socketService.isConnected && token && car?._id) {
@@ -139,7 +142,23 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                 console.error("Error retrieving token:", error);
             }
         };
+
+        const fetchBidData = async () => {
+            try {
+                const storedBidData = await AsyncStorage.getItem("currentBidData");
+                const storedColorData = await AsyncStorage.getItem("currentCarColor");
+                if (storedBidData) {
+                    setCurrentBidData(JSON.parse(storedBidData));
+                }
+                if (storedColorData) {
+                    setCurrentCarColor(JSON.parse(storedColorData));
+                }
+            } catch (error) {
+                console.error("Error retrieving token:", error);
+            }
+        }
         fetchToken();
+        fetchBidData();
     }, []);
 
 
@@ -291,13 +310,13 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                         <View
                             style={[
                                 styles.bidAmountContainer,
-                                { backgroundColor: currentCarColor?.carId === car._id && currentCarColor.color === "green" ? "#ccffcc" : "#ffcccc" },
+                                { backgroundColor: currentCarColor?.carId === car._id && currentCarColor?.color === "green" ? "#ccffcc" : "#ffcccc" },
                             ]}
                         >
                             <Text
                                 style={[
                                     styles.bidAmount,
-                                    { color: currentCarColor?.carId === car._id && currentCarColor.color === "green" ? "#006400" : "#b30000" },
+                                    { color: currentCarColor?.carId === car._id && currentCarColor?.color === "green" ? "#006400" : "#b30000" },
                                 ]}
                             >
                                 AED{" "}
