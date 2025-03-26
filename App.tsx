@@ -25,6 +25,7 @@ export type RootStackParamList = {
   AuctionVehicles: undefined;
   BuyNowVehicles: undefined;
   CarDetails: { carId: string };
+  AuctionEvents: undefined
 };
 
 const App = () => {
