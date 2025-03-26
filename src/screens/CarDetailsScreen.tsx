@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Dimensions, TouchableOpacity, TextInput, Animated } from 'react-native';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Dimensions, TouchableOpacity, TextInput, Animated, Alert } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { Image } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
@@ -7,6 +7,9 @@ import { backendURL } from '../utils/exports';
 import CarOverview from '../components/CarOverview';
 import FeatureCategory from '../components/FeatureCategory';
 import VimeoPlayer from '../components/VimeoPlayer';
+import socketService from '../utils/socket';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 type CarDetailsScreenProps = {
     route: RouteProp<{ params: { carId: string } }, 'params'>;
@@ -18,9 +21,12 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
     const { carId } = route.params;
     const [car, setCar] = useState<any>(null);
     const [loading, setLoading] = useState(false);
+    const [buyLoading, setBuyLoading] = useState(false)
     const [error, setError] = useState('');
     const [bid, setBid] = useState(0);
+    const [currentBalance, setCurrentBalance] = useState(0)
     const [vimeoLive, setVimeoLive] = useState(false);
+    const [token, setToken] = useState<string | null>(null);
     const [featuresData, setFeaturesData] = useState<{ category: string; features: string[] }[]>([]);
     const scaleAnim = useRef(new Animated.Value(1)).current;
     const glowAnim = useRef(new Animated.Value(0.4)).current;
@@ -30,14 +36,36 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
         bidAmount: "",
         auctionStatus: true,
     }
-    const socket = true;
-    const token = "Hello"
+
     const currentCarColor = {
         color: "green",
         carId: car?._id || ""
     }
 
-    const currentBalance = 20;
+    const handlePlaceBid = () => {
+        if (socketService.isConnected && token && car?._id) {
+            if (!bid || isNaN(Number(bid))) {
+                Alert.alert("Invalid bid amount");
+                return;
+            }
+
+            const data = {
+                carId: car._id,
+                token,
+                bidAmount: Number(bid),
+            };
+
+            if (Number(bid) <= Number(currentBidData?.bidAmount || car.startingBid)) {
+                Alert.alert("Bid amount should be greater than the current bid");
+                return;
+            }
+
+            socketService.emit("placeBid", data);
+            setBid(Number(currentBidData?.bidAmount) || Number(bid));
+        } else {
+            Alert.alert("Socket not connected or invalid data");
+        }
+    };
 
 
     const getCarDetails = async () => {
@@ -70,56 +98,124 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
         }
     };
 
+    const purchaseCar = async () => {
+        const authorizationToken = `Bearer ${token}`;
+        try {
+            setBuyLoading(true);
+            const response = await fetch(`${backendURL}/car/purchase/${carId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: authorizationToken,
+                },
+            });
+            const res_data = await response.json();
+            if (response.ok) {
+                // toast.success(res_data.message);
+                Alert.alert(res_data.message)
+                getCarDetails();
+            } else {
+                // toast.error(res_data.message);
+                Alert.alert(res_data.message)
+            }
+        } catch (error) {
+            //   toast.error("Error while buying");
+            Alert.alert("Error while buying");
+        } finally {
+            setBuyLoading(false);
+        }
+    };
+
+
+    useEffect(() => {
+        const fetchToken = async () => {
+            try {
+                const storedToken = await AsyncStorage.getItem("@token");
+                if (storedToken) {
+                    setToken(storedToken);
+                    socketService.connect(storedToken);
+                }
+            } catch (error) {
+                console.error("Error retrieving token:", error);
+            }
+        };
+        fetchToken();
+    }, []);
+
+
     useEffect(() => {
         getCarDetails();
     }, [carId]);
 
     useEffect(() => {
-        Animated.loop(
+        const scaleAnimation = Animated.loop(
             Animated.sequence([
-                Animated.timing(scaleAnim, {
-                    toValue: 1.1,
-                    duration: 800,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(scaleAnim, {
-                    toValue: 1,
-                    duration: 800,
-                    useNativeDriver: true,
-                }),
+                Animated.timing(scaleAnim, { toValue: 1.1, duration: 800, useNativeDriver: true }),
+                Animated.timing(scaleAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
             ])
-        ).start();
+        );
 
-        Animated.loop(
+        const glowAnimation = Animated.loop(
             Animated.sequence([
-                Animated.timing(glowAnim, {
-                    toValue: 1,
-                    duration: 800,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(glowAnim, {
-                    toValue: 0.4,
-                    duration: 800,
-                    useNativeDriver: true,
-                }),
+                Animated.timing(glowAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+                Animated.timing(glowAnim, { toValue: 0.4, duration: 800, useNativeDriver: true }),
             ])
-        ).start();
+        );
+
+        scaleAnimation.start();
+        glowAnimation.start();
+
+        return () => {
+            scaleAnimation.stop();
+            glowAnimation.stop();
+        };
     }, []);
 
+
+    const getDeposits = useCallback(async () => {
+        const authorizationToken = `Bearer ${token}`;
+        try {
+            setLoading(true);
+            const response = await fetch(`${backendURL}/wallet`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: authorizationToken,
+                },
+            });
+            const res_data = await response.json();
+            if (response.ok) {
+                setCurrentBalance(res_data.currentAmount);
+            } else {
+                console.error(res_data.message);
+            }
+        } catch (error) {
+            console.error("Error in getting deposits:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, [token]);
+
+    useEffect(() => {
+        if (token) {
+            getDeposits();
+        }
+    }, [token, getDeposits]);
+
+
     const openLive = () => {
-        setVimeoLive(!vimeoLive)
-        if (!token) {
-            //   toast.error("Please login first to View Live Event");
-        } else if (currentBalance < 1) {
-            //   toast.error("Live can't be opened due to empty wallet");
+        if (currentBalance < 1) {
+            Alert.alert("Live can't be opened due to empty wallet");
         } else {
-            // setVimeoLive(!vimeoLive);
+            setVimeoLive(!vimeoLive);
         }
     };
     useEffect(() => {
-        if (car && car.sellingType === "auction")
-            setBid(car.startingBid)
-    }, [car])
+        if (car) {
+            setBid(car.startingBid);
+        }
+    }, [car]);
+
 
     if (loading || !car)
         return (
@@ -142,23 +238,6 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
     const decreaseBid = () => {
         if (car) setBid(bid - car.bidMargin);
     };
-
-
-    const handlePlaceBid = () => {
-        if (socket && token && car?._id) {
-            const data = {
-                carId: car._id,
-                token,
-                bidAmount: bid,
-            };
-            // socket.emit("placeBid", data);
-            setBid(Number(currentBidData?.bidAmount) || 0);
-        } else {
-            console.log("Socket not connected or invalid data");
-        }
-    };
-
-
 
 
 
@@ -248,78 +327,86 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
             </View>
 
             {/* Controls */}
+            {
+                car.sellingType === "auction" ?
+                    <>
+                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 10 }}>
+                            <TouchableOpacity
+                                style={{ backgroundColor: "#ddd", paddingVertical: 8, paddingHorizontal: 16, borderRadius: 5, marginHorizontal: 5 }}
+                                onPress={decreaseBid}
+                            >
+                                <Text style={{ fontSize: 20, fontWeight: "bold" }}>-</Text>
+                            </TouchableOpacity>
 
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 10 }}>
-                <TouchableOpacity
-                    style={{ backgroundColor: "#ddd", paddingVertical: 8, paddingHorizontal: 16, borderRadius: 5, marginHorizontal: 5 }}
-                    onPress={decreaseBid}
-                >
-                    <Text style={{ fontSize: 20, fontWeight: "bold" }}>-</Text>
-                </TouchableOpacity>
+                            <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#ccc", paddingHorizontal: 10, borderRadius: 5 }}>
+                                <Text style={{ fontSize: 16, marginRight: 5 }}>AED</Text>
+                                <TextInput
+                                    style={{ width: 60, fontSize: 16, textAlign: "center" }}
+                                    keyboardType="numeric"
+                                    value={bid.toString()}
+                                    onChangeText={(text) => setBid(Number(text) || 0)}
+                                />
+                            </View>
 
-                <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#ccc", paddingHorizontal: 10, borderRadius: 5 }}>
-                    <Text style={{ fontSize: 16, marginRight: 5 }}>AED</Text>
-                    <TextInput
-                        style={{ width: 60, fontSize: 16, textAlign: "center" }}
-                        keyboardType="numeric"
-                        value={bid.toString()}
-                        onChangeText={(text) => setBid(parseFloat(text) || 0)}
-                    />
-                </View>
+                            <TouchableOpacity
+                                style={{ backgroundColor: "#ddd", paddingVertical: 8, paddingHorizontal: 16, borderRadius: 5, marginHorizontal: 5 }}
+                                onPress={increaseBid}
+                            >
+                                <Text style={{ fontSize: 20, fontWeight: "bold" }}>+</Text>
+                            </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={{ backgroundColor: "#ddd", paddingVertical: 8, paddingHorizontal: 16, borderRadius: 5, marginHorizontal: 5 }}
-                    onPress={increaseBid}
-                >
-                    <Text style={{ fontSize: 20, fontWeight: "bold" }}>+</Text>
-                </TouchableOpacity>
+                            {currentBidData?.auctionStatus && currentBidData?.carId === car._id ? (
+                                <TouchableOpacity
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        paddingVertical: 10,
+                                        paddingHorizontal: 15,
+                                        borderRadius: 5,
+                                        marginLeft: 10,
+                                        backgroundColor: "#405FF2",
+                                    }}
+                                    onPress={handlePlaceBid}
+                                >
+                                    <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
+                                        Place Bid
+                                    </Text>
+                                </TouchableOpacity>
+                            ) : (
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        paddingVertical: 10,
+                                        paddingHorizontal: 15,
+                                        borderRadius: 5,
+                                        marginLeft: 10,
+                                        backgroundColor: "grey",
+                                        opacity: 0.6,
+                                    }}
+                                >
+                                    <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>Place Bid</Text>
+                                </View>
+                            )}
 
-                {currentBidData?.auctionStatus && currentBidData?.carId === car._id ? (
-                    <TouchableOpacity
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            paddingVertical: 10,
-                            paddingHorizontal: 15,
-                            borderRadius: 5,
-                            marginLeft: 10,
-                            backgroundColor: "#405FF2",
-                        }}
-                        onPress={handlePlaceBid}
-                    >
-                        <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
-                            Place Bid
-                        </Text>
+                        </View>
+                        {/* LIVE BUTTON */}
+                        <TouchableOpacity onPress={openLive} activeOpacity={0.8}>
+                            <Animated.View
+                                style={[
+                                    styles.liveButton,
+                                    { transform: [{ scale: scaleAnim }], shadowOpacity: glowAnim },
+                                ]}
+                            >
+                                <Text style={styles.liveText}>VIEW LIVE AUCTION</Text>
+                            </Animated.View>
+                        </TouchableOpacity>
+                    </>
+                    :
+                    <TouchableOpacity onPress={purchaseCar} style={styles.purchaseCar} disabled={buyLoading}>
+                        <Text style={styles.purchaseText}>{buyLoading ? "Placing Order..." : "Purchase This Car"}</Text>
                     </TouchableOpacity>
-                ) : (
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            paddingVertical: 10,
-                            paddingHorizontal: 15,
-                            borderRadius: 5,
-                            marginLeft: 10,
-                            backgroundColor: "grey",
-                            opacity: 0.6,
-                        }}
-                    >
-                        <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>Place Bid</Text>
-                    </View>
-                )}
-
-            </View>
-            {/* LIVE BUTTON */}
-            <TouchableOpacity onPress={openLive} activeOpacity={0.8}>
-                <Animated.View
-                    style={[
-                        styles.liveButton,
-                        { transform: [{ scale: scaleAnim }], shadowOpacity: glowAnim },
-                    ]}
-                >
-                    <Text style={styles.liveText}>VIEW LIVE AUCTION</Text>
-                </Animated.View>
-            </TouchableOpacity>
+            }
 
             {/* Car Overview */}
             <CarOverview car={car} />
@@ -461,6 +548,17 @@ const styles = StyleSheet.create({
         letterSpacing: 1,
         textTransform: "uppercase",
     },
+    purchaseCar: {
+        width: "100%",
+        height: 50,
+        backgroundColor: "#010153",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 10
+    },
+    purchaseText: {
+        color: "white"
+    }
 });
 
 export default CarDetailsScreen;
