@@ -11,6 +11,8 @@ import NoInternetScreen from "./src/screens/NoInternetScreen";
 import socketService from "./src/utils/socket";
 import { Alert } from "react-native";
 import Sound from "react-native-sound";
+import { navigate } from "./src/utils/navigationRef";
+
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -85,7 +87,7 @@ const App = () => {
         Alert.alert("Failed to load the sound");
         return;
       }
-      sound.play();
+      sound.play(() => sound.release())
     });
   };
 
@@ -94,48 +96,107 @@ const App = () => {
     Alert.alert(message);
   };
 
+
   useEffect(() => {
-    const handleAuctionOpened = (response: any) => {
-      console.log(response);
-      if (!response.isOk) {
-        Alert.alert(response.message);
-        return;
-      }
-      
-      notifyBidders(response.message);
+    const handleToast = (response: any) => {
+      AsyncStorage.getItem("userdata").then((user) => {
+        const userdata = user ? JSON.parse(user) : null;
+        if (userdata?.id === response?.user) {
+          Alert.alert("Error", response.message);
+        }
+      });
     };
 
-    const handleBidPlaced = (response: any) => {
-      console.log(response);
+    const handlePriceColorChange = async (response: any) => {
+      console.log("Price color response:", response);
       if (!response.isOk) {
-        Alert.alert(response.message);
+        handleToast(response);
         return;
       }
       notifyBidders(response.message);
+      await AsyncStorage.setItem("currentCarColor", JSON.stringify(response));
+
     };
 
-    const handleAuctionStatusChanged = (response: any) => {
+
+    const handleAuctionOpened = async (response: any) => {
       console.log(response);
       if (!response.isOk) {
-        Alert.alert(response.message);
+        handleToast(response);
         return;
       }
       notifyBidders(response.message);
+      await AsyncStorage.setItem("currentBidData", JSON.stringify(response));
     };
 
-    const handleNotifyBidders = (response: any) => {
+    const handleBidPlaced = async (response: any) => {
       console.log(response);
       if (!response.isOk) {
-        Alert.alert(response.message);
+        handleToast(response);
+        return;
+      }
+
+      const user = await AsyncStorage.getItem("userdata");
+      const userdata = user ? JSON.parse(user) : null;
+
+      if (userdata.id === response.id) {
+        notifyBidders(response.message);
+      } else if (
+        response.previousBidders?.length &&
+        userdata.id === response.previousBidders[response.previousBidders.length - 1]
+      ) {
+        notifyBidders(response.outBidMessage);
+      }
+
+      await AsyncStorage.setItem("currentBidData", JSON.stringify(response));
+    };
+
+    const handleAuctionStatusChanged = async (response: any) => {
+      console.log(response);
+      if (!response.isOk) {
+        handleToast(response);
+        return;
+      }
+
+      const user = await AsyncStorage.getItem("userdata");
+      const userdata = user ? JSON.parse(user) : null;
+
+      if (userdata.id === response.userId) {
+        notifyBidders(response.winnerMessage);
+      } else {
+        notifyBidders(response.message);
+      }
+
+      await AsyncStorage.removeItem("currentBidData");
+
+      if (response.nextCar && response.nextCar._id) {
+        navigate("CarDetails", { carId: response.nextCar._id });
+      } else {
+        navigate("AuctionVehicles");
+      }
+    };
+
+    const handleNotifyBidders = async (response: any) => {
+      console.log(response);
+      if (!response.isOk) {
+        handleToast(response);
         return;
       }
       notifyBidders(response.message);
+      await AsyncStorage.removeItem("currentBidData");
+
+      if (response.nextCar && response.nextCar._id) {
+        navigate("CarDetails", { carId: response.nextCar._id });
+      } else {
+        navigate("AuctionVehicles");
+      }
     };
 
     socketService.on("auctionOpened", handleAuctionOpened);
     socketService.on("bidPlaced", handleBidPlaced);
     socketService.on("auctionStatusChanged", handleAuctionStatusChanged);
     socketService.on("notifyBidders", handleNotifyBidders);
+    socketService.on("colorChanged", handlePriceColorChange);
     socketService.on("connect", () => console.log("Socket connected"));
     socketService.on("disconnect", () => console.log("Socket disconnected"));
 
@@ -144,8 +205,9 @@ const App = () => {
       socketService.off("bidPlaced", handleBidPlaced);
       socketService.off("auctionStatusChanged", handleAuctionStatusChanged);
       socketService.off("notifyBidders", handleNotifyBidders);
+      socketService.off("colorChanged", handlePriceColorChange);
     };
-  }, []);
+  }, [navigate]);
 
   if (!isConnected) {
     return <NoInternetScreen />;

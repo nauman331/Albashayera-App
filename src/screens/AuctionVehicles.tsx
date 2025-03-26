@@ -311,7 +311,7 @@ const AuctionVehicles: React.FC = () => {
 
                 <View style={styles.cardContent}>
                   <Text style={styles.carName}>{item?.listingTitle || "Unknown Car"}</Text>
-                  <Text style={styles.description}>{item.description || "No Description"}</Text>
+                  <Text style={styles.description}>{item.description || ""}</Text>
                   <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
                   <View style={styles.detailsRow}>
                     <View style={styles.detailItem}>
