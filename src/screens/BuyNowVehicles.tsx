@@ -9,12 +9,14 @@ import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import { Picker } from "@react-native-picker/picker";
 import { backendURL } from "../utils/exports";
 import Toast from 'react-native-toast-message';
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../App";
 
 
 
 const BuyNowVehicles: React.FC = () => {
   const { cars, loading, error, categoriesData } = useFetchCarsAndCategories();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, "CarDetails">>();
 
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [filterLoading, setFilterLoading] = useState(false)
@@ -91,12 +93,12 @@ const BuyNowVehicles: React.FC = () => {
       value: item._id,
     })) || [];
 
-   if (loading)
-          return (
-              <View style={styles.loader}>
-                  <ActivityIndicator size="large" color="blue" />
-              </View>
-          );
+  if (loading)
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    );
   if (error) {
     return <Text style={styles.errorText}>Error: {error}</Text>;
   }
@@ -296,7 +298,7 @@ const BuyNowVehicles: React.FC = () => {
                 <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
                 <View style={styles.footer}>
                   <Text style={styles.price}>AED {item.discountedPrice || item.price || "N/A"}</Text>
-                  <Pressable>
+                  <Pressable onPress={() => navigation.navigate('CarDetails', { carId: item._id })}>
                     <Text style={styles.viewDetails}>View Details <FontAwesome6 name="arrow-up-right-from-square" /></Text>
                   </Pressable>
                 </View>

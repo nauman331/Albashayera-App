@@ -142,7 +142,10 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                 console.error("Error retrieving token:", error);
             }
         };
+        fetchToken();
+    }, []);
 
+    useEffect(() => {
         const fetchBidData = async () => {
             try {
                 const storedBidData = await AsyncStorage.getItem("currentBidData");
@@ -157,9 +160,8 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                 console.error("Error retrieving token:", error);
             }
         }
-        fetchToken();
         fetchBidData();
-    }, []);
+    }, [handlePlaceBid])
 
 
     useEffect(() => {
