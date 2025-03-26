@@ -222,8 +222,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#010153",
-    padding: 15,
-    height: 150
+    paddingVertical: 15,
+    height: 150,
+    width: "100%",
+    paddingHorizontal: 20,
+    flexWrap: "wrap",
+    gap: 10
   },
   profileImage: {
     width: 60,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, FlatList, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import { backendURL } from "../utils/exports";
@@ -43,6 +43,24 @@ const AuctionCard: React.FC = () => {
     getAllAuctions();
   }, []);
 
+  const formatLocalDateTime = (isoString: string): string => {
+    try {
+      if (!isoString) return "Invalid Date";
+
+      const cleanISOString = isoString.replace(/:(\d{3})Z/, ".$1Z");
+
+      const dateTime = new Date(cleanISOString);
+
+      if (isNaN(dateTime.getTime())) return "Invalid Date";
+
+      return dateTime.toLocaleDateString() + " " + dateTime.toLocaleTimeString();
+    } catch (error) {
+      return "Invalid Date";
+    }
+  };
+
+
+
   const calculateTimeLeft = (date: string, time: string) => {
     const auctionDateTime = new Date(`${date} ${time}`);
     const now = new Date();
@@ -76,60 +94,137 @@ const AuctionCard: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.header}>Live Events</Text>
+      {auctions.filter((auction) => auction.statusText === "Ongoing").length === 0 ? (
+        <View style={styles.notfound}>
+                  <Text style={styles.notfoundText}>No Ongoing Events Available</Text>
+                  <Image source={require("../assets/images/vintage.png")} style={styles.carImage} />
+                </View>
+      ) : (
+        <FlatList
+          data={auctions.filter((auction) => auction.statusText === "Ongoing")}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => (
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>{item.auctionTitle || "N/A"}</Text>
+                <Text style={styles.cardDate}>{formatLocalDateTime(item.auctionDate)}</Text>
+              </View>
+  
+              <View style={styles.countdownContainer}>
+                {timers[index] ? (
+                  <>
+                    <Text>{timers[index].days}d</Text>
+                    <Text>{timers[index].hours}h</Text>
+                    <Text>{timers[index].minutes}m</Text>
+                    <Text>{timers[index].seconds}s</Text>
+                  </>
+                ) : (
+                  <Text>Started</Text>
+                )}
+              </View>
+              <View style={styles.detailsContainer}>
+                <Text>
+                  <Icon name="location-on" size={16} /> {item.location?.auctionLocation || "N/A"}
+                </Text>
+                <Text>
+                  <Icon name="directions-car" size={16} /> Total Cars {item.totalVehicles || 0}
+                </Text>
+                <TouchableOpacity
+                  style={styles.viewButton}
+                  onPress={() => navigation.navigate("AuctionEvents")}
+                >
+                  <Text style={styles.viewButtonText}>View All</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        />
+      )}
+  
+    <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
       <Text style={styles.header}>Upcoming Auctions</Text>
-      <FlatList
-        data={auctions.filter((auction) => auction.statusText === "Pending")}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item, index }) => (
-          <View style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>{item.auctionTitle || "N/A"}</Text>
-              <Text style={styles.cardDate}>{item.auctionDate} at {item.auctionTime || "N/A"}</Text>
+      {auctions.filter((auction) => auction.statusText === "Pending").length === 0 ? (
+        <View style={styles.notfound}>
+                  <Text style={styles.notfoundText}>No Upcoming Events Available</Text>
+                  <Image source={require("../assets/images/towing.png")} style={styles.carImage} />
+                </View>
+      ) : (
+        <FlatList
+          data={auctions.filter((auction) => auction.statusText === "Pending")}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => (
+            <View style={styles.card}>
+              <View style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>{item.auctionTitle || "N/A"}</Text>
+                <Text style={styles.cardDate}>{formatLocalDateTime(item.auctionDate)}</Text>
+              </View>
+  
+              <View style={styles.countdownContainer}>
+                {timers[index] ? (
+                  <>
+                    <Text>{timers[index].days}d</Text>
+                    <Text>{timers[index].hours}h</Text>
+                    <Text>{timers[index].minutes}m</Text>
+                    <Text>{timers[index].seconds}s</Text>
+                  </>
+                ) : (
+                  <Text>Started</Text>
+                )}
+              </View>
+              <View style={styles.detailsContainer}>
+                <Text>
+                  <Icon name="location-on" size={16} /> {item.location?.auctionLocation || "N/A"}
+                </Text>
+                <Text>
+                  <Icon name="directions-car" size={16} /> Total Cars {item.totalVehicles || 0}
+                </Text>
+                <TouchableOpacity
+                  style={styles.viewButton}
+                  onPress={() => navigation.navigate("AuctionEvents")}
+                >
+                  <Text style={styles.viewButtonText}>View All</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={styles.countdownContainer}>
-              {timers[index] ? (
-                <>
-                  <Text>{timers[index].days}d</Text>
-                  <Text>{timers[index].hours}h</Text>
-                  <Text>{timers[index].minutes}m</Text>
-                  <Text>{timers[index].seconds}s</Text>
-                </>
-              ) : (
-                <Text>Started</Text>
-              )}
-            </View>
-            <View style={styles.detailsContainer}>
-              <Text>
-                <Icon name="location-on" size={16} /> {item.location?.auctionLocation || "N/A"}
-              </Text>
-              <Text>
-                <Icon name="directions-car" size={16} /> No of Cars {item.totalVehicles || 0}
-              </Text>
-              <TouchableOpacity
-                style={styles.viewButton}
-                onPress={() => navigation.navigate("AuctionEvents")}
-              >
-                <Text style={styles.viewButtonText}>View All</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      />
+          )}
+        />
+      )}
     </View>
   );
+  
 };
 
 const styles = StyleSheet.create({
   container: { padding: 20 },
   header: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
-  card: { backgroundColor: "#fff", padding: 15, borderRadius: 10, marginBottom: 10, elevation: 3 },
+  card: { backgroundColor: "#fff", padding: 15, borderRadius: 10, marginBottom: 10, borderWidth: 2 },
   cardHeader: { marginBottom: 10 },
   cardTitle: { fontSize: 16, fontWeight: "bold" },
   cardDate: { fontSize: 14, color: "gray" },
   countdownContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 10 },
   detailsContainer: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  viewButton: { backgroundColor: "#050b20", padding: 8, borderRadius: 5 },
+  viewButton: { backgroundColor: "#010153", padding: 8, borderRadius: 5 },
   viewButtonText: { color: "#fff", fontSize: 12 },
+  noEventsText: {
+    fontSize: 16,
+    textAlign: "center",
+    color: "gray",
+    marginVertical: 10,
+  },
+  notfound: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40
+  },
+  notfoundText: {
+    fontWeight: "bold",
+    fontSize: 20,
+    marginBottom: 30,
+    color: "#aaa"
+  },
+  carImage: { width: "100%", height: 180, resizeMode: "cover", marginBottom: 30 },
 });
 
 export default AuctionCard;
