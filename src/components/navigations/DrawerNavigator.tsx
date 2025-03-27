@@ -66,8 +66,22 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
     screenOptions={{
       headerTitle: () => <Text>ABA Auctions</Text>,
       headerRight: () => (
+        // <TouchableOpacity style={{ marginRight: 15 }}>
+        //   <Icon name="notifications" size={30} color="#010153" />
+        // </TouchableOpacity>
         <TouchableOpacity style={{ marginRight: 15 }}>
           <Icon name="notifications" size={30} color="#010153" />
+          <View
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: 5,
+              backgroundColor: "red",
+              position: "absolute",
+              top: 5,
+              right: 5,
+            }}
+          />
         </TouchableOpacity>
       ),
       drawerStyle: { height: "100%" }, // Ensures it doesn't overlay bottom bar
@@ -81,8 +95,8 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
     <Drawer.Screen name="Profile" component={() => <ScreenWrapper><Profile /></ScreenWrapper>} />
     <Drawer.Screen name="AuctionEvents" component={() => <ScreenWrapper><Auctions /></ScreenWrapper>} />
     <Drawer.Screen name="CarDetails" component={CarDetailsScreenWrapper} />
-    <Drawer.Screen name="AuctionVehicles" 
-    component={() => <ScreenWrapper><AuctionVehicles /></ScreenWrapper>} />
+    <Drawer.Screen name="AuctionVehicles"
+      component={() => <ScreenWrapper><AuctionVehicles /></ScreenWrapper>} />
     <Drawer.Screen name="BuyNowVehicles" component={() => <ScreenWrapper><BuyNowVehicles /></ScreenWrapper>} />
   </Drawer.Navigator>
 );
