@@ -459,7 +459,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                     </>
                     :
                     <View style={styles.soldContainer}>
-                        <Text style={styles.soldText}>Car has been already Sold</Text>
+                        <Text style={styles.soldText}>Car have already been Sold</Text>
                     </View>
             }
 
