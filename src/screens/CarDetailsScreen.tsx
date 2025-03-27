@@ -19,6 +19,7 @@ interface BidData {
     carId: string;
     bidAmount: number;
     auctionStatus: boolean;
+    currentBid: number;
 }
 
 interface CarColor {
@@ -84,7 +85,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
             setCar(res_data.car);
 
             if (res_data.currentBid) {
-                console.warn("store bid");
+                await AsyncStorage.setItem("currentBidData", JSON.stringify(response));
             }
 
             setFeaturesData(
@@ -322,8 +323,8 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                                 ]}
                             >
                                 AED{" "}
-                                {currentBidData?.carId === car._id && currentBidData?.bidAmount
-                                    ? currentBidData?.bidAmount
+                                {currentBidData?.carId === car._id && (currentBidData?.bidAmount || currentBidData?.currentBid) ?
+                                    currentBidData?.bidAmount || currentBidData?.currentBid
                                     : car?.startingBid}
                             </Text>
                         </View>

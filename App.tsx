@@ -11,7 +11,7 @@ import NoInternetScreen from "./src/screens/NoInternetScreen";
 import socketService from "./src/utils/socket";
 import { Alert } from "react-native";
 import Sound from "react-native-sound";
-import { navigate } from "./src/utils/navigationRef";
+import { navigate, navigationRef } from "./src/utils/navigationRef";
 
 
 export type RootStackParamList = {
@@ -30,8 +30,13 @@ export type RootStackParamList = {
   AuctionEvents: undefined
 };
 
+interface user {
+  id: string,
+}
+
 const App = () => {
   const [token, setToken] = useState<string | null>(null);
+  const [userdata, setUserdata] = useState<user | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(true);
 
   useEffect(() => {
@@ -54,7 +59,7 @@ const App = () => {
       }
     };
     fetchToken();
-  }, []);
+  }, [token]);
 
   const getUserData = useCallback(async () => {
     if (!token) return;
@@ -69,6 +74,7 @@ const App = () => {
       const res_data = await response.json();
       if (response.ok) {
         await AsyncStorage.setItem("@userdata", JSON.stringify(res_data));
+        setUserdata(res_data);
       } else {
         console.warn(res_data.message || "Error retrieving user data");
       }
@@ -82,14 +88,18 @@ const App = () => {
   }, [token, getUserData]);
 
   const playSound = () => {
-    const sound = new Sound(require("./src/assets/notification.wav"), Sound.MAIN_BUNDLE, (error) => {
+    Sound.setCategory("Playback");
+
+    const sound = new Sound(require("./src/assets/notification.wav"), (error) => {
       if (error) {
+        console.error("Failed to load the sound:", error);
         Alert.alert("Failed to load the sound");
         return;
       }
-      sound.play(() => sound.release())
+      sound.play(() => sound.release());
     });
   };
+
 
   const notifyBidders = (message: string) => {
     playSound();
@@ -135,20 +145,16 @@ const App = () => {
         handleToast(response);
         return;
       }
-
-      const user = await AsyncStorage.getItem("userdata");
-      const userdata = user ? JSON.parse(user) : null;
-
-      if (userdata.id === response.id) {
+      await AsyncStorage.setItem("currentBidData", JSON.stringify(response));
+      if (userdata?.id === response?.id) {
         notifyBidders(response.message);
       } else if (
-        response.previousBidders?.length &&
+        userdata &&
+        response.previousBidders?.length > 1 &&
         userdata.id === response.previousBidders[response.previousBidders.length - 1]
       ) {
         notifyBidders(response.outBidMessage);
       }
-
-      await AsyncStorage.setItem("currentBidData", JSON.stringify(response));
     };
 
     const handleAuctionStatusChanged = async (response: any) => {
@@ -158,10 +164,7 @@ const App = () => {
         return;
       }
 
-      const user = await AsyncStorage.getItem("userdata");
-      const userdata = user ? JSON.parse(user) : null;
-
-      if (userdata.id === response.userId) {
+      if (userdata?.id === response?.userId) {
         notifyBidders(response.winnerMessage);
       } else {
         notifyBidders(response.message);
@@ -169,11 +172,13 @@ const App = () => {
 
       await AsyncStorage.removeItem("currentBidData");
 
-      if (response.nextCar && response.nextCar._id) {
-        navigate("CarDetails", { carId: response.nextCar._id });
-      } else {
-        navigate("AuctionVehicles");
-      }
+      setTimeout(() => {
+        if (response.nextCar && response.nextCar._id) {
+          navigate("CarDetails", { carId: response.nextCar._id });
+        } else {
+          navigate("AuctionVehicles");
+        }
+      }, 300);
     };
 
     const handleNotifyBidders = async (response: any) => {
@@ -182,20 +187,22 @@ const App = () => {
         handleToast(response);
         return;
       }
-      notifyBidders(response.message);
       await AsyncStorage.removeItem("currentBidData");
+      notifyBidders(response.message);
 
-      if (response.nextCar && response.nextCar._id) {
-        navigate("CarDetails", { carId: response.nextCar._id });
-      } else {
-        navigate("AuctionVehicles");
-      }
+      setTimeout(() => {
+        if (response.nextCar && response.nextCar._id) {
+          navigate("CarDetails", { carId: response.nextCar._id });
+        } else {
+          navigate("AuctionVehicles");
+        }
+      }, 300);
     };
 
     socketService.on("auctionOpened", handleAuctionOpened);
     socketService.on("bidPlaced", handleBidPlaced);
     socketService.on("auctionStatusChanged", handleAuctionStatusChanged);
-    socketService.on("notifyBidders", handleNotifyBidders);
+    socketService.on("notifybidders", handleNotifyBidders);
     socketService.on("colorChanged", handlePriceColorChange);
     socketService.on("connect", () => console.log("Socket connected"));
     socketService.on("disconnect", () => console.log("Socket disconnected"));
@@ -204,10 +211,10 @@ const App = () => {
       socketService.off("auctionOpened", handleAuctionOpened);
       socketService.off("bidPlaced", handleBidPlaced);
       socketService.off("auctionStatusChanged", handleAuctionStatusChanged);
-      socketService.off("notifyBidders", handleNotifyBidders);
+      socketService.off("notifybidders", handleNotifyBidders);
       socketService.off("colorChanged", handlePriceColorChange);
     };
-  }, [navigate]);
+  }, [navigate, userdata]);
 
   if (!isConnected) {
     return <NoInternetScreen />;
@@ -215,7 +222,7 @@ const App = () => {
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         {token ? <DrawerNavigator setToken={setToken} /> : <UnauthenticatedTabs setToken={setToken} />}
       </NavigationContainer>
       <Toast />
