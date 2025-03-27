@@ -93,7 +93,6 @@ const App = () => {
     const sound = new Sound(require("./src/assets/notification.wav"), (error) => {
       if (error) {
         console.error("Failed to load the sound:", error);
-        Alert.alert("Failed to load the sound");
         return;
       }
       sound.play(() => sound.release());
@@ -105,7 +104,8 @@ const App = () => {
     playSound();
     Toast.show({
       type: "success",
-      text1: message
+      text1: "Pay Attention",
+      text2: message
     })
   };
 

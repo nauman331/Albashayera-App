@@ -9,6 +9,7 @@ import FeatureCategory from '../components/FeatureCategory';
 import VimeoPlayer from '../components/VimeoPlayer';
 import socketService from '../utils/socket';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 
 
 type CarDetailsScreenProps = {
@@ -49,7 +50,10 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
     const handlePlaceBid = () => {
         if (socketService.isConnected && token && car?._id) {
             if (!bid || isNaN(Number(bid))) {
-                Alert.alert("Invalid bid amount");
+                Toast.show({
+                    type: "error",
+                    text1: "Invalid bid amount"
+                });
                 return;
             }
 
@@ -59,15 +63,24 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                 bidAmount: Number(bid),
             };
 
-            if (Number(bid) <= Number(currentBidData?.bidAmount || car.startingBid)) {
-                Alert.alert("Bid amount should be greater than the current bid");
+            if (Number(bid) <= Number(currentBidData?.bidAmount || currentBidData?.currentBid || car.startingBid)) {
+                Toast.show({
+                    type: "error",
+                    text1: "Error:",
+                    text2: "Bid amount should be greater than the current bid"
+                })
                 return;
             }
 
             socketService.emit("placeBid", data);
-            setBid(Number(currentBidData?.bidAmount) || Number(bid));
+            setBid(Number(currentBidData?.bidAmount) || Number(currentBidData?.currentBid) || Number(bid));
         } else {
-            Alert.alert("Socket not connected or invalid data");
+            Toast.show({
+                type: "error",
+                text1: "Error:",
+                text2: "Socket not connected or invalid data"
+            }
+            );
         }
     };
 
@@ -85,7 +98,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
             setCar(res_data.car);
 
             if (res_data.currentBid) {
-                await AsyncStorage.setItem("currentBidData", JSON.stringify(response));
+                await AsyncStorage.setItem("currentBidData", JSON.stringify(res_data.currentBid));
             }
 
             setFeaturesData(
@@ -115,16 +128,22 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
             });
             const res_data = await response.json();
             if (response.ok) {
-                // toast.success(res_data.message);
-                Alert.alert(res_data.message)
-                getCarDetails();
+                Toast.show({
+                    type: "success",
+                    text1: "Success",
+                    text2: res_data.message
+                })
+                await getCarDetails();
             } else {
                 // toast.error(res_data.message);
                 Alert.alert(res_data.message)
             }
         } catch (error) {
-            //   toast.error("Error while buying");
-            Alert.alert("Error while buying");
+            Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: "Error while buying"
+            })
         } finally {
             setBuyLoading(false);
         }
@@ -227,7 +246,11 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
 
     const openLive = () => {
         if (currentBalance < 1) {
-            Alert.alert("Live can't be opened due to empty wallet");
+            Toast.show({
+                type: "error",
+                text1: "Error:",
+                text2: "Live can't be opened due to empty wallet"
+            })
         } else {
             setVimeoLive(!vimeoLive);
         }
