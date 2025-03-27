@@ -156,7 +156,7 @@ const App = () => {
         notifyBidders(response.message);
       } else if (
         userdata &&
-        response.previousBidders?.length > 1 &&
+        response.previousBidders?.length > 0 &&
         userdata.id === response.previousBidders[response.previousBidders.length - 1]
       ) {
         notifyBidders(response.outBidMessage);

@@ -135,8 +135,11 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                 })
                 await getCarDetails();
             } else {
-                // toast.error(res_data.message);
-                Alert.alert(res_data.message)
+                Toast.show({
+                    type: "error",
+                    text1: "Error",
+                    text2: res_data.message
+                })
             }
         } catch (error) {
             Toast.show({
@@ -327,131 +330,139 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                 {car.transmission?.vehicleTransimission || "No Transmission"}
             </Text>
 
-            {/* Price */}
-
-            <View style={styles.currentBidContainer}>
-                {car.sellingType === "auction" ? (
-                    <>
-                        <Text style={styles.bidHeading}>Current Bid</Text>
-                        <View
-                            style={[
-                                styles.bidAmountContainer,
-                                { backgroundColor: currentCarColor?.carId === car._id && currentCarColor?.color === "green" ? "#ccffcc" : "#ffcccc" },
-                            ]}
-                        >
-                            <Text
-                                style={[
-                                    styles.bidAmount,
-                                    { color: currentCarColor?.carId === car._id && currentCarColor?.color === "green" ? "#006400" : "#b30000" },
-                                ]}
-                            >
-                                AED{" "}
-                                {currentBidData?.carId === car._id && (currentBidData?.bidAmount || currentBidData?.currentBid) ?
-                                    currentBidData?.bidAmount || currentBidData?.currentBid
-                                    : car?.startingBid}
-                            </Text>
-                        </View>
-
-                        <Text style={styles.startingPrice}>
-                            Bid Starting Price: {car.startingBid || "N/A"} AED
-                        </Text>
-                    </>
-                ) : (
-                    <>
-                        <Text style={styles.discountedText}>Discounted Price</Text>
-                        <Text style={styles.discountedPrice}>
-                            AED {car.discountedPrice ? car.discountedPrice : car.price || "N/A"}
-                        </Text>
-                        {car.discountedPrice && (
-                            <Text style={styles.originalPrice}>
-                                Original Price: {car.price || "N/A"} AED
-                            </Text>
-                        )}
-                    </>
-                )}
-            </View>
-
-            {/* Controls */}
             {
-                car.sellingType === "auction" ?
+                !car.isSold ?
                     <>
-                        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 10 }}>
-                            <TouchableOpacity
-                                style={{ backgroundColor: "#ddd", paddingVertical: 8, paddingHorizontal: 16, borderRadius: 5, marginHorizontal: 5 }}
-                                onPress={decreaseBid}
-                            >
-                                <Text style={{ fontSize: 20, fontWeight: "bold" }}>-</Text>
-                            </TouchableOpacity>
+                        {/* Price */}
+                        <View style={styles.currentBidContainer}>
+                            {car.sellingType === "auction" ? (
+                                <>
+                                    <Text style={styles.bidHeading}>Current Bid</Text>
+                                    <View
+                                        style={[
+                                            styles.bidAmountContainer,
+                                            { backgroundColor: currentCarColor?.carId === car._id && currentCarColor?.color === "green" ? "#ccffcc" : "#ffcccc" },
+                                        ]}
+                                    >
+                                        <Text
+                                            style={[
+                                                styles.bidAmount,
+                                                { color: currentCarColor?.carId === car._id && currentCarColor?.color === "green" ? "#006400" : "#b30000" },
+                                            ]}
+                                        >
+                                            AED{" "}
+                                            {currentBidData?.carId === car._id && (currentBidData?.bidAmount || currentBidData?.currentBid) ?
+                                                currentBidData?.bidAmount || currentBidData?.currentBid
+                                                : car?.startingBid}
+                                        </Text>
+                                    </View>
 
-                            <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#ccc", paddingHorizontal: 10, borderRadius: 5 }}>
-                                <Text style={{ fontSize: 16, marginRight: 5 }}>AED</Text>
-                                <TextInput
-                                    style={{ width: 60, fontSize: 16, textAlign: "center" }}
-                                    keyboardType="numeric"
-                                    value={bid.toString()}
-                                    onChangeText={(text) => setBid(Number(text) || 0)}
-                                />
-                            </View>
-
-                            <TouchableOpacity
-                                style={{ backgroundColor: "#ddd", paddingVertical: 8, paddingHorizontal: 16, borderRadius: 5, marginHorizontal: 5 }}
-                                onPress={increaseBid}
-                            >
-                                <Text style={{ fontSize: 20, fontWeight: "bold" }}>+</Text>
-                            </TouchableOpacity>
-
-                            {currentBidData?.auctionStatus && currentBidData?.carId === car._id ? (
-                                <TouchableOpacity
-                                    style={{
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        paddingVertical: 10,
-                                        paddingHorizontal: 15,
-                                        borderRadius: 5,
-                                        marginLeft: 10,
-                                        backgroundColor: "#405FF2",
-                                    }}
-                                    onPress={handlePlaceBid}
-                                >
-                                    <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
-                                        Place Bid
+                                    <Text style={styles.startingPrice}>
+                                        Bid Starting Price: {car.startingBid || "N/A"} AED
                                     </Text>
-                                </TouchableOpacity>
+                                </>
                             ) : (
-                                <View
-                                    style={{
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        paddingVertical: 10,
-                                        paddingHorizontal: 15,
-                                        borderRadius: 5,
-                                        marginLeft: 10,
-                                        backgroundColor: "grey",
-                                        opacity: 0.6,
-                                    }}
-                                >
-                                    <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>Place Bid</Text>
-                                </View>
+                                <>
+                                    <Text style={styles.discountedText}>Discounted Price</Text>
+                                    <Text style={styles.discountedPrice}>
+                                        AED {car.discountedPrice ? car.discountedPrice : car.price || "N/A"}
+                                    </Text>
+                                    {car.discountedPrice && (
+                                        <Text style={styles.originalPrice}>
+                                            Original Price: {car.price || "N/A"} AED
+                                        </Text>
+                                    )}
+                                </>
                             )}
-
                         </View>
-                        {/* LIVE BUTTON */}
-                        <TouchableOpacity onPress={openLive} activeOpacity={0.8}>
-                            <Animated.View
-                                style={[
-                                    styles.liveButton,
-                                    { transform: [{ scale: scaleAnim }], shadowOpacity: glowAnim },
-                                ]}
-                            >
-                                <Text style={styles.liveText}>VIEW LIVE AUCTION</Text>
-                            </Animated.View>
-                        </TouchableOpacity>
+                        {/* Controls */}
+                        {
+                            car.sellingType === "auction" ?
+                                <>
+                                    <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 10 }}>
+                                        <TouchableOpacity
+                                            style={{ backgroundColor: "#ddd", paddingVertical: 8, paddingHorizontal: 16, borderRadius: 5, marginHorizontal: 5 }}
+                                            onPress={decreaseBid}
+                                        >
+                                            <Text style={{ fontSize: 20, fontWeight: "bold" }}>-</Text>
+                                        </TouchableOpacity>
+
+                                        <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#ccc", paddingHorizontal: 10, borderRadius: 5 }}>
+                                            <Text style={{ fontSize: 16, marginRight: 5 }}>AED</Text>
+                                            <TextInput
+                                                style={{ width: 60, fontSize: 16, textAlign: "center" }}
+                                                keyboardType="numeric"
+                                                value={bid.toString()}
+                                                onChangeText={(text) => setBid(Number(text) || 0)}
+                                            />
+                                        </View>
+
+                                        <TouchableOpacity
+                                            style={{ backgroundColor: "#ddd", paddingVertical: 8, paddingHorizontal: 16, borderRadius: 5, marginHorizontal: 5 }}
+                                            onPress={increaseBid}
+                                        >
+                                            <Text style={{ fontSize: 20, fontWeight: "bold" }}>+</Text>
+                                        </TouchableOpacity>
+
+                                        {currentBidData?.auctionStatus && currentBidData?.carId === car._id ? (
+                                            <TouchableOpacity
+                                                style={{
+                                                    flexDirection: "row",
+                                                    alignItems: "center",
+                                                    paddingVertical: 10,
+                                                    paddingHorizontal: 15,
+                                                    borderRadius: 5,
+                                                    marginLeft: 10,
+                                                    backgroundColor: "#405FF2",
+                                                }}
+                                                onPress={handlePlaceBid}
+                                            >
+                                                <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
+                                                    Place Bid
+                                                </Text>
+                                            </TouchableOpacity>
+                                        ) : (
+                                            <View
+                                                style={{
+                                                    flexDirection: "row",
+                                                    alignItems: "center",
+                                                    paddingVertical: 10,
+                                                    paddingHorizontal: 15,
+                                                    borderRadius: 5,
+                                                    marginLeft: 10,
+                                                    backgroundColor: "grey",
+                                                    opacity: 0.6,
+                                                }}
+                                            >
+                                                <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>Place Bid</Text>
+                                            </View>
+                                        )}
+
+                                    </View>
+                                    {/* LIVE BUTTON */}
+                                    <TouchableOpacity onPress={openLive} activeOpacity={0.8}>
+                                        <Animated.View
+                                            style={[
+                                                styles.liveButton,
+                                                { transform: [{ scale: scaleAnim }], shadowOpacity: glowAnim },
+                                            ]}
+                                        >
+                                            <Text style={styles.liveText}>VIEW LIVE AUCTION</Text>
+                                        </Animated.View>
+                                    </TouchableOpacity>
+                                </>
+                                :
+                                <TouchableOpacity onPress={purchaseCar} style={styles.purchaseCar} disabled={buyLoading}>
+                                    <Text style={styles.purchaseText}>{buyLoading ? "Placing Order..." : "Purchase This Car"}</Text>
+                                </TouchableOpacity>
+                        }
                     </>
                     :
-                    <TouchableOpacity onPress={purchaseCar} style={styles.purchaseCar} disabled={buyLoading}>
-                        <Text style={styles.purchaseText}>{buyLoading ? "Placing Order..." : "Purchase This Car"}</Text>
-                    </TouchableOpacity>
+                    <View style={styles.soldContainer}>
+                        <Text style={styles.soldText}>Car has been already Sold</Text>
+                    </View>
             }
+
 
             {/* Car Overview */}
             <CarOverview car={car} />
@@ -603,6 +614,19 @@ const styles = StyleSheet.create({
     },
     purchaseText: {
         color: "white"
+    },
+    soldContainer: {
+        width: "100%",
+        borderWidth: 2,
+        padding: 20,
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 10,
+        marginTop: 20
+    },
+    soldText: {
+        fontWeight: "bold",
+        fontSize: 15
     }
 });
 
