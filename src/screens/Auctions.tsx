@@ -4,35 +4,38 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import { backendURL } from "../utils/exports";
 import { RootStackParamList } from "../../App";
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 interface Auction {
-  id: string;
+  _id: string;
   auctionTitle: string;
   auctionDate: string;
   auctionTime: string;
-  location: { auctionLocation: string };
+  location?: { auctionLocation?: string };
   totalVehicles: number;
   statusText: string;
 }
 
+interface Timer {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
 const AuctionCard: React.FC = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'AuctionEvents'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, "AuctionEvents">>();
   const [auctions, setAuctions] = useState<Auction[]>([]);
-  const [timers, setTimers] = useState<{ days: number; hours: number; minutes: number; seconds: number }[]>([]);
+  const [timers, setTimers] = useState<{ [key: string]: Timer }>({});
 
   const getAllAuctions = async () => {
     try {
-      const response = await fetch(`${backendURL}/auction`, {
-        method: "GET",
-      });
-
-      const res_data = await response.json();
+      const response = await fetch(`${backendURL}/auction`);
+      const res_data: Auction[] = await response.json();
       if (response.ok) {
         setAuctions(res_data);
       } else {
-        console.error(res_data.message);
+        console.error(res_data);
       }
     } catch (error) {
       console.error("Error fetching auctions", error);
@@ -43,85 +46,75 @@ const AuctionCard: React.FC = () => {
     getAllAuctions();
   }, []);
 
-  const formatLocalDateTime = (isoString: string): string => {
+  const calculateTimeLeft = (auctionDate: string, auctionTime: string): Timer => {
     try {
-      if (!isoString) return "Invalid Date";
+      const match = auctionTime.match(/(\d+):(\d+) (\w{2})/);
+      if (!match) {
+        console.error("Invalid auctionTime format:", auctionTime);
+        return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+      }
 
-      const cleanISOString = isoString.replace(/:(\d{3})Z/, ".$1Z");
+      const [_, hours, minutes, period] = match;
+      let parsedHours = parseInt(hours, 10);
+      const parsedMinutes = parseInt(minutes, 10);
 
-      const dateTime = new Date(cleanISOString);
+      if (period.toLowerCase() === "pm" && parsedHours !== 12) parsedHours += 12;
+      if (period.toLowerCase() === "am" && parsedHours === 12) parsedHours = 0;
 
-      if (isNaN(dateTime.getTime())) return "Invalid Date";
+      const auctionDateTime = new Date(auctionDate);
+      auctionDateTime.setHours(parsedHours, parsedMinutes, 0);
 
-      return dateTime.toLocaleDateString() + " " + dateTime.toLocaleTimeString();
+      const now = new Date();
+      const difference = auctionDateTime.getTime() - now.getTime();
+
+      return difference > 0
+        ? {
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / (1000 * 60)) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        }
+        : { days: 0, hours: 0, minutes: 0, seconds: 0 };
     } catch (error) {
-      return "Invalid Date";
+      console.error("Error calculating time left", error);
+      return { days: 0, hours: 0, minutes: 0, seconds: 0 };
     }
-  };
-
-
-
-  const calculateTimeLeft = (date: string, time: string) => {
-    const auctionDateTime = new Date(`${date} ${time}`);
-    const now = new Date();
-    const difference = auctionDateTime.getTime() - now.getTime();
-
-    if (difference > 0) {
-      return {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / (1000 * 60)) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
-    }
-    return { days: 0, hours: 0, minutes: 0, seconds: 0 };
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimers(
-        auctions.map((auction) =>
-          calculateTimeLeft(
-            new Date(auction.auctionDate).toISOString().split("T")[0],
-            auction.auctionTime
-          )
-        )
-      );
-    }, 1000);
+    const updateTimers = () => {
+      const newTimers: { [key: string]: Timer } = {};
 
+      auctions.forEach((auction) => {
+        newTimers[auction._id] = calculateTimeLeft(auction.auctionDate, auction.auctionTime);
+      });
+
+      setTimers(newTimers);
+    };
+
+    updateTimers(); // Initial update
+
+    const interval = setInterval(updateTimers, 1000);
     return () => clearInterval(interval);
   }, [auctions]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Live Events</Text>
-      {auctions.filter((auction) => auction.statusText === "Ongoing").length === 0 ? (
-        <View style={styles.notfound}>
-                  <Text style={styles.notfoundText}>No Ongoing Events Available</Text>
-                  <Image source={require("../assets/images/vintage.png")} style={styles.carImage} />
-                </View>
-      ) : (
+      {auctions.some((auction) => auction.statusText === "Ongoing") ? (
         <FlatList
           data={auctions.filter((auction) => auction.statusText === "Ongoing")}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item, index }) => (
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
             <View style={styles.card}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle}>{item.auctionTitle || "N/A"}</Text>
-                <Text style={styles.cardDate}>{formatLocalDateTime(item.auctionDate)}</Text>
               </View>
-  
               <View style={styles.countdownContainer}>
-                {timers[index] ? (
-                  <>
-                    <Text>{timers[index].days}d</Text>
-                    <Text>{timers[index].hours}h</Text>
-                    <Text>{timers[index].minutes}m</Text>
-                    <Text>{timers[index].seconds}s</Text>
-                  </>
-                ) : (
-                  <Text>Started</Text>
-                )}
+                <Text>{timers[item._id]?.days}d</Text>
+                <Text>{timers[item._id]?.hours}h</Text>
+                <Text>{timers[item._id]?.minutes}m</Text>
+                <Text>{timers[item._id]?.seconds}s</Text>
               </View>
               <View style={styles.detailsContainer}>
                 <Text>
@@ -130,47 +123,38 @@ const AuctionCard: React.FC = () => {
                 <Text>
                   <Icon name="directions-car" size={16} /> Total Cars {item.totalVehicles || 0}
                 </Text>
-                <TouchableOpacity
-                  style={styles.viewButton}
-                  onPress={() => navigation.navigate("AuctionEvents")}
-                >
-                  <Text style={styles.viewButtonText}>View All</Text>
-                </TouchableOpacity>
               </View>
+              <TouchableOpacity
+                style={styles.viewButton}
+                onPress={() => navigation.navigate("AuctionEvents")}
+              >
+                <Text style={styles.viewButtonText}>Join Auction</Text>
+              </TouchableOpacity>
             </View>
           )}
         />
-      )}
-  
-    <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
-      <Text style={styles.header}>Upcoming Auctions</Text>
-      {auctions.filter((auction) => auction.statusText === "Pending").length === 0 ? (
-        <View style={styles.notfound}>
-                  <Text style={styles.notfoundText}>No Upcoming Events Available</Text>
-                  <Image source={require("../assets/images/towing.png")} style={styles.carImage} />
-                </View>
       ) : (
+        <View style={styles.notfound}>
+          <Text style={styles.notfoundText}>No Ongoing Events Available</Text>
+          <Image source={require("../assets/images/vintage.png")} style={styles.carImage} />
+        </View>
+      )}
+
+      <Text style={styles.header}>Upcoming Auctions</Text>
+      {auctions.some((auction) => auction.statusText === "Pending") ? (
         <FlatList
           data={auctions.filter((auction) => auction.statusText === "Pending")}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item, index }) => (
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
             <View style={styles.card}>
               <View style={styles.cardHeader}>
                 <Text style={styles.cardTitle}>{item.auctionTitle || "N/A"}</Text>
-                <Text style={styles.cardDate}>{formatLocalDateTime(item.auctionDate)}</Text>
               </View>
-  
               <View style={styles.countdownContainer}>
-                {timers[index] ? (
-                  <>
-                    <Text>{timers[index].days}d</Text>
-                    <Text>{timers[index].hours}h</Text>
-                    <Text>{timers[index].minutes}m</Text>
-                    <Text>{timers[index].seconds}s</Text>
-                  </>
-                ) : (
-                  <Text>Started</Text>
-                )}
+                <Text>{timers[item._id]?.days}d</Text>
+                <Text>{timers[item._id]?.hours}h</Text>
+                <Text>{timers[item._id]?.minutes}m</Text>
+                <Text>{timers[item._id]?.seconds}s</Text>
               </View>
               <View style={styles.detailsContainer}>
                 <Text>
@@ -179,20 +163,24 @@ const AuctionCard: React.FC = () => {
                 <Text>
                   <Icon name="directions-car" size={16} /> Total Cars {item.totalVehicles || 0}
                 </Text>
-                <TouchableOpacity
-                  style={styles.viewButton}
-                  onPress={() => navigation.navigate("AuctionEvents")}
-                >
-                  <Text style={styles.viewButtonText}>View All</Text>
-                </TouchableOpacity>
               </View>
+              <TouchableOpacity
+                style={styles.viewButton}
+                onPress={() => navigation.navigate("AuctionEvents")}
+              >
+                <Text style={styles.viewButtonText}>View All Cars</Text>
+              </TouchableOpacity>
             </View>
           )}
         />
+      ) : (
+        <View style={styles.notfound}>
+          <Text style={styles.notfoundText}>No Upcoming Events Available</Text>
+          <Image source={require("../assets/images/towing.png")} style={styles.carImage} />
+        </View>
       )}
     </View>
   );
-  
 };
 
 const styles = StyleSheet.create({
@@ -204,7 +192,14 @@ const styles = StyleSheet.create({
   cardDate: { fontSize: 14, color: "gray" },
   countdownContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 10 },
   detailsContainer: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  viewButton: { backgroundColor: "#010153", padding: 8, borderRadius: 5 },
+  viewButton: {
+    backgroundColor: "#010153",
+    padding: 12,
+    borderRadius: 5,
+    marginTop: 15,
+    alignItems: "center",
+    justifyContent: "center"
+  },
   viewButtonText: { color: "#fff", fontSize: 12 },
   noEventsText: {
     fontSize: 16,
