@@ -103,7 +103,10 @@ const App = () => {
 
   const notifyBidders = (message: string) => {
     playSound();
-    Alert.alert(message);
+    Toast.show({
+      type: "success",
+      text1: message
+    })
   };
 
 
@@ -112,7 +115,10 @@ const App = () => {
       AsyncStorage.getItem("userdata").then((user) => {
         const userdata = user ? JSON.parse(user) : null;
         if (userdata?.id === response?.user) {
-          Alert.alert("Error", response.message);
+          Toast.show({
+            type: "error",
+            text1: response.message
+          })
         }
       });
     };

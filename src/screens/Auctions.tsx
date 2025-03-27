@@ -24,7 +24,7 @@ interface Timer {
 }
 
 const AuctionCard: React.FC = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, "AuctionEvents">>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [auctions, setAuctions] = useState<Auction[]>([]);
   const [timers, setTimers] = useState<{ [key: string]: Timer }>({});
 
@@ -126,7 +126,7 @@ const AuctionCard: React.FC = () => {
               </View>
               <TouchableOpacity
                 style={styles.viewButton}
-                onPress={() => navigation.navigate("AuctionEvents")}
+                onPress={() => navigation.navigate("AuctionVehicles")}
               >
                 <Text style={styles.viewButtonText}>Join Auction</Text>
               </TouchableOpacity>
@@ -166,7 +166,7 @@ const AuctionCard: React.FC = () => {
               </View>
               <TouchableOpacity
                 style={styles.viewButton}
-                onPress={() => navigation.navigate("AuctionEvents")}
+                onPress={() => navigation.navigate("AuctionVehicles")}
               >
                 <Text style={styles.viewButtonText}>View All Cars</Text>
               </TouchableOpacity>

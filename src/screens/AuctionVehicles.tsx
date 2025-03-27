@@ -59,7 +59,7 @@ const AuctionVehicles: React.FC = () => {
     } else {
       setResponseCars(cars);
     }
-  }, [auctionTitle, cars]);
+  }, [auctionTitle, cars,]);
 
 
 

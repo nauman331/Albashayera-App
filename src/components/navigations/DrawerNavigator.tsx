@@ -81,7 +81,8 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
     <Drawer.Screen name="Profile" component={() => <ScreenWrapper><Profile /></ScreenWrapper>} />
     <Drawer.Screen name="AuctionEvents" component={() => <ScreenWrapper><Auctions /></ScreenWrapper>} />
     <Drawer.Screen name="CarDetails" component={CarDetailsScreenWrapper} />
-    <Drawer.Screen name="AuctionVehicles" component={() => <ScreenWrapper><AuctionVehicles /></ScreenWrapper>} />
+    <Drawer.Screen name="AuctionVehicles" 
+    component={() => <ScreenWrapper><AuctionVehicles /></ScreenWrapper>} />
     <Drawer.Screen name="BuyNowVehicles" component={() => <ScreenWrapper><BuyNowVehicles /></ScreenWrapper>} />
   </Drawer.Navigator>
 );
