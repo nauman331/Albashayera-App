@@ -68,6 +68,9 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
       !item.isSold &&
       item.sellingType === "auction" &&
       item.auctionLot && item.auctionLot.statusText !== "Compeleted"
+      && item.auctionLot?.auctionTitle
+      ?.toLowerCase()
+      .includes(auctionTitle?.toLowerCase())
     )
     : [];
 
