@@ -22,10 +22,15 @@ interface Timer {
   minutes: number;
   seconds: number;
 }
+interface Car {
+  _id: string;
+}
+
 
 const AuctionCard: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [auctions, setAuctions] = useState<Auction[]>([]);
+  const [currentCar, setCurrentCar] = useState<Car | null>(null);
   const [timers, setTimers] = useState<{ [key: string]: Timer }>({});
 
   const getAllAuctions = async () => {
@@ -42,9 +47,34 @@ const AuctionCard: React.FC = () => {
     }
   };
 
+  const getCurrentCar = async () => {
+    try {
+      const response = await fetch(`${backendURL}/auction/active-car`, {
+        method: "GET",
+      });
+      const res_data = await response.json();
+      if (response.ok) {
+        setCurrentCar(res_data);
+      } else {
+        console.log(res_data.message || "Failed to fetch the current car.");
+      }
+    } catch (error) {
+      console.log("Error in getting the current car:", error);
+    }
+  };
+
   useEffect(() => {
     getAllAuctions();
+    getCurrentCar();
   }, []);
+
+  const handleJoin = (auctionTitle: string) => {
+    if (currentCar) {
+      navigation.navigate('CarDetails', { carId: currentCar._id })
+    } else {
+      navigation.navigate("AuctionVehicles", { selectedAuctionProp: auctionTitle })
+    };
+  }
 
   const calculateTimeLeft = (auctionDate: string, auctionTime: string): Timer => {
     try {
@@ -126,7 +156,7 @@ const AuctionCard: React.FC = () => {
               </View>
               <TouchableOpacity
                 style={styles.viewButton}
-                onPress={() => navigation.navigate("AuctionVehicles", { selectedAuctionProp: item.auctionTitle })}
+                onPress={() => handleJoin(item.auctionTitle)}
               >
                 <Text style={styles.viewButtonText}>Join Auction</Text>
               </TouchableOpacity>
@@ -166,7 +196,7 @@ const AuctionCard: React.FC = () => {
               </View>
               <TouchableOpacity
                 style={styles.viewButton}
-                onPress={() => navigation.navigate("AuctionVehicles", { selectedAuctionProp: item.auctionTitle })}
+                onPress={() => handleJoin(item.auctionTitle)}
               >
                 <Text style={styles.viewButtonText}>View All Cars</Text>
               </TouchableOpacity>
