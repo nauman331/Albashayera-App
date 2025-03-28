@@ -10,6 +10,7 @@ import Profile from "../../screens/Profile";
 import Auctions from "../../screens/Auctions";
 import AuctionVehicles from "../../screens/AuctionVehicles";
 import BuyNowVehicles from "../../screens/BuyNowVehicles";
+import WithDraw from "../../screens/WithDraw";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../App";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
@@ -98,6 +99,7 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
     <Drawer.Screen name="Orders" component={() => <ScreenWrapper><Orders /></ScreenWrapper>} />
     <Drawer.Screen name="Wallet" component={() => <ScreenWrapper><Wallet /></ScreenWrapper>} />
     <Drawer.Screen name="Profile" component={() => <ScreenWrapper><Profile /></ScreenWrapper>} />
+    <Drawer.Screen name="Withdraw" component={() => <ScreenWrapper><WithDraw /></ScreenWrapper>} />
     <Drawer.Screen name="AuctionEvents" component={() => <ScreenWrapper><Auctions /></ScreenWrapper>} />
     <Drawer.Screen name="CarDetails" component={CarDetailsScreenWrapper} />
     <Drawer.Screen name="AuctionVehicles" component={AuctionWrapper} />

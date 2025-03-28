@@ -27,7 +27,9 @@ export type RootStackParamList = {
   AuctionVehicles: {selectedAuctionProp: string};
   BuyNowVehicles: undefined;
   CarDetails: { carId: string };
-  AuctionEvents: undefined
+  AuctionEvents: undefined;
+  Withdraw: undefined;
+  Forgot: undefined;
 };
 
 interface user {

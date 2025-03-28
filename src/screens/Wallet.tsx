@@ -12,10 +12,15 @@ import {
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { backendURL } from "../utils/exports";
 import { getToken } from "../utils/asyncStorage";
+import Toast from "react-native-toast-message";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
 
 const screenWidth = Dimensions.get("window").width;
 
 interface Transaction {
+  withdrawDate: string | number | Date;
   inv: any;
   depositeDate: string | number | Date;
   id: string;
@@ -47,7 +52,7 @@ const renderTransactionItem = ({ item }: { item: Transaction }) => {
       <View style={styles.transactionContent}>
         <View style={styles.transactionDetails}>
           <Text style={styles.transactionAmount}>{item.amount} AED</Text>
-          <Text style={styles.transactionDate}>{new Date(item?.depositeDate).toLocaleDateString()}</Text>
+          <Text style={styles.transactionDate}>{new Date(item?.depositeDate || item?.withdrawDate).toLocaleDateString()}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: statusStyle.bgColor }]}>
           <Icon name="bank-transfer" size={25} color={statusStyle.color} />
@@ -65,6 +70,7 @@ const renderTransactionItem = ({ item }: { item: Transaction }) => {
 };
 
 const WalletHistoryScreen = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Withdraw'>>();
   const [selectedTab, setSelectedTab] = useState<"withdraw" | "deposit">("deposit");
   const [balance, setBalance] = useState<number>(0);
   const [token, setToken] = useState<string | null>(null);
@@ -114,6 +120,17 @@ const WalletHistoryScreen = () => {
     }
   }, [token]);
 
+  const handleWithdraw = () => {
+    if(balance < 1) {
+      Toast.show({
+        type: "error",
+        text1: "Insufficient Amount"
+      })
+    } else {
+      navigation.navigate("Withdraw")
+    }
+  }
+
   if (loading)
     return (
       <View style={styles.loader}>
@@ -133,7 +150,7 @@ const WalletHistoryScreen = () => {
           <Icon name="cash-plus" size={20} color="#FFF" />
           <Text style={styles.buttonText}>Deposit</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity style={styles.actionButton} onPress={handleWithdraw}>
           <Icon name="cash-minus" size={20} color="#FFF" />
           <Text style={styles.buttonText}>Withdraw</Text>
         </TouchableOpacity>

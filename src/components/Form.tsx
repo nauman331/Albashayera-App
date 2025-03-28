@@ -14,10 +14,9 @@ interface FormProps {
   onSubmit: (formData: Record<string, string>) => void;
 }
 
-type AuthScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) => {
-  const navigation = useNavigation<AuthScreenNavigationProp>();
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [passwordVisible, setPasswordVisible] = useState<Record<string, boolean>>({});
   const [phoneNumber, setPhoneNumber] = useState<string>('');
@@ -37,8 +36,10 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) =
   return (
     <View style={styles.container}>
       {/* Logo */}
-      <Image source={logo} style={styles.logo} />
-
+      {
+        buttonLabel !== "Withdraw" &&
+        <Image source={logo} style={styles.logo} />
+      }
       {/* Dynamic Inputs */}
       {fields.map((field) => (
         <View key={field.name} style={styles.inputContainer}>
@@ -102,22 +103,24 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) =
       </TouchableOpacity>
 
       {
-        buttonLabel === "Login" ? (
+        buttonLabel === "Login" && (
           <View style={styles.registerContainer}>
             <Text style={styles.registerText}>Don't have an account?</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Register')}>
               <Text style={styles.registerLink}> Register</Text>
             </TouchableOpacity>
           </View>
-        ) : (
+        )} 
+        {
+        buttonLabel === "Register" && (
           <View style={styles.registerContainer}>
             <Text style={styles.registerText}>Already have an account?</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
               <Text style={styles.registerLink}> Login</Text>
             </TouchableOpacity>
           </View>
-        )
-      }
+        )}
+      
     </View>
   );
 };
