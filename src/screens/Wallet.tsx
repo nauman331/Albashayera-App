@@ -20,7 +20,7 @@ import { RootStackParamList } from '../../App';
 const screenWidth = Dimensions.get("window").width;
 
 interface Transaction {
-  withdrawDate: string | number | Date;
+  withdrawRequestDate: string | number | Date;
   inv: any;
   depositeDate: string | number | Date;
   id: string;
@@ -52,7 +52,7 @@ const renderTransactionItem = ({ item }: { item: Transaction }) => {
       <View style={styles.transactionContent}>
         <View style={styles.transactionDetails}>
           <Text style={styles.transactionAmount}>{item.amount} AED</Text>
-          <Text style={styles.transactionDate}>{new Date(item?.depositeDate || item?.withdrawDate).toLocaleDateString()}</Text>
+          <Text style={styles.transactionDate}>{new Date(item?.depositeDate || item?.withdrawRequestDate).toLocaleDateString()}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: statusStyle.bgColor }]}>
           <Icon name="bank-transfer" size={25} color={statusStyle.color} />
