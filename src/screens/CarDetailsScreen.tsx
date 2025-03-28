@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Dimensions, TouchableOpacity, TextInput, Animated, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Dimensions, TouchableOpacity, TextInput, Animated } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { Image } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
@@ -10,6 +10,7 @@ import VimeoPlayer from '../components/VimeoPlayer';
 import socketService from '../utils/socket';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
+import PurchaseModal from '../components/PurchaseModal';
 
 
 type CarDetailsScreenProps = {
@@ -36,7 +37,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
     const [loading, setLoading] = useState(false);
     const [buyLoading, setBuyLoading] = useState(false)
     const [error, setError] = useState('');
-    const [isModalVisible, setModalVisible] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState(false);
     const [bid, setBid] = useState(0);
     const [currentBalance, setCurrentBalance] = useState(0)
     const [currentBidData, setCurrentBidData] = useState<BidData | null>(null);
@@ -152,6 +153,9 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
             setBuyLoading(false);
         }
     };
+    const cancelPurchase = () => {
+        setIsModalVisible(false);
+      };
 
     useEffect(() => {
         const fetchToken = async () => {
@@ -291,12 +295,20 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
 
     return (
         <ScrollView style={styles.container}>
-
+        {
+            isModalVisible &&
+            <PurchaseModal 
+            isVisible={isModalVisible} 
+            onConfirm={purchaseCar} 
+            onCancel={cancelPurchase} 
+          />
+        }
             {/* Car top section */}
             {
                 vimeoLive && <VimeoPlayer />
             }
-            {car?.carImages?.length > 0 && (
+            {car?.carImages?.length > 0 && !isModalVisible && (
+                
                 <Carousel
                     loop
                     width={width}
@@ -452,7 +464,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                                     </TouchableOpacity>
                                 </>
                                 :
-                                <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.purchaseCar} disabled={buyLoading}>
+                                <TouchableOpacity onPress={() => setIsModalVisible(true)} style={styles.purchaseCar} disabled={buyLoading}>
                                     <Text style={styles.purchaseText}>{buyLoading ? "Placing Order..." : "Purchase This Car"}</Text>
                                 </TouchableOpacity>
                         }
@@ -517,8 +529,8 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                     </View>
                 </>
             }
-            
         </ScrollView>
+       
     );
 };
 

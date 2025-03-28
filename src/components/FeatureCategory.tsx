@@ -12,6 +12,7 @@ const FeatureCategory = ({ title, features }: any) => {
             )}
             <FlatList
                 data={features}
+                nestedScrollEnabled={true}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item }) => (
                     <View style={{ flexDirection: "row", alignItems: "center", marginVertical: 5 }}>

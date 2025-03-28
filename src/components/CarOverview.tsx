@@ -25,6 +25,7 @@ const CarOverview = ({ car }: any) => {
       <Text style={styles.header}>Car Overview</Text>
       <FlatList
         data={carDetails}
+        nestedScrollEnabled={true}
         keyExtractor={(item) => item.label}
         renderItem={({ item }) => (
           <View style={styles.item}>
