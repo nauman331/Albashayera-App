@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, Image, Pressable, Modal, TextInput, ScrollView, Alert, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, FlatList, Image, Pressable, Modal, TextInput, ScrollView, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import useFetchCarsAndCategories from "../hooks/useFetchCarsAndCategories";
 import { useNavigation } from "@react-navigation/native";
@@ -17,7 +17,6 @@ import { RootStackParamList } from "../../App";
 const BuyNowVehicles: React.FC = () => {
   const { cars, loading, error, categoriesData } = useFetchCarsAndCategories();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, "CarDetails">>();
-
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [filterLoading, setFilterLoading] = useState(false)
   const [responseCars, setResponseCars] = useState([] as any)

@@ -36,6 +36,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
     const [loading, setLoading] = useState(false);
     const [buyLoading, setBuyLoading] = useState(false)
     const [error, setError] = useState('');
+    const [isModalVisible, setModalVisible] = useState(false);
     const [bid, setBid] = useState(0);
     const [currentBalance, setCurrentBalance] = useState(0)
     const [currentBidData, setCurrentBidData] = useState<BidData | null>(null);
@@ -151,7 +152,6 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
             setBuyLoading(false);
         }
     };
-
 
     useEffect(() => {
         const fetchToken = async () => {
@@ -452,7 +452,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                                     </TouchableOpacity>
                                 </>
                                 :
-                                <TouchableOpacity onPress={purchaseCar} style={styles.purchaseCar} disabled={buyLoading}>
+                                <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.purchaseCar} disabled={buyLoading}>
                                     <Text style={styles.purchaseText}>{buyLoading ? "Placing Order..." : "Purchase This Car"}</Text>
                                 </TouchableOpacity>
                         }
@@ -517,6 +517,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                     </View>
                 </>
             }
+            
         </ScrollView>
     );
 };

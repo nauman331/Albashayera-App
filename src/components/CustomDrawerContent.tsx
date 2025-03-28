@@ -296,12 +296,12 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark background overlay
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
   },
   modalContainer: {
-    width: "80%", // Responsive width
+    width: "80%", 
     backgroundColor: "#fff",
     padding: 20,
     borderRadius: 10,

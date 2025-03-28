@@ -69,8 +69,8 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
       item.sellingType === "auction" &&
       item.auctionLot && item.auctionLot.statusText !== "Compeleted"
       && item.auctionLot?.auctionTitle
-      ?.toLowerCase()
-      .includes(auctionTitle?.toLowerCase())
+        ?.toLowerCase()
+        .includes(auctionTitle?.toLowerCase())
     )
     : [];
 
@@ -114,11 +114,11 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
   };
 
   useEffect(() => {
-    if(selectedAuctionProp){
+    if (selectedAuctionProp) {
       setAuctionTitle(selectedAuctionProp)
     }
   }, [selectedAuctionProp])
-  
+
 
   if (loading)
     return (
