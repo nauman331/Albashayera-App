@@ -126,7 +126,7 @@ const AuctionCard: React.FC = () => {
               </View>
               <TouchableOpacity
                 style={styles.viewButton}
-                onPress={() => navigation.navigate("AuctionVehicles")}
+                onPress={() => navigation.navigate("AuctionVehicles", { selectedAuctionProp: item.auctionTitle })}
               >
                 <Text style={styles.viewButtonText}>Join Auction</Text>
               </TouchableOpacity>
@@ -166,7 +166,7 @@ const AuctionCard: React.FC = () => {
               </View>
               <TouchableOpacity
                 style={styles.viewButton}
-                onPress={() => navigation.navigate("AuctionVehicles")}
+                onPress={() => navigation.navigate("AuctionVehicles", { selectedAuctionProp: item.auctionTitle })}
               >
                 <Text style={styles.viewButtonText}>View All Cars</Text>
               </TouchableOpacity>

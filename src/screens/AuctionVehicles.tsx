@@ -15,9 +15,10 @@ import { RootStackParamList } from "../../App";
 
 
 
-const AuctionVehicles: React.FC = () => {
+const AuctionVehicles: React.FC = ({ route }: any) => {
+  const selectedAuctionProp = route.params?.selectedAuctionProp || "";
   const { cars, loading, error, categoriesData } = useFetchCarsAndCategories();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, "CarDetails">>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [filterLoading, setFilterLoading] = useState(false)
@@ -62,7 +63,6 @@ const AuctionVehicles: React.FC = () => {
   }, [auctionTitle, cars,]);
 
 
-
   const filteredCars = Array.isArray(responseCars)
     ? responseCars.filter(item =>
       !item.isSold &&
@@ -70,7 +70,6 @@ const AuctionVehicles: React.FC = () => {
       item.auctionLot && item.auctionLot.statusText !== "Compeleted"
     )
     : [];
-
 
 
   const applyFilters = async () => {
@@ -111,6 +110,13 @@ const AuctionVehicles: React.FC = () => {
     setAuctionTitle(selectedAuction);
   };
 
+  useEffect(() => {
+    if(selectedAuctionProp){
+      setAuctionTitle(selectedAuctionProp)
+    }
+  }, [selectedAuctionProp])
+  
+
   if (loading)
     return (
       <View style={styles.loader}>
@@ -120,6 +126,8 @@ const AuctionVehicles: React.FC = () => {
   if (error) {
     return <Text style={styles.errorText}>Error: {error}</Text>;
   }
+
+
 
   return (
     <View style={styles.container}>

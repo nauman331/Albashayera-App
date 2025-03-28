@@ -17,9 +17,8 @@ interface SortByDropdownProps {
 }
 
 const SortByDropdown: React.FC<SortByDropdownProps> = ({ onChange, preselected, backendURL }) => {
-    const [selectedOption, setSelectedOption] = useState<string>("");
+    const [selectedOption, setSelectedOption] = useState<string>(preselected || "");
     const [options, setOptions] = useState<Auction[]>([]);
-    const [initialized, setInitialized] = useState<boolean>(false);
 
     useEffect(() => {
         const getAllAuctions = async () => {
@@ -33,22 +32,19 @@ const SortByDropdown: React.FC<SortByDropdownProps> = ({ onChange, preselected, 
                             ...auction,
                             fullAuctionDate: new Date(`${auction.auctionDate} ${auction.auctionTime}`),
                         }))
-                        .sort((a: { fullAuctionDate: { getTime: () => number; }; }, b: { fullAuctionDate: { getTime: () => number; }; }) => a.fullAuctionDate.getTime() - b.fullAuctionDate.getTime())
+                        .sort((a: any, b: any) => a.fullAuctionDate.getTime() - b.fullAuctionDate.getTime())
                         .filter((auction: { statusText: string; }) => auction.statusText?.toLowerCase() !== "compeleted");
 
                     setOptions(sortedOptions);
 
-                    if (preselected && !initialized) {
+                    // Ensure preselected value is updated if it exists
+                    if (preselected) {
                         const auctionExists = sortedOptions.some((auction: { auctionTitle: string; }) => auction.auctionTitle === preselected);
-                        if (auctionExists) {
-                            setSelectedOption(preselected);
-                            onChange(preselected);
-                            setInitialized(true);
-                        }
-                    } else if (!preselected && sortedOptions.length > 0 && !initialized) {
+                        setSelectedOption(auctionExists ? preselected : sortedOptions[0]?.auctionTitle || "");
+                        onChange(auctionExists ? preselected : sortedOptions[0]?.auctionTitle || "");
+                    } else if (sortedOptions.length > 0) {
                         setSelectedOption(sortedOptions[0].auctionTitle);
                         onChange(sortedOptions[0].auctionTitle);
-                        setInitialized(true);
                     }
                 } else {
                     console.error("Failed to fetch auctions:", res_data.message);
@@ -59,7 +55,15 @@ const SortByDropdown: React.FC<SortByDropdownProps> = ({ onChange, preselected, 
         };
 
         getAllAuctions();
-    }, [preselected, onChange, initialized, backendURL]);
+    }, [backendURL]); // Removed dependencies like preselected to avoid unnecessary calls
+
+    // Update selectedOption when preselected changes
+    useEffect(() => {
+        if (preselected) {
+            const auctionExists = options.some(auction => auction.auctionTitle === preselected);
+            setSelectedOption(auctionExists ? preselected : options[0]?.auctionTitle || "");
+        }
+    }, [preselected, options]);
 
     const handleOptionChange = (value: string) => {
         setSelectedOption(value);

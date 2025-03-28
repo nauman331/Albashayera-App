@@ -24,7 +24,7 @@ export type RootStackParamList = {
   Wallet: undefined;
   Profile: undefined;
   Auctions: undefined;
-  AuctionVehicles: undefined;
+  AuctionVehicles: {selectedAuctionProp: string};
   BuyNowVehicles: undefined;
   CarDetails: { carId: string };
   AuctionEvents: undefined

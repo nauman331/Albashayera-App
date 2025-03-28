@@ -22,6 +22,11 @@ const CarDetailsScreenWrapper = (props: any) => (
     <CarDetailsScreen {...props} />
   </ScreenWrapper>
 );
+const AuctionWrapper = (props: any) => (
+  <ScreenWrapper>
+    <AuctionVehicles {...props} />
+  </ScreenWrapper>
+);
 
 
 const CustomBottomBar = () => {
@@ -34,7 +39,7 @@ const CustomBottomBar = () => {
         <Text style={styles.text}>Dashboard</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AuctionVehicles")}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AuctionVehicles", {selectedAuctionProp: ""})}>
         <Icon name="directions-car" size={28} color="white" />
         <Text style={styles.text}>Vehicles</Text>
       </TouchableOpacity>
@@ -84,8 +89,8 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
           />
         </TouchableOpacity>
       ),
-      drawerStyle: { height: "100%" }, // Ensures it doesn't overlay bottom bar
-      drawerContentStyle: { paddingBottom: 60 }, // Leaves space for bottom bar
+      drawerStyle: { height: "100%" },
+      drawerContentStyle: { paddingBottom: 60 },
     }}
     drawerContent={(props) => <CustomDrawerContent {...props} setToken={setToken} />}
   >
@@ -95,8 +100,7 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
     <Drawer.Screen name="Profile" component={() => <ScreenWrapper><Profile /></ScreenWrapper>} />
     <Drawer.Screen name="AuctionEvents" component={() => <ScreenWrapper><Auctions /></ScreenWrapper>} />
     <Drawer.Screen name="CarDetails" component={CarDetailsScreenWrapper} />
-    <Drawer.Screen name="AuctionVehicles"
-      component={() => <ScreenWrapper><AuctionVehicles /></ScreenWrapper>} />
+    <Drawer.Screen name="AuctionVehicles" component={AuctionWrapper} />
     <Drawer.Screen name="BuyNowVehicles" component={() => <ScreenWrapper><BuyNowVehicles /></ScreenWrapper>} />
   </Drawer.Navigator>
 );
