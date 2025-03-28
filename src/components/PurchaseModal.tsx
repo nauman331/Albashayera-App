@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
-const PurchaseModal = ({ isVisible, onConfirm, onCancel }: any) => {
+const PurchaseModal = ({ isVisible, onConfirm, onCancel, buyLoading }: any) => {
   return (
     <Modal visible={isVisible} transparent animationType="fade">
       <View style={styles.modalBackground}>
@@ -11,7 +11,7 @@ const PurchaseModal = ({ isVisible, onConfirm, onCancel }: any) => {
           
           <View style={styles.buttonRow}>
             <TouchableOpacity onPress={onConfirm} style={styles.confirmButton}>
-              <Text style={styles.buttonText}>Confirm</Text>
+              <Text style={styles.buttonText}>{buyLoading ? "Placing Order" : "Confirm"}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
               <Text style={styles.buttonText}>Cancel</Text>

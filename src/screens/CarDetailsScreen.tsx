@@ -136,6 +136,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                     text2: res_data.message
                 })
                 await getCarDetails();
+                setIsModalVisible(false)
             } else {
                 Toast.show({
                     type: "error",
@@ -301,6 +302,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
             isVisible={isModalVisible} 
             onConfirm={purchaseCar} 
             onCancel={cancelPurchase} 
+            loading={buyLoading}
           />
         }
             {/* Car top section */}
