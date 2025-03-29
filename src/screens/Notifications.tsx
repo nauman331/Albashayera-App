@@ -107,8 +107,8 @@ const NotificationScreen: React.FC = () => {
         <Icon name={item.readStatus ? "bell-outline" : "bell-ring"} size={24} color={item.readStatus ? "#888" : "#ff9800"} />
       </View>
       <View style={styles.textContainer}>
-        <Text style={[styles.title, item.readStatus && styles.readTitle]}>{item.title}</Text>
-        <Text style={styles.message}>{item.message}</Text>
+        <Text style={[styles.title, item.readStatus && styles.readTitle]}>Notification</Text>
+        <Text style={styles.message}>{item.message.slice(0,30)}...</Text>
         <Text style={styles.time}>{item.time}</Text>
       </View>
     </TouchableOpacity>
