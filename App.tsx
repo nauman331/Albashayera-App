@@ -9,7 +9,6 @@ import DrawerNavigator from "./src/components/navigations/DrawerNavigator";
 import { backendURL } from "./src/utils/exports";
 import NoInternetScreen from "./src/screens/NoInternetScreen";
 import socketService from "./src/utils/socket";
-import { Alert } from "react-native";
 import Sound from "react-native-sound";
 import { navigate, navigationRef } from "./src/utils/navigationRef";
 
@@ -31,6 +30,7 @@ export type RootStackParamList = {
   Withdraw: undefined;
   Deposit: undefined;
   Forgot: undefined;
+  Notifications: undefined;
 };
 
 interface user {

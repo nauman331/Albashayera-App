@@ -12,10 +12,12 @@ import AuctionVehicles from "../../screens/AuctionVehicles";
 import BuyNowVehicles from "../../screens/BuyNowVehicles";
 import WithDraw from "../../screens/WithDraw";
 import Deposit from "../../screens/Deposit";
+import NotificationScreen from "../../screens/Notifications";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../App";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import CarDetailsScreen from "../../screens/CarDetailsScreen";
+import { navigate } from "../../utils/navigationRef";
 
 const Drawer = createDrawerNavigator();
 
@@ -76,7 +78,7 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
         // <TouchableOpacity style={{ marginRight: 15 }}>
         //   <Icon name="notifications" size={30} color="#010153" />
         // </TouchableOpacity>
-        <TouchableOpacity style={{ marginRight: 15 }}>
+        <TouchableOpacity style={{ marginRight: 15 }} onPress={()=>navigate("Notifications")}>
           <Icon name="notifications" size={30} color="#010153" />
           <View
             style={{
@@ -100,6 +102,7 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
     <Drawer.Screen name="Orders" component={() => <ScreenWrapper><Orders /></ScreenWrapper>} />
     <Drawer.Screen name="Wallet" component={() => <ScreenWrapper><Wallet /></ScreenWrapper>} />
     <Drawer.Screen name="Profile" component={() => <ScreenWrapper><Profile /></ScreenWrapper>} />
+    <Drawer.Screen name="Notifications" component={() => <ScreenWrapper><NotificationScreen /></ScreenWrapper>} />
     <Drawer.Screen name="Deposit" component={() => <ScreenWrapper><Deposit /></ScreenWrapper>} />
     <Drawer.Screen name="Withdraw" component={() => <ScreenWrapper><WithDraw /></ScreenWrapper>} />
     <Drawer.Screen name="AuctionEvents" component={() => <ScreenWrapper><Auctions /></ScreenWrapper>} />

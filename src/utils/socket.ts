@@ -1,11 +1,9 @@
 import { io, Socket } from "socket.io-client";
 import { socketURL } from "./exports";
-import { Alert } from "react-native";
 
 class SocketService {
   private socket: Socket | null = null;
 
-  // ✅ Getter to check if socket is connected
   get isConnected(): boolean {
     return this.socket?.connected ?? false;
   }
@@ -27,17 +25,14 @@ class SocketService {
 
     this.socket.on("connect", () => {
       console.log("🔗 Connected to socket server");
-      Alert.alert("🔗 Connected to the socket server");
     });
 
     this.socket.on("disconnect", () => {
       console.log("❌ Socket disconnected");
-      Alert.alert("❌ Disconnected from the socket server");
     });
 
     this.socket.on("connect_error", (error) => {
       console.error("⚠️ Connection Error:", error.message);
-      Alert.alert("⚠️ Connection Error:", error.message);
     });
 
     this.socket.connect();
@@ -72,7 +67,6 @@ class SocketService {
       this.socket.disconnect();
       this.socket = null;
       console.log("🔌 Socket disconnected");
-      Alert.alert("🔌 Socket disconnected");
     }
   }
 }
