@@ -59,7 +59,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
             />
             <View>
               <Text style={styles.profileName}>{user.firstName} {user.lastName}</Text>
-              <Text style={styles.profileEmail}>{user.email}</Text>
+              <Text style={styles.profileEmail}>{user.email.length > 20 ? `${user.email.slice(0, 20)}...` : user.email}</Text>
             </View>
           </View>
 
@@ -222,12 +222,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#010153",
-    paddingVertical: 15,
+    padding: 15,
     height: 150,
     width: "100%",
-    paddingHorizontal: 20,
-    flexWrap: "wrap",
-    gap: 10
   },
   profileImage: {
     width: 60,

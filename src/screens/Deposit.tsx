@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Dimensions } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from "react-native";
 import { Asset, launchImageLibrary } from "react-native-image-picker";
 import Toast from "react-native-toast-message";
 import { backendURL, cloudinaryURL, UPLOAD_PRESET } from "../utils/exports";
@@ -8,7 +8,6 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../App";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-const { width } = Dimensions.get("window");
 
 const DepositPage: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();

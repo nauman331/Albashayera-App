@@ -12,17 +12,21 @@ import {
   ScrollView,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import * as ImagePicker from "react-native-image-picker";
+import { Asset, launchImageLibrary } from "react-native-image-picker";
 import { getToken } from "../utils/asyncStorage";
+import Toast from "react-native-toast-message";
+import { cloudinaryURL, backendURL, UPLOAD_PRESET } from "../utils/exports";
 
 const Profile = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [contact, setContact] = useState("");
   const [address, setAddress] = useState("");
-  const [profileImage, setProfileImage] = useState("");
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [proof, setProof] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -32,27 +36,45 @@ const Profile = () => {
         if (userDataString) {
           const userData = JSON.parse(userDataString);
           setUser(userData);
-          setName(userData.firstName);
-          setEmail(userData.email);
-          setContact(userData.contact);
-          setAddress(userData.address);
-          setProfileImage(userData.avatarImage);
+          setFirstName(userData.firstName || "");
+          setLastName(userData.lastName || "");
+          setEmail(userData.email || "");
+          setContact(userData.contact || "");
+          setAddress(userData.address || "");
+          setProof(userData.avatarImage || undefined);
         }
       }
     };
-
     fetchUserData();
   }, []);
 
-  const pickImage = () => {
-    ImagePicker.launchImageLibrary({ mediaType: "photo" }, (response) => {
-      if (response.assets && response.assets.length > 0) {
-        setProfileImage(response.assets[0].uri ?? "");
+  const pickFile = () => {
+    launchImageLibrary({ mediaType: "photo", includeBase64: false }, (response) => {
+      if (response.didCancel) return;
+      if (response.assets) {
+        uploadToCloudinary(response.assets[0]);
       }
     });
   };
 
-  // Function to update profile
+  const uploadToCloudinary = async (file: Asset) => {
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", { uri: file.uri, type: file.type, name: file.fileName });
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    try {
+      const res = await fetch(cloudinaryURL, { method: "POST", body: formData });
+      const data = await res.json();
+      setProof(data.secure_url);
+      Toast.show({ type: "success", text1: "Proof uploaded successfully!" });
+    } catch (error) {
+      Toast.show({ type: "error", text1: "Upload failed" });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const updateProfile = async () => {
     try {
       const token = await getToken();
@@ -60,32 +82,16 @@ const Profile = () => {
         console.error("No token found");
         return;
       }
-
-      const updatedUser = {
-        firstName: name,
-        email,
-        contact,
-        address,
-        avatarImage: profileImage,
-      };
-
-      const response = await fetch("https://your-api.com/update-profile", {
+      const updatedUser = { firstName, lastName, email, contact, address, avatarImage: proof };
+      const response = await fetch(`${backendURL}/user/`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(updatedUser),
       });
-
       const result = await response.json();
-
       if (response.ok) {
         setUser((prevUser: any) => ({ ...prevUser, ...updatedUser }));
-        await AsyncStorage.setItem(
-          "@userdata",
-          JSON.stringify({ ...user, ...updatedUser })
-        );
+        await AsyncStorage.setItem("@userdata", JSON.stringify({ ...user, ...updatedUser }));
         setModalVisible(false);
       } else {
         console.error("Update failed:", result.message);
@@ -98,72 +104,36 @@ const Profile = () => {
   return user ? (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.profileCard}>
-        <TouchableOpacity onPress={pickImage}>
-          <Image source={{ uri: profileImage }} style={styles.avatar} />
-          <Icon name="photo-camera" size={25} color="#fff" style={styles.cameraIcon} />
-        </TouchableOpacity>
+        <Image source={{ uri: proof ?? undefined }} style={styles.avatar} />
         <Text style={styles.name}>{user.firstName} {user.lastName}</Text>
         <Text style={styles.email}>{user.email}</Text>
         <Text style={styles.contact}>{user.contact}</Text>
         <Text style={styles.address}>{user.address}</Text>
 
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => setModalVisible(true)}
-        >
+        <TouchableOpacity style={styles.editButton} onPress={() => setModalVisible(true)}>
           <Icon name="edit" size={20} color="#fff" />
           <Text style={styles.editText}>Edit Profile</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Edit Profile Modal */}
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Edit Profile</Text>
-
-            <TouchableOpacity onPress={pickImage}>
-              <Image source={{ uri: profileImage }} style={styles.modalAvatar} />
+            <TouchableOpacity onPress={pickFile}>
+              <Image source={{ uri: proof ?? undefined }} style={styles.avatar} />
+              <Icon name="photo-camera" size={25} color="#fff" style={styles.cameraIcon} />
             </TouchableOpacity>
-
-            <TextInput
-              style={styles.input}
-              placeholder="Name"
-              value={name}
-              onChangeText={setName}
-            />
-            <TextInput
-            
-              style={styles.input}
-              placeholder="Email"
-              value={email}
-              keyboardType="email-address"
-              onChangeText={setEmail}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Contact"
-              value={contact}
-              onChangeText={setContact}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Address"
-              value={address}
-              onChangeText={setAddress}
-            />
-
+            <TextInput style={styles.input} placeholder="First Name" value={firstName} onChangeText={setFirstName} />
+            <TextInput style={styles.input} placeholder="Last Name" value={lastName} onChangeText={setLastName} />
+            <TextInput style={styles.input} placeholder="Email" value={email} keyboardType="email-address" onChangeText={setEmail} />
+            <TextInput style={styles.input} placeholder="Contact" value={contact} onChangeText={setContact} />
+            <TextInput style={styles.input} placeholder="Address" value={address} onChangeText={setAddress} />
             <View style={styles.buttonRow}>
-              <TouchableOpacity
-                style={styles.saveButton}
-                onPress={updateProfile}
-              >
+              <TouchableOpacity style={styles.saveButton} onPress={updateProfile}>
                 <Text style={styles.saveText}>Save</Text>
               </TouchableOpacity>
-              <Pressable
-                style={styles.cancelButton}
-                onPress={() => setModalVisible(false)}
-              >
+              <Pressable style={styles.cancelButton} onPress={() => setModalVisible(false)}>
                 <Text style={styles.cancelText}>Cancel</Text>
               </Pressable>
             </View>
@@ -175,6 +145,8 @@ const Profile = () => {
     <Text>Loading....</Text>
   );
 };
+
+export default Profile;
 
 const styles = StyleSheet.create({
   container: {
@@ -306,6 +278,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
-
-export default Profile;
