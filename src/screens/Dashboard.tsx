@@ -13,6 +13,9 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { BarChart, LineChart } from "react-native-chart-kit";
 import { backendURL } from "../utils/exports";
 import { getToken } from "../utils/asyncStorage";
+import { RootStackParamList } from "../../App";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 
 interface PeriodicData {
   month: number;
@@ -25,10 +28,16 @@ interface DashboardData {
   periodicData: PeriodicData[];
 }
 
+interface Car {
+  _id: string;
+}
+
 const Dashboard: React.FC = () => {
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const screenWidth = Dimensions.get("window").width;
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [currentCar, setCurrentCar] = useState<Car | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,8 +66,35 @@ const Dashboard: React.FC = () => {
       }
     };
 
+
+      const getCurrentCar = async () => {
+        try {
+          const response = await fetch(`${backendURL}/auction/active-car`, {
+            method: "GET",
+          });
+          const res_data = await response.json();
+          if (response.ok) {
+            setCurrentCar(res_data);
+          } else {
+            console.log(res_data.message || "Failed to fetch the current car.");
+          }
+        } catch (error) {
+          console.log("Error in getting the current car:", error);
+        }
+      };
+    
+
     fetchData();
+    getCurrentCar()
   }, []);
+
+  const handleJoin = () => {
+    if (currentCar) {
+      navigation.navigate('CarDetails', { carId: currentCar._id })
+    } else {
+      navigation.navigate("AuctionVehicles",  { selectedAuctionProp: "" })
+    };
+  }
 
   const purchaseCount = data?.purchase || 0;
   const totalSpent = data?.totalSpent || 0;
@@ -104,15 +140,15 @@ const Dashboard: React.FC = () => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.bannerContainer} onPress={() => console.log("Navigate to Live Auction")}>
+      <TouchableOpacity style={styles.bannerContainer} onPress={handleJoin}>
         <ImageBackground 
-          source={{ uri: "https://source.unsplash.com/random/800x400/?auction" }}
+          source={{ uri: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1583&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" }}
           style={styles.bannerImage}
           imageStyle={{ borderRadius: 10 }}
         >
           <View style={styles.bannerOverlay}>
             <Text style={styles.bannerText}>Join Live Auction Now</Text>
-            <Icon name="arrow-right" size={24} color="#fff" style={styles.bannerIcon} />
+            <Icon name="arrow-right" size={24} color="#fff" />
           </View>
         </ImageBackground>
       </TouchableOpacity>
@@ -138,13 +174,13 @@ const Dashboard: React.FC = () => {
               bezier
               style={styles.chartStyle}
             />
-      
+            <View style={{ borderBottomColor: '#f8f9fa', borderBottomWidth: 10, marginVertical: 10 }} />
       <View style={{marginBottom: 100}}>
           <View style={styles.chartContainer}>
             <Text style={styles.chartTitle}>Spending Distribution (Bar Chart)</Text>
             <BarChart
                 data={chartData}
-                width={screenWidth - 40}
+                width={screenWidth - 50}
                 height={220}
                 chartConfig={{
                   backgroundGradientFrom: "#fff",
@@ -156,6 +192,8 @@ const Dashboard: React.FC = () => {
                 }}
                 style={styles.chartStyle} yAxisLabel={""} yAxisSuffix={""}            />
           </View>
+          <View style={{ borderBottomColor: '#f8f9fa', borderBottomWidth: 10, marginVertical: 10 }} />
+      
         </View>
         </View>
       )}
@@ -173,10 +211,10 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 14, color: "gray" },
   cardValue: { fontSize: 20, fontWeight: "bold", color: "#000", textAlign: "center" },
   bannerContainer: { marginVertical: 20 },
-  bannerImage: { height: 150, justifyContent: "center" },
-  bannerOverlay: { flexDirection: "row", alignItems: "center", padding: 20, backgroundColor: "rgba(0,0,0,0.5)", borderRadius: 10 },
+  bannerImage: { height: 150 },
+  bannerOverlay: { flexDirection: "row", alignItems: "center", padding: 20, backgroundColor: "rgba(0,0,0,0.5)", borderRadius: 10,
+   },
   bannerText: { color: "#fff", fontSize: 18, fontWeight: "bold", flex: 1 },
-  bannerIcon: { marginLeft: 10 },
   chartContainer: { backgroundColor: "#fff", borderRadius: 10, marginTop: 10 },
   chartTitle: { fontSize: 12, fontWeight: "bold", margin: 20 },
   chartStyle: { borderRadius: 10 },
