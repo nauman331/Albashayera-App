@@ -120,7 +120,7 @@ const Dashboard: React.FC = () => {
       {loading ? (
         <ActivityIndicator size="large" color="#405FF2" style={styles.loader} />
       ) : (
-        <View>
+        
           <View style={styles.chartContainer}>
             <Text style={styles.chartTitle}>Spending Trend (Line Chart)</Text>
             <LineChart
@@ -131,12 +131,15 @@ const Dashboard: React.FC = () => {
                 backgroundGradientFrom: "#fff",
                 backgroundGradientTo: "#fff",
                 color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                propsForLabels: {
+                  fontSize: 8,
+                },
               }}
               bezier
               style={styles.chartStyle}
             />
-          </View>
-
+      
+      <View style={{marginBottom: 100}}>
           <View style={styles.chartContainer}>
             <Text style={styles.chartTitle}>Spending Distribution (Bar Chart)</Text>
             <BarChart
@@ -147,9 +150,13 @@ const Dashboard: React.FC = () => {
                   backgroundGradientFrom: "#fff",
                   backgroundGradientTo: "#fff",
                   color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  propsForLabels: {
+                    fontSize: 8,
+                  },
                 }}
                 style={styles.chartStyle} yAxisLabel={""} yAxisSuffix={""}            />
           </View>
+        </View>
         </View>
       )}
     </ScrollView>
@@ -164,14 +171,14 @@ const styles = StyleSheet.create({
   card: { flex: 1, backgroundColor: "#fff", padding: 20, borderRadius: 10, alignItems: "center", marginHorizontal: 5 },
   icon: { marginBottom: 5 },
   cardTitle: { fontSize: 14, color: "gray" },
-  cardValue: { fontSize: 20, fontWeight: "bold", color: "#000" },
+  cardValue: { fontSize: 20, fontWeight: "bold", color: "#000", textAlign: "center" },
   bannerContainer: { marginVertical: 20 },
   bannerImage: { height: 150, justifyContent: "center" },
   bannerOverlay: { flexDirection: "row", alignItems: "center", padding: 20, backgroundColor: "rgba(0,0,0,0.5)", borderRadius: 10 },
   bannerText: { color: "#fff", fontSize: 18, fontWeight: "bold", flex: 1 },
   bannerIcon: { marginLeft: 10 },
   chartContainer: { backgroundColor: "#fff", padding: 20, borderRadius: 10, marginTop: 10 },
-  chartTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 10 },
+  chartTitle: { fontSize: 12, fontWeight: "bold", marginBottom: 10 },
   chartStyle: { borderRadius: 10 },
   loader: { marginVertical: 20, alignSelf: "center" },
 });
