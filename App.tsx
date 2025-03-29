@@ -29,6 +29,7 @@ export type RootStackParamList = {
   CarDetails: { carId: string };
   AuctionEvents: undefined;
   Withdraw: undefined;
+  Deposit: undefined;
   Forgot: undefined;
 };
 

@@ -4,6 +4,7 @@ export const socketURL = "https://al-bashayera-car-auction-backend-2vat.onrender
 // export const socketURL = "wss://abaautoauctions.com";
 // export const backendURL = "https://abaautoauctions.com/api";
 export const cloudinaryURL = "https://api.cloudinary.com/v1_1/dgdwau5vj/image/upload";
+export const UPLOAD_PRESET = "car_auction"
 
 export const categories = [
   { name: "Vehicle Makes", key: "vehicle-make", field: "vehicleMake" },

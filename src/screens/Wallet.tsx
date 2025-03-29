@@ -21,7 +21,7 @@ const screenWidth = Dimensions.get("window").width;
 
 interface Transaction {
   withdrawRequestDate: string | number | Date;
-  inv: any;
+  inv: string;
   depositeDate: string | number | Date;
   id: string;
   amount: string;
@@ -70,7 +70,7 @@ const renderTransactionItem = ({ item }: { item: Transaction }) => {
 };
 
 const WalletHistoryScreen = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Withdraw'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [selectedTab, setSelectedTab] = useState<"withdraw" | "deposit">("deposit");
   const [balance, setBalance] = useState<number>(0);
   const [token, setToken] = useState<string | null>(null);
@@ -146,7 +146,7 @@ const WalletHistoryScreen = () => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity style={styles.actionButton} onPress={()=>navigation.navigate("Deposit")}>
           <Icon name="cash-plus" size={20} color="#FFF" />
           <Text style={styles.buttonText}>Deposit</Text>
         </TouchableOpacity>
