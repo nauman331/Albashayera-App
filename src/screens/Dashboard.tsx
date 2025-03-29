@@ -137,7 +137,7 @@ const Dashboard: React.FC = () => {
           <Text style={styles.cardValue}>{purchaseCount}</Text>
         </View>
         <View style={styles.card}>
-          <Icon name="currency-usd" size={30} color="#010153" style={styles.icon} />
+                    <Icon name="bank-transfer" size={25} color="#010153" style={styles.icon}  />
           <Text style={styles.cardTitle}>Total Spent</Text>
           <Text style={styles.cardValue}>{`AED ${formatNumber(data?.totalSpent || 0)}`}</Text>
         </View>
