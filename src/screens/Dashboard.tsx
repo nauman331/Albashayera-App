@@ -66,7 +66,6 @@ const Dashboard: React.FC = () => {
       }
     };
 
-
       const getCurrentCar = async () => {
         try {
           const response = await fetch(`${backendURL}/auction/active-car`, {
@@ -83,7 +82,6 @@ const Dashboard: React.FC = () => {
         }
       };
     
-
     fetchData();
     getCurrentCar()
   }, []);
@@ -95,6 +93,12 @@ const Dashboard: React.FC = () => {
       navigation.navigate("AuctionVehicles",  { selectedAuctionProp: "" })
     };
   }
+
+  const formatNumber = (num: number) => {
+    if (num >= 1e6) return (num / 1e6).toFixed(1) + "M"; 
+    if (num >= 1e3) return (num / 1e3).toFixed(1) + "K"; 
+    return num; 
+  };
 
   const purchaseCount = data?.purchase || 0;
   const totalSpent = data?.totalSpent || 0;
@@ -125,18 +129,17 @@ const Dashboard: React.FC = () => {
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>Dashboard</Text>
-      <Text style={styles.subHeader}>Whole Progress of Spendings</Text>
 
       <View style={styles.statsContainer}>
         <View style={styles.card}>
-          <Icon name="cart-outline" size={30} color="#405FF2" style={styles.icon} />
+          <Icon name="cart-outline" size={30} color="#010153" style={styles.icon} />
           <Text style={styles.cardTitle}>Purchases</Text>
           <Text style={styles.cardValue}>{purchaseCount}</Text>
         </View>
         <View style={styles.card}>
-          <Icon name="currency-usd" size={30} color="#405FF2" style={styles.icon} />
+          <Icon name="currency-usd" size={30} color="#010153" style={styles.icon} />
           <Text style={styles.cardTitle}>Total Spent</Text>
-          <Text style={styles.cardValue}>AED {totalSpent.toLocaleString()}</Text>
+          <Text style={styles.cardValue}>{`AED ${formatNumber(data?.totalSpent || 0)}`}</Text>
         </View>
       </View>
 
@@ -154,7 +157,7 @@ const Dashboard: React.FC = () => {
       </TouchableOpacity>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#405FF2" style={styles.loader} />
+        <ActivityIndicator size="large" color="#010153" style={styles.loader} />
       ) : (
         
           <View style={styles.chartContainer}>
@@ -203,11 +206,11 @@ const Dashboard: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f8f9fa", padding: 20 },
-  header: { fontSize: 22, fontWeight: "bold", marginBottom: 5 },
+  header: { fontSize: 22, fontWeight: "bold", margin: 5 },
   subHeader: { fontSize: 14, color: "gray", marginBottom: 20 },
-  statsContainer: { flexDirection: "row", justifyContent: "space-between" },
+  statsContainer: { flexDirection: "row", justifyContent: "space-between", marginTop: 30 },
   card: { flex: 1, backgroundColor: "#fff", padding: 20, borderRadius: 10, alignItems: "center", marginHorizontal: 5 },
-  icon: { marginBottom: 5 },
+  icon: { marginBottom: 5, backgroundColor: "#e9f2ff", padding: 10, borderRadius: 100 },
   cardTitle: { fontSize: 14, color: "gray" },
   cardValue: { fontSize: 20, fontWeight: "bold", color: "#000", textAlign: "center" },
   bannerContainer: { marginVertical: 20 },
