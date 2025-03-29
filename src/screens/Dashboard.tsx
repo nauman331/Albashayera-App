@@ -177,8 +177,8 @@ const styles = StyleSheet.create({
   bannerOverlay: { flexDirection: "row", alignItems: "center", padding: 20, backgroundColor: "rgba(0,0,0,0.5)", borderRadius: 10 },
   bannerText: { color: "#fff", fontSize: 18, fontWeight: "bold", flex: 1 },
   bannerIcon: { marginLeft: 10 },
-  chartContainer: { backgroundColor: "#fff", padding: 20, borderRadius: 10, marginTop: 10 },
-  chartTitle: { fontSize: 12, fontWeight: "bold", marginBottom: 10 },
+  chartContainer: { backgroundColor: "#fff", borderRadius: 10, marginTop: 10 },
+  chartTitle: { fontSize: 12, fontWeight: "bold", margin: 20 },
   chartStyle: { borderRadius: 10 },
   loader: { marginVertical: 20, alignSelf: "center" },
 });
