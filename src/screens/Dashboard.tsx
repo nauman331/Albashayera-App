@@ -1,23 +1,41 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { 
-  View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity, ActivityIndicator 
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  TouchableOpacity,
+  ActivityIndicator,
+  ImageBackground,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { LineChart } from "react-native-chart-kit";
+import { BarChart, LineChart } from "react-native-chart-kit";
 import { backendURL } from "../utils/exports";
 import { getToken } from "../utils/asyncStorage";
 
-const Dashboard = () => {
+interface PeriodicData {
+  month: number;
+  paidAmount: number;
+}
+
+interface DashboardData {
+  purchase: number;
+  totalSpent: number;
+  periodicData: PeriodicData[];
+}
+
+const Dashboard: React.FC = () => {
   const screenWidth = Dimensions.get("window").width;
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = await getToken();
         if (!token) return;
-        
+
         const response = await fetch(`${backendURL}/dashboard/buyer`, {
           method: "GET",
           headers: {
@@ -25,12 +43,12 @@ const Dashboard = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        
-        const res_data = await response.json();
+
+        const res_data: DashboardData = await response.json();
         if (response.ok) {
           setData(res_data);
         } else {
-          console.error("API Error:", res_data.message);
+          console.error("API Error:", res_data);
         }
       } catch (error) {
         console.error("Network Error:", error);
@@ -38,7 +56,7 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
 
@@ -46,22 +64,25 @@ const Dashboard = () => {
   const totalSpent = data?.totalSpent || 0;
 
   const chartData = useMemo(() => {
-    const defaultLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const defaultValues = new Array(12).fill(0);
-    
+    const labels = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    ];
+    const values = new Array(12).fill(0);
+
     data?.periodicData?.forEach(({ month, paidAmount }) => {
       if (month >= 1 && month <= 12) {
-        defaultValues[month - 1] = paidAmount;
+        values[month - 1] = paidAmount;
       }
     });
 
     return {
-      labels: defaultLabels,
-      datasets: [{
-        data: defaultValues,
-        color: (opacity = 1) => `rgba(64, 95, 242, ${opacity})`,
-        strokeWidth: 3,
-      }],
+      labels,
+      datasets: [
+        {
+          data: values,
+          color: (opacity = 1) => `rgba(64, 95, 242, ${opacity})`,
+        },
+      ],
     };
   }, [data]);
 
@@ -83,31 +104,52 @@ const Dashboard = () => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.bannerContainer} onPress={() => console.log("Navigate to Live Auction")}>        
-        <View style={styles.bannerOverlay}>
-          <Text style={styles.bannerText}>Join Live Auction Now</Text>
-          <Icon name="arrow-right" size={24} color="#fff" style={styles.bannerIcon} />
-        </View>
+      <TouchableOpacity style={styles.bannerContainer} onPress={() => console.log("Navigate to Live Auction")}>
+        <ImageBackground 
+          source={{ uri: "https://source.unsplash.com/random/800x400/?auction" }}
+          style={styles.bannerImage}
+          imageStyle={{ borderRadius: 10 }}
+        >
+          <View style={styles.bannerOverlay}>
+            <Text style={styles.bannerText}>Join Live Auction Now</Text>
+            <Icon name="arrow-right" size={24} color="#fff" style={styles.bannerIcon} />
+          </View>
+        </ImageBackground>
       </TouchableOpacity>
 
       {loading ? (
         <ActivityIndicator size="large" color="#405FF2" style={styles.loader} />
       ) : (
-        <View style={styles.chartContainer}>
-          <Text style={styles.chartTitle}>Spending Trend</Text>
-          <LineChart
-            data={chartData}
-            width={screenWidth - 40}
-            height={220}
-            chartConfig={{
-              backgroundGradientFrom: "#fff",
-              backgroundGradientTo: "#fff",
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              strokeWidth: 2,
-            }}
-            bezier
-            style={styles.chartStyle}
-          />
+        <View>
+          <View style={styles.chartContainer}>
+            <Text style={styles.chartTitle}>Spending Trend (Line Chart)</Text>
+            <LineChart
+              data={chartData}
+              width={screenWidth - 40}
+              height={220}
+              chartConfig={{
+                backgroundGradientFrom: "#fff",
+                backgroundGradientTo: "#fff",
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              }}
+              bezier
+              style={styles.chartStyle}
+            />
+          </View>
+
+          <View style={styles.chartContainer}>
+            <Text style={styles.chartTitle}>Spending Distribution (Bar Chart)</Text>
+            <BarChart
+                data={chartData}
+                width={screenWidth - 40}
+                height={220}
+                chartConfig={{
+                  backgroundGradientFrom: "#fff",
+                  backgroundGradientTo: "#fff",
+                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                }}
+                style={styles.chartStyle} yAxisLabel={""} yAxisSuffix={""}            />
+          </View>
         </View>
       )}
     </ScrollView>
@@ -119,24 +161,15 @@ const styles = StyleSheet.create({
   header: { fontSize: 22, fontWeight: "bold", marginBottom: 5 },
   subHeader: { fontSize: 14, color: "gray", marginBottom: 20 },
   statsContainer: { flexDirection: "row", justifyContent: "space-between" },
-  card: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    marginHorizontal: 5,
-  },
+  card: { flex: 1, backgroundColor: "#fff", padding: 20, borderRadius: 10, alignItems: "center", marginHorizontal: 5 },
   icon: { marginBottom: 5 },
   cardTitle: { fontSize: 14, color: "gray" },
   cardValue: { fontSize: 20, fontWeight: "bold", color: "#000" },
-  bannerContainer: { backgroundColor: "#405FF2", borderRadius: 10, marginVertical: 20 },
-  bannerOverlay: { flexDirection: "row", alignItems: "center", padding: 20 },
-  bannerText: { color: "#fff", fontSize: 18, fontWeight: "bold", marginRight: 10 },
-  bannerIcon: { marginLeft: 5 },
+  bannerContainer: { marginVertical: 20 },
+  bannerImage: { height: 150, justifyContent: "center" },
+  bannerOverlay: { flexDirection: "row", alignItems: "center", padding: 20, backgroundColor: "rgba(0,0,0,0.5)", borderRadius: 10 },
+  bannerText: { color: "#fff", fontSize: 18, fontWeight: "bold", flex: 1 },
+  bannerIcon: { marginLeft: 10 },
   chartContainer: { backgroundColor: "#fff", padding: 20, borderRadius: 10, marginTop: 10 },
   chartTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 10 },
   chartStyle: { borderRadius: 10 },
