@@ -3,8 +3,13 @@ import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ActivityIndi
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { backendURL } from "../utils/exports";
 import { getToken } from "../utils/asyncStorage";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../../App";
+import { useNavigation } from "@react-navigation/native";
+
 
 interface Order {
+  invNumber: string;
   statusText: string;
   carId: any;
   id: string;
@@ -16,6 +21,7 @@ interface Order {
 }
 
 const OrdersScreen: React.FC = () => {
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [token, setToken] = useState<string | null>(null);
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState<boolean>(false)
@@ -58,7 +64,7 @@ const OrdersScreen: React.FC = () => {
   }, [token]);
 
   const handleOrderClick = (id: string) => {
-    console.log(`Navigating to details page for order: ${id}`);
+    navigation.navigate("OrderDetails", {orderId: id})
   };
 
   const statusIcons: { [key in Order["paymentStatus"]]: string } = {
@@ -85,7 +91,7 @@ const OrdersScreen: React.FC = () => {
     const status = item.statusText as Order["paymentStatus"];
 
     return (
-      <TouchableOpacity style={styles.orderCard} onPress={() => handleOrderClick(item.id)}>
+      <TouchableOpacity style={styles.orderCard} onPress={() => handleOrderClick(item?.invNumber)}>
         <Image source={{ uri: item?.carId?.carImages[0] || "" }} style={styles.image} />
         <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
         <View style={styles.detailsContainer}>

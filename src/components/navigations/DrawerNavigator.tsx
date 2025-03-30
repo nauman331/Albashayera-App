@@ -13,6 +13,7 @@ import BuyNowVehicles from "../../screens/BuyNowVehicles";
 import WithDraw from "../../screens/WithDraw";
 import Deposit from "../../screens/Deposit";
 import NotificationScreen from "../../screens/Notifications";
+import OrderDetails from "../../screens/OrderDetails";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../App";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
@@ -29,6 +30,11 @@ const CarDetailsScreenWrapper = (props: any) => (
 const AuctionWrapper = (props: any) => (
   <ScreenWrapper>
     <AuctionVehicles {...props} />
+  </ScreenWrapper>
+);
+const OrderDetailsWrapper = (props: any) => (
+  <ScreenWrapper>
+    <OrderDetails {...props} />
   </ScreenWrapper>
 );
 
@@ -108,6 +114,7 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
     <Drawer.Screen name="AuctionEvents" component={() => <ScreenWrapper><Auctions /></ScreenWrapper>} />
     <Drawer.Screen name="CarDetails" component={CarDetailsScreenWrapper} />
     <Drawer.Screen name="AuctionVehicles" component={AuctionWrapper} />
+    <Drawer.Screen name="OrderDetails" component={OrderDetailsWrapper} />
     <Drawer.Screen name="BuyNowVehicles" component={() => <ScreenWrapper><BuyNowVehicles /></ScreenWrapper>} />
   </Drawer.Navigator>
 );
