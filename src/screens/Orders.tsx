@@ -20,7 +20,7 @@ const OrdersScreen: React.FC = () => {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState<boolean>(false)
 
-useEffect(() => {
+  useEffect(() => {
     const fetchToken = async () => {
       const tokeninner = await getToken();
       setToken(tokeninner)
@@ -66,36 +66,34 @@ useEffect(() => {
     "approved": "check-circle",
     "rejected": "cancel",
   };
-  
+
   const statusStyleMapping: { [key in Order["paymentStatus"]]: any } = {
     "payment pending": styles.pending,
     approved: styles.approved,
     rejected: styles.rejected,
   };
-  
+
   const statusTextStyleMapping: { [key in Order["paymentStatus"]]: any } = {
     "payment pending": styles.pendingText,
     approved: styles.approvedText,
     rejected: styles.rejectedText,
   };
 
-  if(loading){
-    return <ActivityIndicator size="large" color="#010153"  />
-  }
-  
+
   const renderItem = ({ item }: { item: Order }) => {
-  
+
     const status = item.statusText as Order["paymentStatus"];
-  
+
     return (
       <TouchableOpacity style={styles.orderCard} onPress={() => handleOrderClick(item.id)}>
         <Image source={{ uri: item?.carId?.carImages[0] || "" }} style={styles.image} />
+        <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
         <View style={styles.detailsContainer}>
           <Text style={styles.carName}>{item?.carId?.listingTitle || "Unknown Vehicle"}</Text>
           <Text style={styles.carVin}>VIN: {item?.carId?.vin || ""}</Text>
           <Text style={styles.amount}>Total: {item.totalAmount || 0} AED</Text>
         </View>
-  
+
         <View
           style={[
             styles.statusBar,
@@ -119,15 +117,29 @@ useEffect(() => {
       </TouchableOpacity>
     );
   };
-  
-  
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Car Orders</Text>
-      <FlatList data={orders} keyExtractor={(item) => item.id} renderItem={renderItem} contentContainerStyle={styles.list} />
+
+      {loading ? (
+        <ActivityIndicator size="large" color="#010153" />
+      ) : orders.length < 1 ? (
+        <View style={styles.notfound}>
+          <Text style={styles.notfoundText}>No Orders Found</Text>
+          <Image source={require("../assets/images/orders.png")} style={styles.carImage} />
+        </View>
+      ) : (
+        <FlatList
+          data={orders}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.list}
+        />
+      )}
     </View>
   );
+
 };
 
 const styles = StyleSheet.create({
@@ -188,6 +200,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     justifyContent: "center",
+    marginBottom: 10
   },
   pending: {
     backgroundColor: "#FDEBD0",
@@ -212,6 +225,18 @@ const styles = StyleSheet.create({
   rejectedText: {
     color: "#E74C3C",
   },
+  notfound: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40
+  },
+  notfoundText: {
+    fontWeight: "bold",
+    fontSize: 30,
+    marginBottom: 30
+  },
+  carImage: { width: "100%", height: 180, resizeMode: "cover" },
 });
 
 export default OrdersScreen;

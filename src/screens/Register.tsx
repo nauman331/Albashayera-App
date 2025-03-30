@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
 import Form from '../components/Form';
 import { backendURL } from '../utils/exports';
