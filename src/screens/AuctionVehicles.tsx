@@ -181,7 +181,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                   onChangeText={(value) => setFilters({ ...filters, maxPrice: value ? Number(value) : 0 })} />
               </View>
 
-              {/* Selects */}
+              {/* Selects filters */}
 
               <View style={styles.pickerContainer}>
                 <Picker
