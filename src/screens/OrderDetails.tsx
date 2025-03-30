@@ -70,7 +70,7 @@ const OrderDetails = ({ route, navigation }: any) => {
             }
         };
         fetchTokenAndInvoice();
-    }, []);
+    }, [orderId]);
 
     const getStatusIcon = () => {
         switch (invoice?.statusText.toLowerCase()) {
@@ -160,7 +160,7 @@ export default OrderDetails;
 const styles = StyleSheet.create({
     loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     container: { padding: 10, alignItems: 'center', backgroundColor: '#FAF9F6' },
-    invoiceWrapper: { width: '100%', alignItems: 'center', padding: 20, borderWidth: 1, borderColor: '#ddd', borderRadius: 5, backgroundColor: '#fff' },
+    invoiceWrapper: { width: '100%', alignItems: 'center', padding: 20, borderWidth: 1, borderColor: '#ddd', borderRadius: 5, backgroundColor: '#fff', marginBottom: 100 },
     card: { width: '95%', padding: 20, elevation: 3, borderRadius: 5, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 5 },
     invoiceHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     invoiceTitle: { fontSize: 26, fontWeight: 'bold', textAlign: 'center', marginVertical: 5 },
