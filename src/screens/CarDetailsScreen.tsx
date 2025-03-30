@@ -45,8 +45,6 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
     const [vimeoLive, setVimeoLive] = useState(false);
     const [token, setToken] = useState<string | null>(null);
     const [featuresData, setFeaturesData] = useState<{ category: string; features: string[] }[]>([]);
-    const scaleAnim = useRef(new Animated.Value(1)).current;
-    const glowAnim = useRef(new Animated.Value(0.4)).current;
 
 
     const handlePlaceBid = () => {
@@ -156,7 +154,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
     };
     const cancelPurchase = () => {
         setIsModalVisible(false);
-      };
+    };
 
     useEffect(() => {
         const fetchToken = async () => {
@@ -195,30 +193,6 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
     useEffect(() => {
         getCarDetails();
     }, [carId]);
-
-    useEffect(() => {
-        const scaleAnimation = Animated.loop(
-            Animated.sequence([
-                Animated.timing(scaleAnim, { toValue: 1.1, duration: 800, useNativeDriver: true }),
-                Animated.timing(scaleAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
-            ])
-        );
-
-        const glowAnimation = Animated.loop(
-            Animated.sequence([
-                Animated.timing(glowAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
-                Animated.timing(glowAnim, { toValue: 0.4, duration: 800, useNativeDriver: true }),
-            ])
-        );
-
-        scaleAnimation.start();
-        glowAnimation.start();
-
-        return () => {
-            scaleAnimation.stop();
-            glowAnimation.stop();
-        };
-    }, []);
 
 
     const getDeposits = useCallback(async () => {
@@ -296,21 +270,21 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
 
     return (
         <ScrollView style={styles.container}>
-        {
-            isModalVisible &&
-            <PurchaseModal 
-            isVisible={isModalVisible} 
-            onConfirm={purchaseCar} 
-            onCancel={cancelPurchase} 
-            loading={buyLoading}
-          />
-        }
+            {
+                isModalVisible &&
+                <PurchaseModal
+                    isVisible={isModalVisible}
+                    onConfirm={purchaseCar}
+                    onCancel={cancelPurchase}
+                    loading={buyLoading}
+                />
+            }
             {/* Car top section */}
             {
                 vimeoLive && <VimeoPlayer />
             }
             {car?.carImages?.length > 0 && !isModalVisible && (
-                
+
                 <Carousel
                     loop
                     width={width}
@@ -454,16 +428,11 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
 
                                     </View>
                                     {/* LIVE BUTTON */}
-                                    <TouchableOpacity onPress={openLive} activeOpacity={0.8}>
-                                        <Animated.View
-                                            style={[
-                                                styles.liveButton,
-                                                { transform: [{ scale: scaleAnim }], shadowOpacity: glowAnim },
-                                            ]}
-                                        >
-                                            <Text style={styles.liveText}>VIEW LIVE AUCTION</Text>
-                                        </Animated.View>
-                                    </TouchableOpacity>
+                                    {currentBidData?.auctionStatus && currentBidData?.carId === car._id && (
+                                        <TouchableOpacity style={styles.liveButton} onPress={openLive}>
+                                                <Text style={styles.liveText}>{vimeoLive ? "CLOSE LIVE AUCTION" : "VIEW LIVE AUCTION"}</Text>
+                                        </TouchableOpacity>
+                                    )}
                                 </>
                                 :
                                 <TouchableOpacity onPress={() => setIsModalVisible(true)} style={styles.purchaseCar} disabled={buyLoading}>
@@ -532,7 +501,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                 </>
             }
         </ScrollView>
-       
+
     );
 };
 
@@ -598,7 +567,7 @@ const styles = StyleSheet.create({
         color: "#888"
     },
     liveButton: {
-        backgroundColor: "#22C55E",
+        backgroundColor: "green",
         paddingVertical: 12,
         paddingHorizontal: 26,
         borderRadius: 10,
