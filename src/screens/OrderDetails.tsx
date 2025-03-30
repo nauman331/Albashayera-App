@@ -14,6 +14,7 @@ import { getToken } from '../utils/asyncStorage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import Toast from 'react-native-toast-message';
+import Share from 'react-native-share';
 
 interface Order {
     carAmount: number;
@@ -44,27 +45,24 @@ const OrderDetails = ({ route }: any) => {
     const [downloading, setDownloading] = useState<boolean>(false);
 
     useEffect(() => {
-        const fetchToken = async () => {
+        const fetchTokenAndInvoice = async () => {
             const tokenInner = await getToken();
             setToken(tokenInner);
+            if (tokenInner) {
+                getInvoice(tokenInner);
+            }
         };
-        fetchToken();
+        fetchTokenAndInvoice();
     }, []);
 
-    useEffect(() => {
-        if (token) {
-            getInvoice();
-        }
-    }, [token]);
-
-    const getInvoice = async () => {
+    const getInvoice = async (tokenValue: string) => {
         try {
             setLoading(true);
             const response = await fetch(`${backendURL}/purchase-invoice/get-invoice/${orderId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${tokenValue}`,
                 },
             });
             const resData = await response.json();
@@ -83,10 +81,8 @@ const OrderDetails = ({ route }: any) => {
     const requestStoragePermission = async () => {
         if (Platform.OS === 'android') {
             if (Platform.Version >= 33) {
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES // For Android 13+
-                );
-                return granted === PermissionsAndroid.RESULTS.GRANTED;
+                // Android 13+ (No permission needed for saving)
+                return true;
             } else if (Platform.Version >= 30) {
                 const granted = await PermissionsAndroid.requestMultiple([
                     PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
@@ -103,11 +99,10 @@ const OrderDetails = ({ route }: any) => {
                 return granted === PermissionsAndroid.RESULTS.GRANTED;
             }
         }
-        return true; // iOS doesn't need this permission
+        return true; // iOS doesn’t need this permission
     };
 
-
-    const generatePDF = async () => {
+    const generatePDF = async (invoice: any) => {
         if (!invoice) return;
 
         const hasPermission = await requestStoragePermission();
@@ -116,10 +111,9 @@ const OrderDetails = ({ route }: any) => {
             return;
         }
 
-        setDownloading(true);
         try {
             const htmlContent = `
-             <!DOCTYPE html>
+                 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -168,7 +162,7 @@ const OrderDetails = ({ route }: any) => {
             margin: 0 auto 10px;
         }
         .tick::after {
-            content: "\2713";
+            content: "✓";
             font-size: 30px;
             color: white;
             font-weight: bold;
@@ -207,7 +201,6 @@ const OrderDetails = ({ route }: any) => {
     </div>
 </body>
 </html>
-
             `;
 
             const options = {
@@ -216,16 +209,19 @@ const OrderDetails = ({ route }: any) => {
                 directory: 'Documents',
             };
             const file = await RNHTMLtoPDF.convert(options);
-            setDownloading(false);
+
             if (file.filePath) {
-                Toast.show({ type: 'success', text1: 'Receipt downloaded!', text2: file.filePath });
+                // Share file for all Android versions and iOS
+                await Share.open({ url: `file://${file.filePath}` });
+
+                Toast.show({ type: 'success', text1: 'Receipt generated!', text2: 'Sharing file...' });
             }
         } catch (error) {
-            setDownloading(false);
             console.error('PDF Generation Error:', error);
-            Toast.show({ type: 'error', text1: 'Failed to download receipt' });
+            Toast.show({ type: 'error', text1: 'Failed to generate receipt' });
         }
     };
+
 
 
     if (loading)
