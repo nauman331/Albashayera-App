@@ -111,7 +111,7 @@ const OrderDetails = ({ route, navigation }: any) => {
 
                     {/* Invoice Title */}
                     <Text style={styles.invoiceTitle}>INVOICE</Text>
-                    <Text style={styles.invoiceInfo}>Invoice No: {invoice?.invNumber} | Date: {new Date(invoice?.createdAt).toDateString()}</Text>
+                    <Text style={styles.invoiceInfo}>Invoice No: {invoice?.invNumber} | Date: {invoice?.createdAt ? new Date(invoice.createdAt).toDateString() : 'N/A'}</Text>
 
                     <View style={styles.divider} />
 
@@ -146,7 +146,7 @@ const OrderDetails = ({ route, navigation }: any) => {
                         <Text style={styles.amount}>{invoice?.carAmount} AED</Text>
 
                         <View style={styles.divider} />
-                        
+
                         <Text style={styles.totalAmount}>Total: {invoice?.totalAmount} AED</Text>
                     </View>
                 </Card>
