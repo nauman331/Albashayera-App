@@ -1,80 +1,122 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { backendURL } from "../utils/exports";
+import { getToken } from "../utils/asyncStorage";
 
 interface Order {
+  statusText: string;
+  carId: any;
   id: string;
   image: string;
   name: string;
   vin: string;
-  paymentStatus: "pending" | "approved" | "rejected";
+  paymentStatus: "payment pending" | "approved" | "rejected";
   totalAmount: string;
 }
 
-const orders: Order[] = [
-  {
-    id: "1",
-    image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1583&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    name: "Toyota Corolla",
-    vin: "1HGBH41JXMN109186",
-    paymentStatus: "pending",
-    totalAmount: "$22,000",
-  },
-  {
-    id: "2",
-    image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1583&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    name: "Honda Civic",
-    vin: "2HGCM82633A123456",
-    paymentStatus: "approved",
-    totalAmount: "$25,000",
-  },
-  {
-    id: "3",
-    image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1583&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    name: "BMW 3 Series",
-    vin: "WBA8B9C55HK866541",
-    paymentStatus: "rejected",
-    totalAmount: "$50,000",
-  },
-];
-
 const OrdersScreen: React.FC = () => {
+  const [token, setToken] = useState<string | null>(null);
+  const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState<boolean>(false)
+
+useEffect(() => {
+    const fetchToken = async () => {
+      const tokeninner = await getToken();
+      setToken(tokeninner)
+    }
+    fetchToken()
+  }, [])
+
+
+  const getInvoices = async () => {
+    const authorizationToken = `Bearer ${token}`;
+    try {
+      setLoading(true);
+      const response = await fetch(`${backendURL}/purchase-invoice/get-inoivces`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: authorizationToken,
+        },
+      });
+      const res_data = await response.json();
+      if (response.ok) {
+        setOrders(res_data);
+      } else {
+        console.error(res_data.message);
+      }
+    } catch (error) {
+      console.error('Error in getting invoices', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getInvoices();
+  }, [token]);
+
   const handleOrderClick = (id: string) => {
     console.log(`Navigating to details page for order: ${id}`);
   };
 
   const statusIcons: { [key in Order["paymentStatus"]]: string } = {
-    pending: "schedule",
-    approved: "check-circle",
-    rejected: "cancel",
+    "payment pending": "schedule",
+    "approved": "check-circle",
+    "rejected": "cancel",
   };
-
+  
   const statusStyleMapping: { [key in Order["paymentStatus"]]: any } = {
-    pending: styles.pending,
+    "payment pending": styles.pending,
     approved: styles.approved,
     rejected: styles.rejected,
   };
-
+  
   const statusTextStyleMapping: { [key in Order["paymentStatus"]]: any } = {
-    pending: styles.pendingText,
+    "payment pending": styles.pendingText,
     approved: styles.approvedText,
     rejected: styles.rejectedText,
   };
-
-  const renderItem = ({ item }: { item: Order }) => (
-    <TouchableOpacity style={styles.orderCard} onPress={() => handleOrderClick(item.id)}>
-      <Image source={{ uri: item.image }} style={styles.image} />
-      <View style={styles.detailsContainer}>
-        <Text style={styles.carName}>{item.name}</Text>
-        <Text style={styles.carVin}>VIN: {item.vin}</Text>
-        <Text style={styles.amount}>Total: {item.totalAmount}</Text>
-      </View>
-      <View style={[styles.statusBar, statusStyleMapping[item.paymentStatus]]}>
-        <Icon name={statusIcons[item.paymentStatus]} size={18} style={statusTextStyleMapping[item.paymentStatus]} />
-        <Text style={[styles.statusText, statusTextStyleMapping[item.paymentStatus]]}> {item.paymentStatus}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  
+  const renderItem = ({ item }: { item: Order }) => {
+  
+    const status = item.statusText as Order["paymentStatus"];
+  
+    return (
+      <TouchableOpacity style={styles.orderCard} onPress={() => handleOrderClick(item.id)}>
+        <Image source={{ uri: item?.carId?.carImages[0] || "" }} style={styles.image} />
+        <View style={styles.detailsContainer}>
+          <Text style={styles.carName}>{item?.carId?.listingTitle || "Unknown Vehicle"}</Text>
+          <Text style={styles.carVin}>VIN: {item?.carId?.vin || ""}</Text>
+          <Text style={styles.amount}>Total: {item.totalAmount || 0} AED</Text>
+        </View>
+  
+        <View
+          style={[
+            styles.statusBar,
+            statusStyleMapping[status] || { backgroundColor: "gray" }
+          ]}
+        >
+          <Icon
+            name={statusIcons[status] || "help-outline"}
+            size={18}
+            color={statusTextStyleMapping[status]?.color || "black"}
+          />
+          <Text
+            style={[
+              styles.statusText,
+              statusTextStyleMapping[status] || { color: "black" }
+            ]}
+          >
+            {status}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+  
+  
 
   return (
     <View style={styles.container}>
