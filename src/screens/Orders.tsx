@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { backendURL } from "../utils/exports";
 import { getToken } from "../utils/asyncStorage";
@@ -78,6 +78,10 @@ useEffect(() => {
     approved: styles.approvedText,
     rejected: styles.rejectedText,
   };
+
+  if(loading){
+    return <ActivityIndicator size="large" color="#010153"  />
+  }
   
   const renderItem = ({ item }: { item: Order }) => {
   
