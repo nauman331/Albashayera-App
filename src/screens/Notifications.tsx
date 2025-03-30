@@ -104,7 +104,7 @@ const NotificationScreen: React.FC = () => {
       onPress={() => handleNotificationClick(item)}
     >
       <View style={styles.iconContainer}>
-        <Icon name={item.readStatus ? "bell-outline" : "bell-ring"} size={24} color={item.readStatus ? "#888" : "#ff9800"} />
+        <Icon name={item.readStatus ? "bell-outline" : "bell-ring"} size={24} color={item.readStatus ? "#888" : "#010153"} />
       </View>
       <View style={styles.textContainer}>
         <Text style={[styles.title, item.readStatus && styles.readTitle]}>Notification</Text>
@@ -118,14 +118,14 @@ const NotificationScreen: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.header}>Notifications</Text>
       {notificationsLoading ? (
-        <ActivityIndicator size="large" color="#ff9800" style={{ marginTop: 20 }} />
+        <ActivityIndicator size="large" color="#010153" style={{ marginTop: 20 }} />
       ) : (
         <FlatList
           data={notifications}
           keyExtractor={(item) => item._id}
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
-          style={{ marginBottom: 100 }}
+          style={{ marginBottom: 70 }}
         />
       )}
 
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     marginTop: 15,
-    backgroundColor: "#ff9800",
+    backgroundColor: "#010153",
     padding: 10,
     borderRadius: 5,
   },
