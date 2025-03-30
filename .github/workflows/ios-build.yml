@@ -1,0 +1,38 @@
+name: iOS Build
+
+on: [push]  # Jab bhi code push hoga, build start hoga
+
+jobs:
+  build:
+    runs-on: macos-latest  # Free macOS runner use karega
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18  # Apne project ke hisaab se Node version change kar sakte ho
+
+      - name: Install Dependencies
+        run: |
+          npm install
+          cd ios
+          pod install
+
+      - name: Build iOS App
+        run: |
+          cd ios
+          xcodebuild -workspace YourApp.xcworkspace -scheme YourApp -sdk iphoneos -configuration Release archive -archivePath YourApp.xcarchive
+
+      - name: Export IPA
+        run: |
+          cd ios
+          xcodebuild -exportArchive -archivePath YourApp.xcarchive -exportOptionsPlist exportOptions.plist -exportPath build
+
+      - name: Upload IPA as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: iOS-Build
+          path: ios/build/
