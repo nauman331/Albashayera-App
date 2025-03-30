@@ -5,7 +5,6 @@ import {
     ActivityIndicator,
     ScrollView,
     TouchableOpacity,
-    Image
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { backendURL } from '../utils/exports';
@@ -31,16 +30,14 @@ interface Order {
     userId: {
         firstName: string;
         lastName: string;
-        _id: string
+        _id: string;
     };
 }
 
-const OrderDetails = ({ route }: any) => {
+const OrderDetails = ({ route, navigation }: any) => {
     const { orderId } = route.params;
     const [loading, setLoading] = useState<boolean>(true);
     const [invoice, setInvoice] = useState<Order | null>(null);
-
-
 
     const getInvoice = async (tokenValue: string) => {
         try {
@@ -75,7 +72,18 @@ const OrderDetails = ({ route }: any) => {
         fetchTokenAndInvoice();
     }, []);
 
-
+    const getStatusIcon = () => {
+        switch (invoice?.statusText.toLowerCase()) {
+            case 'approved':
+                return <Icon name="check-circle" size={50} color="green" />;
+            case 'payment pending':
+                return <Icon name="hourglass-empty" size={50} color="orange" />;
+            case 'rejected':
+                return <Icon name="cancel" size={50} color="red" />;
+            default:
+                return <Icon name="info" size={50} color="gray" />;
+        }
+    };
 
     if (loading)
         return (
@@ -86,49 +94,63 @@ const OrderDetails = ({ route }: any) => {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Order Details</Text>
-            {invoice && (
-                <View style={styles.container}>
-                    <Card style={styles.card}>
-                        <View style={styles.iconContainer}>
-                            <Icon name="check-circle" size={40} color="#010153" />
-                        </View>
-                        <Text style={styles.title}>{invoice.statusText.toUpperCase()}</Text>
+            <View style={styles.invoiceWrapper}>
+                <Card style={styles.card}>
+                    {/* Invoice Header */}
+                    <View style={styles.invoiceHeader}>
+                        <View>{getStatusIcon()}</View>
+                        {!invoice?.paymentStatus && (
+                            <TouchableOpacity
+                                style={styles.payButton}
+                                onPress={() => navigation.navigate('PaymentScreen', { orderId })}
+                            >
+                                <Text style={styles.payButtonText}>Pay Pending Amount</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
 
-                        <Text style={styles.label}>Date:</Text>
-                        <Text style={styles.text}>{new Date(invoice.createdAt).toDateString()}</Text>
+                    {/* Invoice Title */}
+                    <Text style={styles.invoiceTitle}>INVOICE</Text>
+                    <Text style={styles.invoiceInfo}>Invoice No: {invoice?.invNumber} | Date: {new Date(invoice?.createdAt).toDateString()}</Text>
 
-                        <Text style={styles.label}>Invoice No:</Text>
-                        <Text style={styles.text}>{invoice.invNumber}</Text>
+                    <View style={styles.divider} />
 
-                        <Text style={styles.label}>Customer Name:</Text>
-                        <Text style={styles.text}>{invoice.userId?.firstName} {invoice.userId?.lastName}</Text>
+                    {/* Customer Info */}
+                    <View style={styles.section}>
+                        <Text style={styles.label}>Customer:</Text>
+                        <Text style={styles.text}>{invoice?.userId?.firstName} {invoice?.userId?.lastName}</Text>
+                    </View>
 
-                        <Text style={styles.label}>User ID:</Text>
-                        <Text style={styles.text}>{invoice.userId?._id}</Text>
+                    {/* Vehicle Info */}
+                    <View style={styles.section}>
+                        <Text style={styles.label}>Vehicle:</Text>
+                        <Text style={styles.text}>{invoice?.carId?.listingTitle}</Text>
+                        <Text style={styles.label}>VIN:</Text>
+                        <Text style={styles.text}>{invoice?.carId?.vin}</Text>
+                    </View>
 
-                        <Text style={styles.label}>Vehicle Name:</Text>
-                        <Text style={styles.text}>{invoice.carId?.listingTitle}</Text>
+                    <View style={styles.divider} />
 
-                        <Text style={styles.label}>Vehicle VIN:</Text>
-                        <Text style={styles.text}>{invoice.carId?.vin}</Text>
-
+                    {/* Amounts */}
+                    <View style={styles.amountSection}>
                         <Text style={styles.label}>Wallet Deduction:</Text>
-                        <Text style={styles.text}>{invoice.walletDeduction} AED</Text>
+                        <Text style={styles.amount}>{invoice?.walletDeduction} AED</Text>
 
                         <Text style={styles.label}>Pending Amount:</Text>
-                        <Text style={styles.text}>{invoice.pendingAmount} AED</Text>
+                        <Text style={styles.amount}>{invoice?.pendingAmount} AED</Text>
 
-                        <Text style={styles.label}>VAT(5%):</Text>
-                        <Text style={styles.text}>{invoice.vat} AED</Text>
-                        
+                        <Text style={styles.label}>VAT (5%):</Text>
+                        <Text style={styles.amount}>{invoice?.vat} AED</Text>
+
                         <Text style={styles.label}>Car Price:</Text>
-                        <Text style={styles.text}>{invoice.carAmount} AED</Text>
+                        <Text style={styles.amount}>{invoice?.carAmount} AED</Text>
 
-                        <Text style={styles.totalAmount}>Total Amount: {invoice.totalAmount} AED</Text>
-                    </Card>
-                </View>
-            )}
+                        <View style={styles.divider} />
+                        
+                        <Text style={styles.totalAmount}>Total: {invoice?.totalAmount} AED</Text>
+                    </View>
+                </Card>
+            </View>
         </ScrollView>
     );
 };
@@ -137,47 +159,19 @@ export default OrderDetails;
 
 const styles = StyleSheet.create({
     loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    container: { padding: 10, marginBottom: 100 },
-    section: { fontSize: 18, fontWeight: 'bold', marginTop: 10 },
-    buttonText: { color: 'white', fontSize: 16, marginLeft: 8 },
-    card: {
-        width: 300,
-        padding: 20,
-        borderRadius: 10,
-        backgroundColor: '#fff',
-        elevation: 5,
-        alignItems: 'center',
-    },
-    iconContainer: {
-        alignItems: 'center',
-    },
-    icon: {
-        width: 40,
-        height: 40,
-        tintColor: '#010153',
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#010153',
-        marginBottom: 20,
-        textAlign: "center"
-    },
-    text: {
-        fontSize: 14,
-        color: '#333',
-        marginBottom: 5,
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#000',
-        marginTop: 5
-    },
-    totalAmount: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#010153',
-        marginTop: 10,
-    },
+    container: { padding: 10, alignItems: 'center', backgroundColor: '#FAF9F6' },
+    invoiceWrapper: { width: '100%', alignItems: 'center', padding: 20, borderWidth: 1, borderColor: '#ddd', borderRadius: 5, backgroundColor: '#fff' },
+    card: { width: '95%', padding: 20, elevation: 3, borderRadius: 5, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 5 },
+    invoiceHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    invoiceTitle: { fontSize: 26, fontWeight: 'bold', textAlign: 'center', marginVertical: 5 },
+    invoiceInfo: { fontSize: 14, textAlign: 'center', color: '#666' },
+    section: { marginBottom: 10 },
+    divider: { width: '100%', height: 1, backgroundColor: '#ccc', marginVertical: 10 },
+    label: { fontSize: 16, fontWeight: 'bold', color: '#333' },
+    text: { fontSize: 14, color: '#555' },
+    amountSection: { padding: 10, backgroundColor: '#f7f7f7', borderRadius: 5 },
+    amount: { fontSize: 14, fontWeight: 'bold', color: '#333' },
+    totalAmount: { fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginTop: 10 },
+    payButton: { backgroundColor: '#ff5733', paddingVertical: 8, paddingHorizontal: 15, borderRadius: 5 },
+    payButtonText: { color: '#fff', fontSize: 14, fontWeight: 'bold' },
 });
