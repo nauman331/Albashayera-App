@@ -179,7 +179,7 @@ const WalletHistoryScreen = () => {
         data={selectedTab === "withdraw" ? withdrawHistory : depositHistory}
         keyExtractor={(item) => item.id}
         renderItem={renderTransactionItem}
-        style={{ marginBottom: 100 }}
+        style={{ marginBottom: 75 }}
       />
     </View>
   );
