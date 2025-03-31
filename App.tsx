@@ -11,7 +11,6 @@ import NoInternetScreen from "./src/screens/NoInternetScreen";
 import socketService from "./src/utils/socket";
 import Sound from "react-native-sound";
 import { navigate, navigationRef } from "./src/utils/navigationRef";
-import { Alert } from "react-native";
 
 
 export type RootStackParamList = {

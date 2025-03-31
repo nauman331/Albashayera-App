@@ -20,6 +20,7 @@ import { DrawerNavigationProp } from "@react-navigation/drawer";
 import CarDetailsScreen from "../../screens/CarDetailsScreen";
 import { navigate } from "../../utils/navigationRef";
 
+
 const Drawer = createDrawerNavigator();
 
 const CarDetailsScreenWrapper = (props: any) => (
@@ -49,7 +50,7 @@ const CustomBottomBar = () => {
         <Text style={styles.text}>Dashboard</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AuctionVehicles", {selectedAuctionProp: ""})}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AuctionVehicles", { selectedAuctionProp: "" })}>
         <Icon name="directions-car" size={28} color="white" />
         <Text style={styles.text}>Vehicles</Text>
       </TouchableOpacity>
@@ -81,7 +82,7 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
     screenOptions={{
       headerTitle: () => <Text>ABA Auctions</Text>,
       headerRight: () => (
-        <TouchableOpacity style={{ marginRight: 15 }} onPress={()=>navigate("Notifications")}>
+        <TouchableOpacity style={{ marginRight: 15 }} onPress={() => navigate("Notifications")}>
           <Icon name="notifications" size={30} color="#010153" />
           <View
             style={{
