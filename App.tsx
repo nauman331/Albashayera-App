@@ -183,42 +183,22 @@ const App = () => {
 
       await AsyncStorage.removeItem("currentBidData");
 
-      setTimeout(() => {
-        if (response.nextCar && response.nextCar._id) {
-          navigate("CarDetails", { carId: response.nextCar._id });
-        } else {
-          navigate("AuctionVehicles");
-        }
-      }, 300);
-    };
-
-    const handleNotifyBidders = async (response: any) => {
-      console.log(response);
-    
-      if (!response.isOk) {
-        handleToast(response);
-        return;
-      }
-    
-      await AsyncStorage.removeItem("currentBidData");
-      notifyBidders(response.message);
-    
       let carId: string | undefined;
       let currentRouteName: string | undefined;
-    
+
       if (navigationRef.isReady()) {
         const currentRoute = navigationRef.getCurrentRoute();
-    
+
         if (currentRoute) {
           currentRouteName = currentRoute.name;
           const params = currentRoute.params;
-    
+
           if (params && typeof params === "object" && "carId" in params) {
             carId = (params as { carId?: string }).carId;
           }
         }
       }
-    
+
       if (currentRouteName === "CarDetails" && carId === response.carId) {
         setTimeout(() => {
           if (response.nextCar && response.nextCar._id) {
@@ -229,7 +209,45 @@ const App = () => {
         }, 300);
       }
     };
-    
+
+    const handleNotifyBidders = async (response: any) => {
+      console.log(response);
+
+      if (!response.isOk) {
+        handleToast(response);
+        return;
+      }
+
+      await AsyncStorage.removeItem("currentBidData");
+      notifyBidders(response.message);
+
+      let carId: string | undefined;
+      let currentRouteName: string | undefined;
+
+      if (navigationRef.isReady()) {
+        const currentRoute = navigationRef.getCurrentRoute();
+
+        if (currentRoute) {
+          currentRouteName = currentRoute.name;
+          const params = currentRoute.params;
+
+          if (params && typeof params === "object" && "carId" in params) {
+            carId = (params as { carId?: string }).carId;
+          }
+        }
+      }
+
+      if (currentRouteName === "CarDetails" && carId === response.carId) {
+        setTimeout(() => {
+          if (response.nextCar && response.nextCar._id) {
+            navigate("CarDetails", { carId: response.nextCar._id });
+          } else {
+            navigate("AuctionVehicles");
+          }
+        }, 300);
+      }
+    };
+
     socketService.on("auctionOpened", handleAuctionOpened);
     socketService.on("bidPlaced", handleBidPlaced);
     socketService.on("auctionStatusChanged", handleAuctionStatusChanged);
