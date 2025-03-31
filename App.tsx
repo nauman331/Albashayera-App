@@ -11,6 +11,7 @@ import NoInternetScreen from "./src/screens/NoInternetScreen";
 import socketService from "./src/utils/socket";
 import Sound from "react-native-sound";
 import { navigate, navigationRef } from "./src/utils/navigationRef";
+import { Alert } from "react-native";
 
 
 export type RootStackParamList = {
@@ -23,8 +24,8 @@ export type RootStackParamList = {
   Wallet: undefined;
   Profile: undefined;
   Auctions: undefined;
-  AuctionVehicles: {selectedAuctionProp: string};
-  OrderDetails: {orderId: string};
+  AuctionVehicles: { selectedAuctionProp: string };
+  OrderDetails: { orderId: string };
   BuyNowVehicles: undefined;
   CarDetails: { carId: string };
   AuctionEvents: undefined;
@@ -193,22 +194,42 @@ const App = () => {
 
     const handleNotifyBidders = async (response: any) => {
       console.log(response);
+    
       if (!response.isOk) {
         handleToast(response);
         return;
       }
+    
       await AsyncStorage.removeItem("currentBidData");
       notifyBidders(response.message);
-
-      setTimeout(() => {
-        if (response.nextCar && response.nextCar._id) {
-          navigate("CarDetails", { carId: response.nextCar._id });
-        } else {
-          navigate("AuctionVehicles");
+    
+      let carId: string | undefined;
+      let currentRouteName: string | undefined;
+    
+      if (navigationRef.isReady()) {
+        const currentRoute = navigationRef.getCurrentRoute();
+    
+        if (currentRoute) {
+          currentRouteName = currentRoute.name;
+          const params = currentRoute.params;
+    
+          if (params && typeof params === "object" && "carId" in params) {
+            carId = (params as { carId?: string }).carId;
+          }
         }
-      }, 300);
+      }
+    
+      if (currentRouteName === "CarDetails" && carId === response.carId) {
+        setTimeout(() => {
+          if (response.nextCar && response.nextCar._id) {
+            navigate("CarDetails", { carId: response.nextCar._id });
+          } else {
+            navigate("AuctionVehicles");
+          }
+        }, 300);
+      }
     };
-
+    
     socketService.on("auctionOpened", handleAuctionOpened);
     socketService.on("bidPlaced", handleBidPlaced);
     socketService.on("auctionStatusChanged", handleAuctionStatusChanged);
