@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, View, Text } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Form from '../components/Form'
 import { getToken } from '../utils/asyncStorage'
@@ -62,6 +62,7 @@ const WithDraw = () => {
 
     return (
         <View style={styles.container}>
+             <Text style={styles.header}>Withdraw Funds</Text>
             <Form
                 fields={[
                     { name: 'accountHolderName', placeholder: 'Account Holder Name', type: 'default' },
@@ -86,5 +87,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         backgroundColor: '#f8f9fa',
+    },
+    header: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginBottom: 20,
+        color: "#333",
     },
 })
