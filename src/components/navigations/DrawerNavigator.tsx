@@ -81,9 +81,6 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
     screenOptions={{
       headerTitle: () => <Text>ABA Auctions</Text>,
       headerRight: () => (
-        // <TouchableOpacity style={{ marginRight: 15 }}>
-        //   <Icon name="notifications" size={30} color="#010153" />
-        // </TouchableOpacity>
         <TouchableOpacity style={{ marginRight: 15 }} onPress={()=>navigate("Notifications")}>
           <Icon name="notifications" size={30} color="#010153" />
           <View
