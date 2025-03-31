@@ -59,12 +59,16 @@ const renderTransactionItem = ({ item }: { item: Transaction }) => {
           <Text style={[styles.statusText, { color: statusStyle.color }]}>{item?.status === "pending" ? "Payment Pending" : item?.status?.charAt(0).toUpperCase() + item?.status?.slice(1) || "N/A"}</Text>
         </View>
       </View>
-      <TouchableOpacity
-        style={styles.eye}
-        onPress={() => Linking.openURL(`${item.inv}?attachment=true`)}
-      >
-        <Icon name="eye-outline" size={26} color="#010153" />
-      </TouchableOpacity>
+      {
+        item.inv &&
+        <TouchableOpacity
+          style={styles.eye}
+          onPress={() => Linking.openURL(`${item.inv}?attachment=true`)}
+        >
+          <Icon name="eye-outline" size={26} color="#010153" />
+        </TouchableOpacity>
+      }
+
     </View>
   );
 };
@@ -121,7 +125,7 @@ const WalletHistoryScreen = () => {
   }, [token]);
 
   const handleWithdraw = () => {
-    if(balance < 1) {
+    if (balance < 1) {
       Toast.show({
         type: "error",
         text1: "Insufficient Amount"
@@ -146,7 +150,7 @@ const WalletHistoryScreen = () => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.actionButton} onPress={()=>navigation.navigate("Deposit")}>
+        <TouchableOpacity style={styles.actionButton} onPress={() => navigation.navigate("Deposit")}>
           <Icon name="cash-plus" size={20} color="#FFF" />
           <Text style={styles.buttonText}>Deposit</Text>
         </TouchableOpacity>
