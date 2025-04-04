@@ -1,188 +1,72 @@
-// import {
-//     StyleSheet,
-//     Text,
-//     View,
-//     ActivityIndicator,
-//     ScrollView,
-//     TouchableOpacity,
-// } from 'react-native';
-// import React, { useEffect, useState } from 'react';
-// import { backendURL } from '../utils/exports';
-// import { getToken } from '../utils/asyncStorage';
-// import Icon from 'react-native-vector-icons/MaterialIcons';
-// import { Card } from 'react-native-paper';
-
-// interface Order {
-//     carAmount: number;
-//     createdAt: string | Date;
-//     invNumber: number;
-//     paidAmount: number;
-//     pendingAmount: number;
-//     paymentStatus: boolean;
-//     statusText: string;
-//     totalAmount: number;
-//     vat: number;
-//     walletDeduction: number;
-//     carId: {
-//         vin: string;
-//         listingTitle: string;
-//     };
-//     userId: {
-//         firstName: string;
-//         lastName: string;
-//         _id: string;
-//     };
-// }
-
-// const OrderDetails = ({ route, navigation }: any) => {
-//     const { orderId } = route.params;
-//     const [loading, setLoading] = useState<boolean>(true);
-//     const [invoice, setInvoice] = useState<Order | null>(null);
-
-//     const getInvoice = async (tokenValue: string) => {
-//         try {
-//             setLoading(true);
-//             const response = await fetch(`${backendURL}/purchase-invoice/get-invoice/${orderId}`, {
-//                 method: 'GET',
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                     Authorization: `Bearer ${tokenValue}`,
-//                 },
-//             });
-//             const resData = await response.json();
-//             if (response.ok) {
-//                 setInvoice(resData);
-//             } else {
-//                 console.error(resData.message);
-//             }
-//         } catch (error) {
-//             console.error('Error fetching invoice', error);
-//         } finally {
-//             setLoading(false);
-//         }
-//     };
-
-//     useEffect(() => {
-//         const fetchTokenAndInvoice = async () => {
-//             const tokenInner = await getToken();
-//             if (tokenInner) {
-//                 getInvoice(tokenInner);
-//             }
-//         };
-//         fetchTokenAndInvoice();
-//     }, [orderId]);
-
-//     const getStatusIcon = () => {
-//         switch (invoice?.statusText.toLowerCase()) {
-//             case 'approved':
-//                 return <Icon name="check-circle" size={50} color="green" />;
-//             case 'payment pending':
-//                 return <Icon name="hourglass-empty" size={50} color="orange" />;
-//             case 'rejected':
-//                 return <Icon name="cancel" size={50} color="red" />;
-//             default:
-//                 return <Icon name="info" size={50} color="gray" />;
-//         }
-//     };
-
-//     if (loading)
-//         return (
-//             <View style={styles.loader}>
-//                 <ActivityIndicator size="large" color="blue" />
-//             </View>
-//         );
-
-//     return (
-//         <ScrollView contentContainerStyle={styles.container}>
-//             <View style={styles.invoiceWrapper}>
-//                 <Card style={styles.card}>
-//                     {/* Invoice Header */}
-//                     <View style={styles.invoiceHeader}>
-//                         <View>{getStatusIcon()}</View>
-//                         {!invoice?.paymentStatus && (
-//                             <TouchableOpacity
-//                                 style={styles.payButton}
-//                                 onPress={() => navigation.navigate('PaymentScreen', { orderId })}
-//                             >
-//                                 <Text style={styles.payButtonText}>Pay Pending Amount</Text>
-//                             </TouchableOpacity>
-//                         )}
-//                     </View>
-
-//                     {/* Invoice Title */}
-//                     <Text style={styles.invoiceTitle}>INVOICE</Text>
-//                     <Text style={styles.invoiceInfo}>Invoice No: {invoice?.invNumber} | Date: {invoice?.createdAt ? new Date(invoice.createdAt).toDateString() : 'N/A'}</Text>
-
-//                     <View style={styles.divider} />
-
-//                     {/* Customer Info */}
-//                     <View style={styles.section}>
-//                         <Text style={styles.label}>Customer:</Text>
-//                         <Text style={styles.text}>{invoice?.userId?.firstName} {invoice?.userId?.lastName}</Text>
-//                     </View>
-
-//                     {/* Vehicle Info */}
-//                     <View style={styles.section}>
-//                         <Text style={styles.label}>Vehicle:</Text>
-//                         <Text style={styles.text}>{invoice?.carId?.listingTitle}</Text>
-//                         <Text style={styles.label}>VIN:</Text>
-//                         <Text style={styles.text}>{invoice?.carId?.vin}</Text>
-//                     </View>
-
-//                     <View style={styles.divider} />
-
-//                     {/* Amounts */}
-//                     <View style={styles.amountSection}>
-//                         <Text style={styles.label}>Wallet Deduction:</Text>
-//                         <Text style={styles.amount}>{invoice?.walletDeduction} AED</Text>
-
-//                         <Text style={styles.label}>Pending Amount:</Text>
-//                         <Text style={styles.amount}>{invoice?.pendingAmount} AED</Text>
-
-//                         <Text style={styles.label}>VAT (5%):</Text>
-//                         <Text style={styles.amount}>{invoice?.vat} AED</Text>
-
-//                         <Text style={styles.label}>Car Price:</Text>
-//                         <Text style={styles.amount}>{invoice?.carAmount} AED</Text>
-
-//                         <View style={styles.divider} />
-
-//                         <Text style={styles.totalAmount}>Total: {invoice?.totalAmount} AED</Text>
-//                     </View>
-//                 </Card>
-//             </View>
-//         </ScrollView>
-//     );
-// };
-
-// export default OrderDetails;
-
-// const styles = StyleSheet.create({
-//     loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-//     container: { padding: 10, alignItems: 'center', backgroundColor: '#FAF9F6' },
-//     invoiceWrapper: { width: '100%', alignItems: 'center', padding: 20, borderWidth: 1, borderColor: '#ddd', borderRadius: 5, backgroundColor: '#fff', marginBottom: 100 },
-//     card: { width: '95%', padding: 20, elevation: 3, borderRadius: 5, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 5 },
-//     invoiceHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-//     invoiceTitle: { fontSize: 26, fontWeight: 'bold', textAlign: 'center', marginVertical: 5 },
-//     invoiceInfo: { fontSize: 14, textAlign: 'center', color: '#666' },
-//     section: { marginBottom: 10 },
-//     divider: { width: '100%', height: 1, backgroundColor: '#ccc', marginVertical: 10 },
-//     label: { fontSize: 16, fontWeight: 'bold', color: '#333' },
-//     text: { fontSize: 14, color: '#555' },
-//     amountSection: { padding: 10, backgroundColor: '#f7f7f7', borderRadius: 5 },
-//     amount: { fontSize: 14, fontWeight: 'bold', color: '#333' },
-//     totalAmount: { fontSize: 20, fontWeight: 'bold', textAlign: 'center', marginTop: 10 },
-//     payButton: { backgroundColor: '#ff5733', paddingVertical: 8, paddingHorizontal: 15, borderRadius: 5 },
-//     payButtonText: { color: '#fff', fontSize: 14, fontWeight: 'bold' },
-// });
-
-
-
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { backendURL } from '../utils/exports';
+import { getToken } from '../utils/asyncStorage';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
-const InvoiceSlip = () => {
+interface Order {
+  carAmount: number;
+  createdAt: string | Date;
+  invNumber: number;
+  paidAmount: number;
+  pendingAmount: number;
+  paymentStatus: boolean;
+  statusText: string;
+  totalAmount: number;
+  vat: number;
+  walletDeduction: number;
+  carId: {
+    vin: string;
+    listingTitle: string;
+  };
+  userId: {
+    firstName: string;
+    lastName: string;
+    _id: string;
+  };
+}
+const InvoiceSlip = ({ route, navigation }: any) => {
+  const { orderId } = route.params;
+  const [loading, setLoading] = useState<boolean>(true);
+  const [invoice, setInvoice] = useState<Order | null>(null);
+
+  const getInvoice = async (tokenValue: string) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${backendURL}/purchase-invoice/get-invoice/${orderId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${tokenValue}`,
+        },
+      });
+      const resData = await response.json();
+      if (response.ok) {
+        setInvoice(resData);
+      } else {
+        console.error(resData.message);
+      }
+    } catch (error) {
+      console.error('Error fetching invoice', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchTokenAndInvoice = async () => {
+      const tokenInner = await getToken();
+      if (tokenInner) {
+        getInvoice(tokenInner);
+      }
+    };
+    fetchTokenAndInvoice();
+  }, [orderId]);
+
+  if (loading)
+    return (
+      <ActivityIndicator size="large" color="blue" />
+    );
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -190,33 +74,36 @@ const InvoiceSlip = () => {
         <TouchableOpacity style={styles.backButton}>
           <Icon name="arrow-left" size={20} color="#FFF" />
         </TouchableOpacity>
-        <Text style={styles.orderId}>#RF-232-258-299</Text>
+        <Text style={styles.orderId}>#{invoice?.invNumber}</Text>
       </View>
-      
-      {/* Payment Section */}
+
       <View style={styles.paymentContainer}>
         <View style={styles.paymentIcons}>
-          <View style={[styles.iconWrapper, styles.iconLeft]}>
-            <View style={[styles.iconContainer, { opacity: 0.6 }]}>
-              <Icon name="x-circle" size={20} color="#DC2626" />
+          <View style={[styles.iconWrapper, invoice?.statusText === 'rejected' ? styles.iconCenter : styles.iconLeft]}>
+            <View style={[styles.iconContainer, invoice?.statusText === 'rejected' ? styles.iconContainerLarge : styles.iconCenterFaded]}>
+              <Icon name="x-circle" size={invoice?.statusText === 'rejected' ? 28 : 20} color="#DC2626" />
             </View>
-            <Text style={styles.iconText}>Rejected</Text>
+            <Text style={invoice?.statusText === 'rejected' ? styles.iconTextP : styles.iconText}>Rejected</Text>
           </View>
-          <View style={[styles.iconWrapper, styles.iconCenter]}>
-            <View style={styles.iconContainerLarge}>
-              <Icon name="clock" size={28} color="#FBBF24" />
+
+          <View style={[styles.iconWrapper, invoice?.statusText === 'payment pending' ? styles.iconCenter : styles.iconCenterFaded]}>
+            <View style={[styles.iconContainer, invoice?.statusText === 'payment pending' ? styles.iconContainerLarge : styles.iconCenterFaded]}>
+              <Icon name="clock" size={invoice?.statusText === 'payment pending' ? 28 : 20} color="#FBBF24" />
             </View>
-            <Text style={styles.iconTextP}>Pending</Text>
+            <Text style={invoice?.statusText === 'payment pending' ? styles.iconTextP : styles.iconText}>Pending</Text>
           </View>
-          <View style={[styles.iconWrapper, styles.iconRight]}>
-            <View style={[styles.iconContainer, { opacity: 0.6 }]}>
-              <Icon name="check-circle" size={20} color="#22C55E" />
+
+          <View style={[styles.iconWrapper, invoice?.statusText === 'approved' ? styles.iconCenter : styles.iconRight]}>
+            <View style={[styles.iconContainer, invoice?.statusText === 'approved' ? styles.iconContainerLarge : styles.iconCenterFaded]}>
+              <Icon name="check-circle" size={invoice?.statusText === 'approved' ? 28 : 20} color="#22C55E" />
             </View>
-            <Text style={styles.iconText}>Completed</Text>
+            <Text style={invoice?.statusText === 'approved' ? styles.iconTextP : styles.iconText}>Completed</Text>
           </View>
         </View>
+
       </View>
-      
+
+
       {/* Invoice Box */}
       <View style={styles.invoiceBox}>
         <View style={styles.invoiceHeader}>
@@ -224,29 +111,49 @@ const InvoiceSlip = () => {
         </View>
         <View style={styles.row}>
           <View style={styles.column}>
-            <Text style={styles.label}>ORDER #</Text>
-            <Text style={styles.value}>RF-232-258-299</Text>
+            <Text style={styles.label}>CUSTOMER</Text>
+            <Text style={styles.value}>{invoice?.userId?.firstName} {invoice?.userId?.lastName}</Text>
           </View>
           <View style={styles.column}>
             <Text style={styles.label}>DUE ON</Text>
-            <Text style={styles.value}>Jul 21, 2015</Text>
+            <Text style={styles.value}>{invoice?.createdAt ? new Date(invoice.createdAt).toLocaleDateString() : 'N/A'}</Text>
           </View>
         </View>
         <View style={styles.row}>
           <View style={styles.column}>
-            <Text style={styles.label}>Rx</Text>
-            <Text style={styles.value}>02</Text>
+            <Text style={styles.label}>VEHICLE NAME</Text>
+            <Text style={styles.value}>{invoice?.carId?.listingTitle}</Text>
           </View>
           <View style={styles.column}>
-            <Text style={styles.label}>MEDICATIONS</Text>
-            <Text style={styles.value}>18</Text>
+            <Text style={styles.label}>VEHICLE VIN</Text>
+            <Text style={styles.value}>{invoice?.carId?.vin}</Text>
           </View>
         </View>
         <TouchableOpacity style={styles.detailsButton}>
-          <Text style={styles.detailsText}>DETAILS</Text>
+          <Text style={styles.detailsText}>PPRICE DETAILS</Text>
           <Icon name="plus" size={14} color="#777" />
         </TouchableOpacity>
-        <Text style={styles.totalAmount}>$145.00</Text>
+        <View style={styles.row}>
+          <View style={styles.column}>
+            <Text style={styles.label}>WALLET DEDUCTION</Text>
+            <Text style={styles.value}>{invoice?.walletDeduction} AED</Text>
+          </View>
+          <View style={styles.column}>
+            <Text style={styles.label}>PENDING AMOUNT</Text>
+            <Text style={styles.value}>{invoice?.pendingAmount} AED</Text>
+          </View>
+        </View>
+        <View style={styles.row}>
+          <View style={styles.column}>
+            <Text style={styles.label}>VAT (5%)</Text>
+            <Text style={styles.value}>{invoice?.vat} AED</Text>
+          </View>
+          <View style={styles.column}>
+            <Text style={styles.label}>CAR PRICE</Text>
+            <Text style={styles.value}>{invoice?.carAmount} AED</Text>
+          </View>
+        </View>
+        <Text style={styles.totalAmount}>Total: {invoice?.totalAmount} AED</Text>
         <TouchableOpacity style={styles.payButton}>
           <Text style={styles.payButtonText}>PAY NOW</Text>
         </TouchableOpacity>
@@ -259,7 +166,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    marginTop: 20,
     backgroundColor: '#E8F0FF',
   },
   header: {
@@ -281,33 +187,21 @@ const styles = StyleSheet.create({
   },
   paymentContainer: {
     backgroundColor: '#3B82F6',
-    paddingVertical: 10,
+    paddingVertical: 20,
     alignItems: 'center',
     width: '100%',
     position: 'relative',
   },
   paymentIcons: {
     flexDirection: 'row',
-   marginBottom: 20,
-    justifyContent: 'space-between',
-    width: '90%',
+    justifyContent: 'center', // Center icons
+    alignItems: 'center',
+    width: '100%',
     position: 'relative',
   },
   iconWrapper: {
     alignItems: 'center',
-  },
-  iconLeft: {
-    position: 'absolute',
-    left: 10,
-    bottom: 0,
-  },
-  iconCenter: {
-    zIndex: 2,
-  },
-  iconRight: {
-    position: 'absolute',
-    right: 10,
-    bottom: 0,
+    flex: 1, // Spread icons evenly
   },
   iconContainer: {
     backgroundColor: '#FFF',
@@ -320,7 +214,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 40,
     marginBottom: 5,
-    marginLeft: "50%"
   },
   iconText: {
     color: '#FFF',
@@ -329,7 +222,21 @@ const styles = StyleSheet.create({
   iconTextP: {
     color: '#FFF',
     fontSize: 12,
-    marginLeft: "50%"
+    fontWeight: 'bold',
+  },
+  iconCenter: {
+    alignSelf: 'center', // Center active icon properly
+    zIndex: 2,
+  },
+  iconLeft: {
+    alignSelf: 'flex-start', // Move to left
+  },
+  iconRight: {
+    alignSelf: 'flex-end', // Move to right
+  },
+
+  iconCenterFaded: {
+    opacity: 0.6, 
   },
   invoiceBox: {
     backgroundColor: '#FFF',
@@ -405,5 +312,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
 
 export default InvoiceSlip;
