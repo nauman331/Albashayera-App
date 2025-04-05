@@ -79,7 +79,7 @@ const InvoiceSlip = ({ route, navigation }: any) => {
 
       <View style={styles.paymentContainer}>
         <View style={styles.paymentIcons}>
-          <View style={[styles.iconWrapper, invoice?.statusText === 'rejected' ? styles.iconCenter : styles.iconLeft]}>
+          <View style={styles.iconWrapper}>
             <View style={[styles.iconContainer, invoice?.statusText === 'rejected' ? styles.iconContainerLarge : styles.iconCenterFaded]}>
               <Icon name="x-circle" size={invoice?.statusText === 'rejected' ? 28 : 20} color="#DC2626" />
             </View>
@@ -93,7 +93,7 @@ const InvoiceSlip = ({ route, navigation }: any) => {
             <Text style={invoice?.statusText === 'payment pending' ? styles.iconTextP : styles.iconText}>Pending</Text>
           </View>
 
-          <View style={[styles.iconWrapper, invoice?.statusText === 'approved' ? styles.iconCenter : styles.iconRight]}>
+          <View style={styles.iconWrapper}>
             <View style={[styles.iconContainer, invoice?.statusText === 'approved' ? styles.iconContainerLarge : styles.iconCenterFaded]}>
               <Icon name="check-circle" size={invoice?.statusText === 'approved' ? 28 : 20} color="#22C55E" />
             </View>
@@ -167,6 +167,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: '#E8F0FF',
+    marginBottom: 70
   },
   header: {
     backgroundColor: '#3B82F6',
@@ -187,7 +188,7 @@ const styles = StyleSheet.create({
   },
   paymentContainer: {
     backgroundColor: '#3B82F6',
-    paddingVertical: 20,
+    paddingVertical: 10,
     alignItems: 'center',
     width: '100%',
     position: 'relative',
@@ -198,6 +199,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     position: 'relative',
+    marginBottom: 30
   },
   iconWrapper: {
     alignItems: 'center',
@@ -207,7 +209,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     padding: 10,
     borderRadius: 30,
-    marginBottom: 5,
   },
   iconContainerLarge: {
     backgroundColor: '#FFF',
@@ -227,12 +228,6 @@ const styles = StyleSheet.create({
   iconCenter: {
     alignSelf: 'center', // Center active icon properly
     zIndex: 2,
-  },
-  iconLeft: {
-    alignSelf: 'flex-start', // Move to left
-  },
-  iconRight: {
-    alignSelf: 'flex-end', // Move to right
   },
 
   iconCenterFaded: {
