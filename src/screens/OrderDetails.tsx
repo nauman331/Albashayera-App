@@ -71,7 +71,7 @@ const InvoiceSlip = ({ route, navigation }: any) => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Icon name="arrow-left" size={20} color="#FFF" />
         </TouchableOpacity>
         <Text style={styles.orderId}>#{invoice?.invNumber}</Text>
@@ -154,9 +154,18 @@ const InvoiceSlip = ({ route, navigation }: any) => {
           </View>
         </View>
         <Text style={styles.totalAmount}>Total: {invoice?.totalAmount} AED</Text>
-        <TouchableOpacity style={styles.payButton}>
-          <Text style={styles.payButtonText}>PAY NOW</Text>
-        </TouchableOpacity>
+        {
+          invoice?.paymentStatus ?
+            <TouchableOpacity style={styles.payButton1}>
+              <Icon name="check-circle" size={20} color="#fff" />
+            </TouchableOpacity>
+            :
+            <TouchableOpacity
+              onPress={() => navigation.navigate("PayOrder", { invoiceNumber: invoice?.invNumber, pendingAmount: invoice?.pendingAmount })}
+              style={styles.payButton}>
+              <Text style={styles.payButtonText}>PAY NOW</Text>
+            </TouchableOpacity>
+        }
       </View>
     </View>
   );
@@ -231,7 +240,7 @@ const styles = StyleSheet.create({
   },
 
   iconCenterFaded: {
-    opacity: 0.6, 
+    opacity: 0.6,
   },
   invoiceBox: {
     backgroundColor: '#FFF',
@@ -298,6 +307,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     width: '50%',
+    position: 'absolute',
+    bottom: -20,
+    alignSelf: 'center',
+  },
+  payButton1: {
+    backgroundColor: '#22C55E',
+    padding: 10,
+    borderRadius: 100,
+    alignItems: 'center',
     position: 'absolute',
     bottom: -20,
     alignSelf: 'center',

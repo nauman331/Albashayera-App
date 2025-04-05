@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from "react-native";
 import { Asset, launchImageLibrary } from "react-native-image-picker";
 import Toast from "react-native-toast-message";
 import { backendURL, cloudinaryURL, UPLOAD_PRESET } from "../utils/exports";
@@ -8,10 +8,11 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../App";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import toast from "react-native-toast-message"
 
-const DepositPage: React.FC = () => {
+const PayOrder: React.FC = ({ route }: any) => {
+    const { invoiceNumber, pendingAmount } = route.params;
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-    const [amount, setAmount] = useState("");
     const [proof, setProof] = useState<string | null>(null);
     const [uploading, setUploading] = useState<boolean>(false)
     const [loading, setLoading] = useState<boolean>(false)
@@ -32,7 +33,7 @@ const DepositPage: React.FC = () => {
             }
         });
     };
-    
+
 
     const uploadToCloudinary = async (file: Asset) => {
         setUploading(true);
@@ -56,42 +57,42 @@ const DepositPage: React.FC = () => {
     };
 
     const submitDeposit = async () => {
-        if (!amount || !proof) {
-            Toast.show({ type: "error", text1: "Please enter an amount and upload proof" });
+        if (!proof) {
+            Toast.show({ type: "error", text1: "Please upload a valid proof" });
             return;
         }
+        const authorizationToken = `Bearer ${token}`;
         try {
-            setLoading(true)
-            const res = await fetch(`${backendURL}/wallet/deposit`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    amount,
-                    inv: proof,
-                }),
-            });
-            const res_data = await res.json();
-            if (res.ok) {
+            setLoading(true);
+            const response = await fetch(
+                `${backendURL}/purchase-invoice/upload-slip/${invoiceNumber}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: authorizationToken,
+                    },
+                    body: JSON.stringify({ invSlip: proof }),
+                }
+            );
+            const res_data = await response.json();
+            if (response.ok) {
                 Toast.show({ type: "success", text1: "Deposit submitted successfully!" });
-                setAmount("");
                 setProof(null);
                 navigation.navigate("Wallet");
             } else {
-                Toast.show({ type: "error", text1: "Error:", text2: res_data.message });
+                Toast.show({ type: "error", text1: "Error:", text2: res_data.message || "Proof Uploaded Successfull" });
             }
         } catch (error) {
             Toast.show({ type: "error", text1: "Failed to submit deposit" });
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Deposit Funds</Text>
+            <Text style={styles.header}>Pay Pending Amount</Text>
             <View style={styles.bankDetailsCard}>
                 <View style={styles.bankHeader}>
                     <Icon name="bank" size={26} color="#010153" />
@@ -116,14 +117,9 @@ const DepositPage: React.FC = () => {
 
             <View style={styles.inputContainer}>
                 <Text style={styles.inputIcon}>AED</Text>
-                <TextInput
+                <Text
                     style={styles.input}
-                    keyboardType="numeric"
-                    placeholder="Enter Deposit Amount"
-                    value={amount}
-                    onChangeText={setAmount}
-                    placeholderTextColor="black"
-                />
+                >{pendingAmount} is your pending amount.</Text>
             </View>
             {proof ? (
                 <Image source={{ uri: proof }} style={styles.proofImage} />
@@ -252,4 +248,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default DepositPage;
+export default PayOrder;

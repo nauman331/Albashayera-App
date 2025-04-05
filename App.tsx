@@ -24,6 +24,7 @@ export type RootStackParamList = {
   Profile: undefined;
   Auctions: undefined;
   AuctionVehicles: { selectedAuctionProp: string };
+  PayOrder: { invoiceNumber: string, pendingAmount: string | number };
   OrderDetails: { orderId: string };
   BuyNowVehicles: undefined;
   CarDetails: { carId: string };
