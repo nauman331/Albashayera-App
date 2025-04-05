@@ -10,8 +10,11 @@ import {
   Modal,
   Pressable,
   ScrollView,
+  Linking
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Asset, launchImageLibrary } from "react-native-image-picker";
 import { getToken } from "../utils/asyncStorage";
 import Toast from "react-native-toast-message";
@@ -140,6 +143,47 @@ const Profile = () => {
           </View>
         </View>
       </Modal>
+      <Text style={styles.socialheading}>Our Social Media</Text>
+
+      <View style={styles.socialCard}>
+        <TouchableOpacity style={styles.socialItem} onPress={() => Linking.openURL("https://www.tiktok.com/@albashayeraautoauction?_t=ZS-8u3T6j55U8X&_r=1")}>
+          <FontAwesome name="music" size={24} color="#010153" />
+          <Text style={styles.socialText}>TikTok</Text>
+          <MaterialCommunityIcons name="arrow-right" size={20} color="#888" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.socialItem} onPress={() => Linking.openURL("facebook.com/share/1DXXBfLc9f/?mibextid=wwXIfr")}>
+          <FontAwesome name="facebook" size={24} color="#1877F2" />
+          <Text style={styles.socialText}>Facebook</Text>
+          <MaterialCommunityIcons name="arrow-right" size={20} color="#888" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.socialItem} onPress={() => Linking.openURL("https://www.instagram.com/albashayeraautoauction?igsh=ODZjODYwOTJzZmwx&utm_source=qr")}>
+          <FontAwesome name="instagram" size={24} color="#C13584" />
+          <Text style={styles.socialText}>Instagram</Text>
+          <MaterialCommunityIcons name="arrow-right" size={20} color="#888" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.socialItem} onPress={() => Linking.openURL("mailto:Info@abaautoauctions.com")}>
+          <MaterialCommunityIcons name="email" size={24} color="#EA4335" />
+          <Text style={styles.socialText}>Email</Text>
+          <MaterialCommunityIcons name="arrow-right" size={20} color="#888" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.socialItem} onPress={() => Linking.openURL("tel:+971 509496511")}>
+          <FontAwesome name="phone" size={24} color="#34A853" />
+          <Text style={styles.socialText}>Phone</Text>
+          <MaterialCommunityIcons name="arrow-right" size={20} color="#888" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.socialItem} onPress={() => Linking.openURL("https://www.google.com/maps/search/?api=1&query=Al+bashayera+Auto+Auction")}>
+          <MaterialCommunityIcons name="map-marker" size={24} color="#FF5722" />
+          <Text style={styles.socialText}>Address</Text>
+          <MaterialCommunityIcons name="arrow-right" size={20} color="#888" />
+        </TouchableOpacity>
+      </View>
+
+
     </ScrollView>
   ) : (
     <Text>Loading....</Text>
@@ -163,6 +207,37 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     elevation: 5,
   },
+  socialheading: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginVertical: 20
+  },
+  socialCard: {
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    padding: 20,
+    width: "100%",
+    marginBottom: 70,
+    elevation: 5,
+  },
+
+  socialItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 15,
+    borderBottomColor: "#eee",
+    borderBottomWidth: 1,
+  },
+
+  socialText: {
+    flex: 1,
+    fontSize: 16,
+    marginLeft: 10,
+    color: "#333",
+    fontWeight: "500",
+  },
+
   avatar: {
     width: 100,
     height: 100,
