@@ -5,15 +5,20 @@ import { useNavigationState } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getToken, removeToken } from "../utils/asyncStorage";
+import { backendURL } from "../utils/exports";
 
 interface CustomDrawerContentProps {
   navigation: any;
   setToken: React.Dispatch<React.SetStateAction<string | null>>;
 }
+interface Car {
+  _id: string;
+}
 
 const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, setToken }) => {
   const [vehiclesExpanded, setVehiclesExpanded] = useState(false);
   const [auctionsExpanded, setAuctionsExpanded] = useState(false);
+  const [currentCar, setCurrentCar] = useState<Car | null>(null);
   const [user, setUser] = useState<any>(null);
   const [isModalVisible, setModalVisible] = useState(false);
 
@@ -46,6 +51,35 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
       console.error("Error logging out:", error);
     }
   };
+
+  const getCurrentCar = async () => {
+    try {
+      const response = await fetch(`${backendURL}/auction/active-car`, {
+        method: "GET",
+      });
+      const res_data = await response.json();
+      if (response.ok) {
+        setCurrentCar(res_data);
+      } else {
+        console.log(res_data.message || "Failed to fetch the current car.");
+      }
+    } catch (error) {
+      console.log("Error in getting the current car:", error);
+    }
+  };
+
+  useEffect(() => {
+    getCurrentCar();
+  }, []);
+
+  const handleJoin = () => {
+    if (currentCar) {
+      navigation.navigate('CarDetails', { carId: currentCar._id })
+    } else {
+      navigation.navigate("AuctionVehicles")
+    };
+  }
+
 
   return (
     <View style={{ flex: 1 }}>
@@ -127,7 +161,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={styles.subMenuItem}
-                      onPress={() => navigation.navigate("LiveAuction")}
+                      onPress={handleJoin}
                     >
                       <Text style={styles.subMenuText}>Live Auction</Text>
                     </TouchableOpacity>
@@ -298,7 +332,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContainer: {
-    width: "80%", 
+    width: "80%",
     backgroundColor: "#fff",
     padding: 20,
     borderRadius: 10,
