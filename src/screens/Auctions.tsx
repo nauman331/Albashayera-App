@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image, ActivityIndicator } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { backendURL } from "../utils/exports";
@@ -32,9 +32,11 @@ const AuctionCard: React.FC = () => {
   const [auctions, setAuctions] = useState<Auction[]>([]);
   const [currentCar, setCurrentCar] = useState<Car | null>(null);
   const [timers, setTimers] = useState<{ [key: string]: Timer }>({});
+  const [loading, setLoading] = useState<boolean>(false);
 
   const getAllAuctions = async () => {
     try {
+      setLoading(true)
       const response = await fetch(`${backendURL}/auction`);
       const res_data: Auction[] = await response.json();
       if (response.ok) {
@@ -44,11 +46,14 @@ const AuctionCard: React.FC = () => {
       }
     } catch (error) {
       console.error("Error fetching auctions", error);
+    } finally {
+      setLoading(false)
     }
   };
 
   const getCurrentCar = async () => {
     try {
+      setLoading(true)
       const response = await fetch(`${backendURL}/auction/active-car`, {
         method: "GET",
       });
@@ -60,6 +65,8 @@ const AuctionCard: React.FC = () => {
       }
     } catch (error) {
       console.log("Error in getting the current car:", error);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -130,6 +137,10 @@ const AuctionCard: React.FC = () => {
     const interval = setInterval(updateTimers, 1000);
     return () => clearInterval(interval);
   }, [auctions]);
+
+  if(loading) {
+    return <ActivityIndicator size="large" color="blue" style={styles.loader} />
+  }
 
   return (
     <View style={styles.container}>
@@ -218,6 +229,11 @@ const AuctionCard: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: { padding: 20 },
+  loader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   header: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
   card: { backgroundColor: "#fff", padding: 15, borderRadius: 10, marginBottom: 10, borderWidth: 2 },
   cardHeader: { marginBottom: 10 },
