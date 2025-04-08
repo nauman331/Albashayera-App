@@ -1,8 +1,9 @@
 import { backendURL } from '../utils/exports';
 import { getToken } from '../utils/asyncStorage';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Order {
   carAmount: number;
@@ -53,15 +54,17 @@ const InvoiceSlip = ({ route, navigation }: any) => {
     }
   };
 
-  useEffect(() => {
-    const fetchTokenAndInvoice = async () => {
-      const tokenInner = await getToken();
-      if (tokenInner) {
-        getInvoice(tokenInner);
-      }
-    };
-    fetchTokenAndInvoice();
-  }, [orderId]);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchTokenAndInvoice = async () => {
+        const tokenInner = await getToken();
+        if (tokenInner) {
+          getInvoice(tokenInner);
+        }
+      };
+      fetchTokenAndInvoice();
+    }, [orderId])
+  );
 
   if (loading)
     return (
