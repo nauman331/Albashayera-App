@@ -11,7 +11,7 @@ import NoInternetScreen from "./src/screens/NoInternetScreen";
 import socketService from "./src/utils/socket";
 import Sound from "react-native-sound";
 import { navigate, navigationRef } from "./src/utils/navigationRef";
-
+import { ActivityIndicator, View, StyleSheet } from "react-native";
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -43,6 +43,7 @@ const App = () => {
   const [token, setToken] = useState<string | null>(null);
   const [userdata, setUserdata] = useState<user | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
@@ -69,6 +70,7 @@ const App = () => {
   const getUserData = useCallback(async () => {
     if (!token) return;
     try {
+      setLoading(true)
       const response = await fetch(`${backendURL}/user/`, {
         method: "GET",
         headers: {
@@ -85,6 +87,8 @@ const App = () => {
       }
     } catch (error) {
       console.error("Network error fetching user data:", error);
+    } finally {
+      setLoading(false)
     }
   }, [token]);
 
@@ -269,6 +273,13 @@ const App = () => {
     return <NoInternetScreen />;
   }
 
+  if (loading)
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="blue" />
+      </View>
+    );
+
   return (
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
@@ -280,3 +291,7 @@ const App = () => {
 };
 
 export default App;
+
+const styles = StyleSheet.create({
+  loader: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: "#fff" },
+});

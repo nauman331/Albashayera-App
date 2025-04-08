@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, Image, Pressable, Modal, TextInput, ScrollView, Alert, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, FlatList, Image, Pressable, Modal, TextInput, ScrollView, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import useFetchCarsAndCategories from "../hooks/useFetchCarsAndCategories";
 import { useNavigation } from "@react-navigation/native";
@@ -360,9 +360,9 @@ export default AuctionVehicles;
 
 
 const styles = StyleSheet.create({
+  loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   container: { padding: 20, backgroundColor: "#F5F5F5", flex: 1 },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
-  loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   errorText: { textAlign: "center", marginTop: 20, fontSize: 16, color: "red" },
   noCarsText: { textAlign: "center", fontSize: 16, color: "#666", marginTop: 10 },
   filterSection: {

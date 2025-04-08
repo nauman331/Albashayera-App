@@ -13,7 +13,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { backendURL } from "../utils/exports";
 import { getToken } from "../utils/asyncStorage";
 import Toast from "react-native-toast-message";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 
@@ -118,11 +118,14 @@ const WalletHistoryScreen = () => {
     }
   }, [token]);
 
-  useEffect(() => {
-    if (token) {
-      getDeposits();
-    }
-  }, [token]);
+  useFocusEffect(
+    useCallback(() => {
+      if (token) {
+        getDeposits();
+      }
+    }, [token])
+  );
+  
 
   const handleWithdraw = () => {
     if (balance < 1) {
