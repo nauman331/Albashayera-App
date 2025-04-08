@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, FlatList, Image, Pressable, Modal, TextInput, ScrollView, ActivityIndicator } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import useFetchCarsAndCategories from "../hooks/useFetchCarsAndCategories";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import fuel from "../assets/images/fuel.png";
 import speedometer from "../assets/images/speedometer.png";
 import gearbox from "../assets/images/gearbox.png";
@@ -15,7 +15,7 @@ import { RootStackParamList } from "../../App";
 
 
 const BuyNowVehicles: React.FC = () => {
-  const { cars, loading, error, categoriesData } = useFetchCarsAndCategories();
+  const { cars, loading, error, categoriesData, refetch } = useFetchCarsAndCategories();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, "CarDetails">>();
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [filterLoading, setFilterLoading] = useState(false)
@@ -40,9 +40,14 @@ const BuyNowVehicles: React.FC = () => {
     cylinders: "",
   });
 
-
   const toggleFilterModal = () => setFilterVisible(!isFilterVisible);
 
+
+    useFocusEffect(
+      useCallback(() => {
+        refetch(); 
+      }, [refetch])
+    );
 
   useEffect(() => {
     setResponseCars(cars);

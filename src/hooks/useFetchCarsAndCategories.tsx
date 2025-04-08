@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { backendURL, categories } from "../utils/exports";
 
 interface Category {
@@ -17,7 +17,6 @@ const useFetchCarsAndCategories = () => {
   const [error, setError] = useState<string | null>(null);
 
   const getAllCars = async (): Promise<void> => {
-    setLoading(true);
     try {
       const response = await fetch(`${backendURL}/car`);
       if (!response.ok) throw new Error("Failed to fetch cars");
@@ -25,8 +24,6 @@ const useFetchCarsAndCategories = () => {
       setCars(res_data);
     } catch (err) {
       setError((err as Error).message);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -40,7 +37,6 @@ const useFetchCarsAndCategories = () => {
         })
       );
 
-      // Convert array to object { key: data }
       const formattedData: CategoryData = results.reduce((acc, item) => {
         acc[item.key] = item.data;
         return acc;
@@ -52,12 +48,22 @@ const useFetchCarsAndCategories = () => {
     }
   };
 
-  useEffect(() => {
-    getAllCars();
-    fetchCategories();
-  }, []);
+  const refetch = useCallback(async (): Promise<void> => {
+    setLoading(true);
+    try {
+      await Promise.all([getAllCars(), fetchCategories()]);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);  
 
-  return { cars, categoriesData, loading, error };
+  useEffect(() => {
+    refetch(); 
+  }, [refetch]); 
+
+  return { cars, categoriesData, loading, error, refetch };
 };
 
 export default useFetchCarsAndCategories;
