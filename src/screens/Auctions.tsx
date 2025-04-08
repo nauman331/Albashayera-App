@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Image } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { backendURL } from "../utils/exports";
 import { RootStackParamList } from "../../App";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -63,10 +63,13 @@ const AuctionCard: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    getAllAuctions();
-    getCurrentCar();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getAllAuctions();
+      getCurrentCar();
+    }, [])
+  );
+  
 
   const handleJoin = (auctionTitle: string) => {
     if (currentCar) {
