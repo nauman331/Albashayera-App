@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Dimensions, TouchableOpacity, TextInput, Animated } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { Image } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, useFocusEffect } from '@react-navigation/native';
 import { backendURL } from '../utils/exports';
 import CarOverview from '../components/CarOverview';
 import FeatureCategory from '../components/FeatureCategory';
@@ -190,10 +190,17 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
     }, [handlePlaceBid])
 
 
-    useEffect(() => {
-        getCarDetails();
-    }, [carId]);
-
+    useFocusEffect(
+        useCallback(() => {
+            // Fetch car details and deposits when the screen is focused
+            if (carId) {
+                getCarDetails(); // Refetch car details
+            }
+            if (token) {
+                getDeposits(); // Refetch wallet details
+            }
+        }, [carId, token]) // Dependency on carId and token
+    );
 
     const getDeposits = useCallback(async () => {
         const authorizationToken = `Bearer ${token}`;

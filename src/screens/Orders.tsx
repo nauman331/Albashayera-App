@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { backendURL } from "../utils/exports";
 import { getToken } from "../utils/asyncStorage";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../App";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 
 interface Order {
@@ -59,9 +59,11 @@ const OrdersScreen: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    getInvoices();
-  }, [token]);
+  useFocusEffect(
+    useCallback(() => {
+      getInvoices();  // Fetch invoices when the screen comes into focus
+    }, [token])  // Refetch only when the token changes
+  );
 
   const handleOrderClick = (id: string) => {
     navigation.navigate("OrderDetails", {orderId: id})
