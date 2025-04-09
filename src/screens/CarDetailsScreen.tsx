@@ -171,23 +171,27 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
         fetchToken();
     }, []);
 
-    useEffect(() => {
-        const fetchBidData = async () => {
-            try {
-                const storedBidData = await AsyncStorage.getItem("currentBidData");
-                const storedColorData = await AsyncStorage.getItem("currentCarColor");
-                if (storedBidData) {
-                    setCurrentBidData(JSON.parse(storedBidData));
+    useFocusEffect(
+        useCallback(() => {
+            const fetchBidData = async () => {
+                try {
+                    const storedBidData = await AsyncStorage.getItem("currentBidData");
+                    const storedColorData = await AsyncStorage.getItem("currentCarColor");
+
+                    if (storedBidData) {
+                        setCurrentBidData(JSON.parse(storedBidData));
+                    }
+                    if (storedColorData) {
+                        setCurrentCarColor(JSON.parse(storedColorData));
+                    }
+                } catch (error) {
+                    console.error("Error retrieving data from AsyncStorage:", error);
                 }
-                if (storedColorData) {
-                    setCurrentCarColor(JSON.parse(storedColorData));
-                }
-            } catch (error) {
-                console.error("Error retrieving token:", error);
-            }
-        }
-        fetchBidData();
-    }, [handlePlaceBid])
+            };
+
+            fetchBidData();
+        }, []) 
+    );
 
 
     useFocusEffect(
