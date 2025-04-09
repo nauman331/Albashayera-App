@@ -36,10 +36,8 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) =
   return (
     <View style={styles.container}>
       {/* Logo */}
-      {
-        buttonLabel !== "Withdraw" &&
         <Image source={logo} style={styles.logo} />
-      }
+        
       {/* Dynamic Inputs */}
       {fields.map((field) => (
         <View key={field.name} style={styles.inputContainer}>
