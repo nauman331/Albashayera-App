@@ -104,11 +104,21 @@ const WalletHistoryScreen = () => {
       });
       const res_data = await response.json();
       if (response.ok) {
-        setWithdrawHistory(Array.isArray(res_data.withdrawHistory) ? res_data.withdrawHistory : []);
-        setDepositHistory(Array.isArray(res_data.depositeHistory) ? res_data.depositeHistory : []);
+        const sortByDateDesc = (arr: Transaction[]) =>
+          arr.sort((a, b) => new Date(b.depositeDate || b.withdrawRequestDate).getTime() - new Date(a.depositeDate || a.withdrawRequestDate).getTime());
+
+        setWithdrawHistory(
+          Array.isArray(res_data.withdrawHistory)
+            ? sortByDateDesc(res_data.withdrawHistory)
+            : []
+        );
+        setDepositHistory(
+          Array.isArray(res_data.depositeHistory)
+            ? sortByDateDesc(res_data.depositeHistory)
+            : []
+        );
         setBalance(res_data.currentAmount || 0);
-      }
-      else {
+      } else {
         console.error(res_data.message);
       }
     } catch (error) {
@@ -118,6 +128,7 @@ const WalletHistoryScreen = () => {
     }
   }, [token]);
 
+
   useFocusEffect(
     useCallback(() => {
       if (token) {
@@ -125,7 +136,7 @@ const WalletHistoryScreen = () => {
       }
     }, [token])
   );
-  
+
 
   const handleWithdraw = () => {
     if (balance < 1) {
