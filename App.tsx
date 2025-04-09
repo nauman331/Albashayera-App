@@ -12,6 +12,7 @@ import socketService from "./src/utils/socket";
 import Sound from "react-native-sound";
 import { navigate, navigationRef } from "./src/utils/navigationRef";
 import { ActivityIndicator, View, StyleSheet } from "react-native";
+import EventBus from "./src/utils/EventBus";
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -141,6 +142,28 @@ const App = () => {
       notifyBidders(response.message);
       await AsyncStorage.setItem("currentCarColor", JSON.stringify(response));
 
+      let carId: string | undefined;
+      let currentRouteName: string | undefined;
+
+      if (navigationRef.isReady()) {
+        const currentRoute = navigationRef.getCurrentRoute();
+
+        if (currentRoute) {
+          currentRouteName = currentRoute.name;
+          const params = currentRoute.params;
+
+          if (params && typeof params === "object" && "carId" in params) {
+            carId = (params as { carId?: string }).carId;
+          }
+        }
+      }
+
+      if (currentRouteName === "CarDetails" && carId === response.carId) {
+        setTimeout(() => {
+          navigate("CarDetails", { carId: response.carId });
+        }, 300);
+      }
+
     };
 
 
@@ -152,6 +175,27 @@ const App = () => {
       }
       notifyBidders(response.message);
       await AsyncStorage.setItem("currentBidData", JSON.stringify(response));
+      let carId: string | undefined;
+      let currentRouteName: string | undefined;
+
+      if (navigationRef.isReady()) {
+        const currentRoute = navigationRef.getCurrentRoute();
+
+        if (currentRoute) {
+          currentRouteName = currentRoute.name;
+          const params = currentRoute.params;
+
+          if (params && typeof params === "object" && "carId" in params) {
+            carId = (params as { carId?: string }).carId;
+          }
+        }
+      }
+
+      if (currentRouteName === "CarDetails" && carId === response.carId) {
+        setTimeout(() => {
+          navigate("CarDetails", { carId: response.carId });
+        }, 300);
+      }
     };
 
     const handleBidPlaced = async (response: any) => {
@@ -178,14 +222,13 @@ const App = () => {
         handleToast(response);
         return;
       }
-
       if (userdata?.id === response?.userId) {
         notifyBidders(response.winnerMessage);
       } else {
         notifyBidders(response.message);
       }
-
       await AsyncStorage.removeItem("currentBidData");
+      EventBus.emit("resetBidData");
 
       let carId: string | undefined;
       let currentRouteName: string | undefined;
@@ -223,6 +266,7 @@ const App = () => {
       }
 
       await AsyncStorage.removeItem("currentBidData");
+      EventBus.emit("resetBidData");
       notifyBidders(response.message);
 
       let carId: string | undefined;

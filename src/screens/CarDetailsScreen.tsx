@@ -11,6 +11,7 @@ import socketService from '../utils/socket';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import PurchaseModal from '../components/PurchaseModal';
+import EventBus from '../utils/EventBus';
 
 
 type CarDetailsScreenProps = {
@@ -171,27 +172,35 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
         fetchToken();
     }, []);
 
-    useFocusEffect(
-        useCallback(() => {
-            const fetchBidData = async () => {
-                try {
-                    const storedBidData = await AsyncStorage.getItem("currentBidData");
-                    const storedColorData = await AsyncStorage.getItem("currentCarColor");
+    useEffect(() => {
+        const resetListener = () => {
+            setCurrentBidData(null);
+        };
 
-                    if (storedBidData) {
-                        setCurrentBidData(JSON.parse(storedBidData));
-                    }
-                    if (storedColorData) {
-                        setCurrentCarColor(JSON.parse(storedColorData));
-                    }
-                } catch (error) {
-                    console.error("Error retrieving data from AsyncStorage:", error);
+        EventBus.on("resetBidData", resetListener);
+
+        return () => {
+            EventBus.off("resetBidData", resetListener);
+        };
+    }, []);
+
+    useEffect(() => {
+        const fetchBidData = async () => {
+            try {
+                const storedBidData = await AsyncStorage.getItem("currentBidData");
+                const storedColorData = await AsyncStorage.getItem("currentCarColor");
+                if (storedBidData) {
+                    setCurrentBidData(JSON.parse(storedBidData));
                 }
-            };
-
-            fetchBidData();
-        }, []) 
-    );
+                if (storedColorData) {
+                    setCurrentCarColor(JSON.parse(storedColorData));
+                }
+            } catch (error) {
+                console.error("Error retrieving token:", error);
+            }
+        }
+        fetchBidData();
+    }, [handlePlaceBid])
 
 
     useFocusEffect(
@@ -441,7 +450,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                                     {/* LIVE BUTTON */}
                                     {currentBidData?.auctionStatus && currentBidData?.carId === car._id && (
                                         <TouchableOpacity style={styles.liveButton} onPress={openLive}>
-                                                <Text style={styles.liveText}>{vimeoLive ? "CLOSE LIVE AUCTION" : "VIEW LIVE AUCTION"}</Text>
+                                            <Text style={styles.liveText}>{vimeoLive ? "CLOSE LIVE AUCTION" : "VIEW LIVE AUCTION"}</Text>
                                         </TouchableOpacity>
                                     )}
                                 </>
