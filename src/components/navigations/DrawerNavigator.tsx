@@ -86,6 +86,7 @@ const ScreenWrapper = ({ children }: { children: React.ReactNode }) => (
 // Drawer Navigator with Custom Bottom Bar
 const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<string | null>> }) => (
   <Drawer.Navigator
+  backBehavior="history"
     screenOptions={{
       headerTitle: () => <Text>ABA Auctions</Text>,
       headerRight: () => (
