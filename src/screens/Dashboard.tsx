@@ -33,7 +33,7 @@ interface Car {
 }
 
 const Dashboard: React.FC = () => {
-    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const screenWidth = Dimensions.get("window").width;
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -66,22 +66,22 @@ const Dashboard: React.FC = () => {
       }
     };
 
-      const getCurrentCar = async () => {
-        try {
-          const response = await fetch(`${backendURL}/auction/active-car`, {
-            method: "GET",
-          });
-          const res_data = await response.json();
-          if (response.ok) {
-            setCurrentCar(res_data);
-          } else {
-            console.log(res_data.message || "Failed to fetch the current car.");
-          }
-        } catch (error) {
-          console.log("Error in getting the current car:", error);
+    const getCurrentCar = async () => {
+      try {
+        const response = await fetch(`${backendURL}/auction/active-car`, {
+          method: "GET",
+        });
+        const res_data = await response.json();
+        if (response.ok) {
+          setCurrentCar(res_data);
+        } else {
+          console.log(res_data.message || "Failed to fetch the current car.");
         }
-      };
-    
+      } catch (error) {
+        console.log("Error in getting the current car:", error);
+      }
+    };
+
     fetchData();
     getCurrentCar()
   }, []);
@@ -90,18 +90,17 @@ const Dashboard: React.FC = () => {
     if (currentCar) {
       navigation.navigate('CarDetails', { carId: currentCar._id })
     } else {
-      navigation.navigate("AuctionVehicles",  { selectedAuctionProp: "" })
+      navigation.navigate("AuctionVehicles", { selectedAuctionProp: "" })
     };
   }
 
   const formatNumber = (num: number) => {
-    if (num >= 1e6) return (num / 1e6).toFixed(1) + "M"; 
-    if (num >= 1e3) return (num / 1e3).toFixed(1) + "K"; 
-    return num; 
+    if (num >= 1e6) return (num / 1e6).toFixed(1) + "M";
+    if (num >= 1e3) return (num / 1e3).toFixed(1) + "K";
+    return num;
   };
 
   const purchaseCount = data?.purchase || 0;
-  const totalSpent = data?.totalSpent || 0;
 
   const chartData = useMemo(() => {
     const labels = [
@@ -137,14 +136,14 @@ const Dashboard: React.FC = () => {
           <Text style={styles.cardValue}>{purchaseCount}</Text>
         </View>
         <View style={styles.card}>
-                    <Icon name="bank-transfer" size={25} color="#010153" style={styles.icon}  />
+          <Icon name="bank-transfer" size={25} color="#010153" style={styles.icon} />
           <Text style={styles.cardTitle}>Total Spent</Text>
           <Text style={styles.cardValue}>{`AED ${formatNumber(data?.totalSpent || 0)}`}</Text>
         </View>
       </View>
 
       <TouchableOpacity style={styles.bannerContainer} onPress={handleJoin}>
-        <ImageBackground 
+        <ImageBackground
           source={require("../assets/images/dashcar.png")}
           style={styles.bannerImage}
           imageStyle={{ borderRadius: 10 }}
@@ -159,45 +158,25 @@ const Dashboard: React.FC = () => {
       {loading ? (
         <ActivityIndicator size="large" color="#010153" style={styles.loader} />
       ) : (
-        
-          <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>Spending Trend (Line Chart)</Text>
-            <LineChart
-              data={chartData}
-              width={screenWidth - 40}
-              height={220}
-              chartConfig={{
-                backgroundGradientFrom: "#fff",
-                backgroundGradientTo: "#fff",
-                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                propsForLabels: {
-                  fontSize: 8,
-                },
-              }}
-              bezier
-              style={styles.chartStyle}
-            />
-            <View style={{ borderBottomColor: '#f8f9fa', borderBottomWidth: 10, marginVertical: 10 }} />
-      <View style={{marginBottom: 100}}>
-          <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>Spending Distribution (Bar Chart)</Text>
-            <BarChart
-                data={chartData}
-                width={screenWidth - 50}
-                height={220}
-                chartConfig={{
-                  backgroundGradientFrom: "#fff",
-                  backgroundGradientTo: "#fff",
-                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                  propsForLabels: {
-                    fontSize: 8,
-                  },
-                }}
-                style={styles.chartStyle} yAxisLabel={""} yAxisSuffix={""}            />
-          </View>
-          <View style={{ borderBottomColor: '#f8f9fa', borderBottomWidth: 10, marginVertical: 10 }} />
-      
-        </View>
+          <View style={{marginBottom: 110}}>
+        <View style={styles.chartContainer}>
+          <Text style={styles.chartTitle}>Spending Trend (Line Chart)</Text>
+          <LineChart
+            data={chartData}
+            width={screenWidth - 40}
+            height={220}
+            chartConfig={{
+              backgroundGradientFrom: "#fff",
+              backgroundGradientTo: "#fff",
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              propsForLabels: {
+                fontSize: 8,
+              },
+            }}
+            bezier
+            style={styles.chartStyle}
+          />
+</View>
         </View>
       )}
     </ScrollView>
@@ -215,12 +194,13 @@ const styles = StyleSheet.create({
   cardValue: { fontSize: 20, fontWeight: "bold", color: "#000", textAlign: "center" },
   bannerContainer: { marginVertical: 20 },
   bannerImage: { height: 150 },
-  bannerOverlay: { flexDirection: "row", alignItems: "center", padding: 20, backgroundColor: "rgba(0,0,0,0.5)", borderRadius: 10,
-   },
+  bannerOverlay: {
+    flexDirection: "row", alignItems: "center", padding: 20, backgroundColor: "rgba(0,0,0,0.5)", borderRadius: 10,
+  },
   bannerText: { color: "#fff", fontSize: 18, fontWeight: "bold", flex: 1 },
   chartContainer: { backgroundColor: "#fff", borderRadius: 10, marginTop: 10 },
   chartTitle: { fontSize: 12, fontWeight: "bold", margin: 20 },
-  chartStyle: { borderRadius: 10 },
+  chartStyle: { borderRadius: 10, },
   loader: { marginVertical: 20, alignSelf: "center" },
 });
 

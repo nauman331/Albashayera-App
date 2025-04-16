@@ -1,6 +1,6 @@
 import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet, Image } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import CustomDrawerContent from "../CustomDrawerContent";
 import Dashboard from "../../screens/Dashboard";
@@ -86,9 +86,14 @@ const ScreenWrapper = ({ children }: { children: React.ReactNode }) => (
 // Drawer Navigator with Custom Bottom Bar
 const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<string | null>> }) => (
   <Drawer.Navigator
-  backBehavior="history"
+    backBehavior="history"
     screenOptions={{
-      headerTitle: () => <Text>ABA Auctions</Text>,
+      headerTitle: () => (
+        <Image
+          source={require("../../assets/images/Logo.png")}
+          style={{ width: 120, height: 40, resizeMode: "contain", marginLeft: -30 }}
+        />
+      ),
       headerRight: () => (
         <TouchableOpacity style={{ marginRight: 15 }} onPress={() => navigate("Notifications")}>
           <Icon name="notifications" size={30} color="#010153" />
