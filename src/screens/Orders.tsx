@@ -87,13 +87,9 @@ const OrdersScreen: React.FC = () => {
     rejected: styles.rejectedText,
   };
 
-  const capitalizeWords = (text: string): string =>
-    text
-      .split(" ")
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
 
 
+  
   const renderItem = ({ item }: { item: Order }) => {
 
     const status = item.statusText as Order["paymentStatus"];
@@ -125,7 +121,7 @@ const OrdersScreen: React.FC = () => {
               statusTextStyleMapping[status] || { color: "black" }
             ]}
           >
-            {capitalizeWords(item.statusText)}
+            {item?.statusText?.charAt(0).toUpperCase() + item?.statusText?.slice(1) || "N/A"}
           </Text>
 
         </View>
@@ -229,7 +225,8 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 14,
     fontWeight: "bold",
-    textTransform: "lowercase",
+    textAlign: "left", // Ensure text is aligned properly
+    overflow: "visible",
   },
   pendingText: {
     color: "#F39C12",
