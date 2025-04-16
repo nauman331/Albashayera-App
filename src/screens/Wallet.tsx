@@ -56,7 +56,7 @@ const renderTransactionItem = ({ item }: { item: Transaction }) => {
         </View>
         <View style={[styles.statusBadge, { backgroundColor: statusStyle.bgColor }]}>
           <Icon name="bank-transfer" size={25} color={statusStyle.color} />
-          <Text style={[styles.statusText, { color: statusStyle.color }]}>{item?.status === "pending" ? "Payment Pending" : item?.status?.charAt(0).toUpperCase() + item?.status?.slice(1) || "N/A"}</Text>
+          <Text style={[styles.statusText, { color: statusStyle.color }]}>{item?.status?.charAt(0).toUpperCase() + item?.status?.slice(1) || "N/A"}</Text>
         </View>
       </View>
       {
