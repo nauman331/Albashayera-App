@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { backendURL } from "../utils/exports";
 import { getToken } from "../utils/asyncStorage";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface Notification {
   _id: string;
@@ -36,11 +37,13 @@ const NotificationScreen: React.FC = () => {
     fetchToken();
   }, []);
 
-  useEffect(() => {
-    if (token) {
-      getNotifications();
-    }
-  }, [token]);
+  useFocusEffect(
+    useCallback(() => {
+      if (token) {
+        getNotifications();
+      }
+    }, [token])
+  );
 
   const getNotifications = async () => {
     const authorizationToken = `Bearer ${token}`;

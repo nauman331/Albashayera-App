@@ -137,26 +137,27 @@ const InvoiceSlip = ({ route, navigation }: any) => {
           <Icon name="plus" size={14} color="#777" />
         </TouchableOpacity>
         <View style={styles.row}>
-          <View style={styles.column}>
-            <Text style={styles.label}>WALLET DEDUCTION</Text>
-            <Text style={styles.value}>{invoice?.walletDeduction} AED</Text>
+        <View style={styles.column}>
+            <Text style={styles.label}>CAR PRICE</Text>
+            <Text style={styles.value}>{invoice?.carAmount} AED</Text>
           </View>
-          <View style={styles.column}>
-            <Text style={styles.label}>PENDING AMOUNT</Text>
-            <Text style={styles.value}>{invoice?.pendingAmount} AED</Text>
-          </View>
-        </View>
-        <View style={styles.row}>
           <View style={styles.column}>
             <Text style={styles.label}>VAT (5%)</Text>
             <Text style={styles.value}>{invoice?.vat} AED</Text>
           </View>
+        </View>
+        <View style={styles.row}>
+        <View style={styles.column}>
+            <Text style={styles.label}>Total</Text>
+            <Text style={styles.value}>{invoice?.totalAmount} AED</Text>
+          </View>
           <View style={styles.column}>
-            <Text style={styles.label}>CAR PRICE</Text>
-            <Text style={styles.value}>{invoice?.carAmount} AED</Text>
+            <Text style={styles.label}>WALLET DEDUCTION</Text>
+            <Text style={styles.value}>{invoice?.walletDeduction} AED</Text>
           </View>
         </View>
-        <Text style={styles.totalAmount}>Total: {invoice?.totalAmount} AED</Text>
+       
+        <Text style={styles.totalAmount}>PENDING AMOUNT: {invoice?.pendingAmount} AED</Text>
         {
           invoice?.paymentStatus ?
             <TouchableOpacity style={styles.payButton1}>
@@ -300,7 +301,7 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   totalAmount: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
     marginVertical: 10,
   },

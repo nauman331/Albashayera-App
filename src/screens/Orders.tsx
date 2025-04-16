@@ -21,7 +21,7 @@ interface Order {
 }
 
 const OrdersScreen: React.FC = () => {
-    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [token, setToken] = useState<string | null>(null);
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState<boolean>(false)
@@ -66,7 +66,7 @@ const OrdersScreen: React.FC = () => {
   );
 
   const handleOrderClick = (id: string) => {
-    navigation.navigate("OrderDetails", {orderId: id})
+    navigation.navigate("OrderDetails", { orderId: id })
   };
 
   const statusIcons: { [key in Order["paymentStatus"]]: string } = {
@@ -86,6 +86,12 @@ const OrdersScreen: React.FC = () => {
     approved: styles.approvedText,
     rejected: styles.rejectedText,
   };
+
+  const capitalizeWords = (text: string): string =>
+    text
+      .split(" ")
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
 
 
   const renderItem = ({ item }: { item: Order }) => {
@@ -119,8 +125,9 @@ const OrdersScreen: React.FC = () => {
               statusTextStyleMapping[status] || { color: "black" }
             ]}
           >
-            {status}
+            {capitalizeWords(item.statusText)}
           </Text>
+
         </View>
       </TouchableOpacity>
     );
@@ -128,7 +135,7 @@ const OrdersScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Car Orders</Text>
+      <Text style={styles.header}>Orders</Text>
 
       {loading ? (
         <ActivityIndicator size="large" color="#010153" />
