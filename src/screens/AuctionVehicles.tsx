@@ -47,7 +47,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
 
   useFocusEffect(
     useCallback(() => {
-      refetch(); 
+      refetch();
     }, [refetch])
   );
 
@@ -164,6 +164,9 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
       <Modal visible={isFilterVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
+            <Pressable style={styles.closeButton} onPress={() => setFilterVisible(false)}>
+              <FontAwesome6 name="xmark" size={24} color="#555" />
+            </Pressable>
             <ScrollView>
               <Text style={styles.modalTitle}>Filter Cars</Text>
 
@@ -325,7 +328,10 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
 
                 <View style={styles.cardContent}>
                   <Text style={styles.carName}>{item?.listingTitle || "Unknown Car"}</Text>
-                  <Text style={styles.description}>{item.description || ""}</Text>
+                  {
+                    item?.description &&
+                    <Text style={styles.description}>{item.description || ""}</Text>
+                  }
                   <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
                   <View style={styles.detailsRow}>
                     <View style={styles.detailItem}>
@@ -503,5 +509,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 30,
     marginBottom: 30
-  }
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+    padding: 5,
+  },
 });                

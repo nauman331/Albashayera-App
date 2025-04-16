@@ -43,11 +43,11 @@ const BuyNowVehicles: React.FC = () => {
   const toggleFilterModal = () => setFilterVisible(!isFilterVisible);
 
 
-    useFocusEffect(
-      useCallback(() => {
-        refetch(); 
-      }, [refetch])
-    );
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   useEffect(() => {
     setResponseCars(cars);
@@ -126,6 +126,9 @@ const BuyNowVehicles: React.FC = () => {
       <Modal visible={isFilterVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
+            <Pressable style={styles.closeButton} onPress={() => setFilterVisible(false)}>
+              <FontAwesome6 name="xmark" size={24} color="#555" />
+            </Pressable>
             <ScrollView>
               <Text style={styles.modalTitle}>Filter Cars</Text>
 
@@ -283,7 +286,10 @@ const BuyNowVehicles: React.FC = () => {
 
               <View style={styles.cardContent}>
                 <Text style={styles.carName}>{item?.listingTitle || "Unknown Car"}</Text>
+                {
+                  item?.description && 
                 <Text style={styles.description}>{item.description || ""}</Text>
+                }
                 <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
                 <View style={styles.detailsRow}>
                   <View style={styles.detailItem}>
@@ -452,5 +458,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 30,
     marginBottom: 30
-  }
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+    padding: 5,
+  },
+
 });                

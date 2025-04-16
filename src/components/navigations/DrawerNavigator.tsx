@@ -91,7 +91,7 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
       headerTitle: () => (
         <Image
           source={require("../../assets/images/Logo.png")}
-          style={{ width: 120, height: 40, resizeMode: "contain", marginLeft: -30 }}
+          style={{ width: 120, height: 40, resizeMode: "contain", marginLeft: "30%" }}
         />
       ),
       headerRight: () => (
