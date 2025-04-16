@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Modal,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { backendURL } from "../utils/exports";
@@ -126,6 +127,16 @@ const NotificationScreen: React.FC = () => {
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
           style={{ marginBottom: 70 }}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Image
+                source={require("../assets/images/notification.png")} 
+                style={styles.emptyImage}
+                resizeMode="contain"
+              />
+              <Text style={styles.emptyText}>No notifications available</Text>
+            </View>
+          }
         />
       )}
 
@@ -163,6 +174,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 16,
     color: "#333",
+    textAlign: "center"
   },
   notificationCard: {
     flexDirection: "row",
@@ -241,6 +253,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#999",
     marginTop: 4,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 100,
+  },
+  emptyImage: {
+    width: 200,
+    height: 200,
+    marginBottom: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#999",
   },
 });
 

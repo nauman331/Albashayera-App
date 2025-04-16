@@ -45,6 +45,11 @@ const PayOrderWrapper = (props: any) => (
     <PayOrder {...props} />
   </ScreenWrapper>
 );
+const WithdrawWrapper = (props: any) => (
+  <ScreenWrapper>
+    <WithDraw {...props} />
+  </ScreenWrapper>
+);
 
 
 const CustomBottomBar = () => {
@@ -121,14 +126,14 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
     <Drawer.Screen name="Profile" component={() => <ScreenWrapper><Profile /></ScreenWrapper>} />
     <Drawer.Screen name="Notifications" component={() => <ScreenWrapper><NotificationScreen /></ScreenWrapper>} />
     <Drawer.Screen name="Deposit" component={() => <ScreenWrapper><Deposit /></ScreenWrapper>} />
-    <Drawer.Screen name="Withdraw" component={() => <ScreenWrapper><WithDraw /></ScreenWrapper>} />
     <Drawer.Screen name="AuctionEvents" component={() => <ScreenWrapper><Auctions /></ScreenWrapper>} />
     <Drawer.Screen name="ContactUs" component={() => <ScreenWrapper><ContactScreen /></ScreenWrapper>} />
+    <Drawer.Screen name="BuyNowVehicles" component={() => <ScreenWrapper><BuyNowVehicles /></ScreenWrapper>} />
+    <Drawer.Screen name="Withdraw" component={WithdrawWrapper} />
     <Drawer.Screen name="CarDetails" component={CarDetailsScreenWrapper} />
     <Drawer.Screen name="AuctionVehicles" component={AuctionWrapper} />
     <Drawer.Screen name="OrderDetails" component={OrderDetailsWrapper} />
     <Drawer.Screen name="PayOrder" component={PayOrderWrapper} />
-    <Drawer.Screen name="BuyNowVehicles" component={() => <ScreenWrapper><BuyNowVehicles /></ScreenWrapper>} />
   </Drawer.Navigator>
 );
 

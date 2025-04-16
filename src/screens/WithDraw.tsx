@@ -8,8 +8,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Toast from 'react-native-toast-message'
 
-const WithDraw = () => {
+const WithDraw = ({route}: any) => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Wallet'>>();
+    const balance = route?.params?.balance || "";
     const [loading, setLoading] = useState<boolean>(false);
     const [token, setToken] = useState<string | null>(null)
 
@@ -22,7 +23,14 @@ const WithDraw = () => {
     }, [])
 
     const handleWithdraw = async (formData: Record<string, string>) => {
-
+        if(balance < formData.amount) {
+            Toast.show({
+                type: "error",
+                text1: "Error:",
+                text2: "You can't withdraw greater than your balance"
+            })
+            return
+        }
         const authorizationToken = `Bearer ${token}`;
         try {
             setLoading(true)
@@ -68,7 +76,7 @@ const WithDraw = () => {
                     { name: 'accountHolderName', placeholder: 'Account Holder Name', type: 'default' },
                     { name: 'accountNumber', placeholder: 'Account/IBAN Number', type: 'default' },
                     { name: 'bankName', placeholder: 'Bank Name', type: 'default' },
-                    { name: 'amount', placeholder: 'Amount', type: 'phone-pad' },
+                    { name: 'amount', placeholder: `Balance - ${balance}`, type: 'phone-pad' },
                 ]}
                 buttonLabel="Withdraw"
                 onSubmit={handleWithdraw}

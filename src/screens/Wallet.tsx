@@ -145,7 +145,7 @@ const WalletHistoryScreen = () => {
         text1: "Insufficient Amount"
       })
     } else {
-      navigation.navigate("Withdraw")
+      navigation.navigate("Withdraw", {balance})
     }
   }
 
