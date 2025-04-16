@@ -133,7 +133,7 @@ const InvoiceSlip = ({ route, navigation }: any) => {
           </View>
         </View>
         <TouchableOpacity style={styles.detailsButton}>
-          <Text style={styles.detailsText}>PPRICE DETAILS</Text>
+          <Text style={styles.detailsText}>PRICE DETAILS</Text>
           <Icon name="plus" size={14} color="#777" />
         </TouchableOpacity>
         <View style={styles.row}>
