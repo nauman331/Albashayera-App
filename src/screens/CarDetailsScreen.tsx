@@ -398,7 +398,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
                                         <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: "#ccc", paddingHorizontal: 10, borderRadius: 5 }}>
                                             <Text style={{ fontSize: 16, marginRight: 5 }}>AED</Text>
                                             <TextInput
-                                                style={{ width: 60, fontSize: 16, textAlign: "center" }}
+                                                style={{ width: 60, height: 40, fontSize: 16, textAlign: "center" }}
                                                 keyboardType="numeric"
                                                 value={bid.toString()}
                                                 onChangeText={(text) => setBid(Number(text) || 0)}
