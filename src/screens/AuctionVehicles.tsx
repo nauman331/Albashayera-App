@@ -6,7 +6,7 @@ import fuel from "../assets/images/fuel.png";
 import speedometer from "../assets/images/speedometer.png";
 import gearbox from "../assets/images/gearbox.png";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
-import { Picker } from "@react-native-picker/picker";
+import DropDownPicker from 'react-native-dropdown-picker';
 import SortByDropdown from "../components/SortByDropdown";
 import { backendURL } from "../utils/exports";
 import Toast from 'react-native-toast-message';
@@ -23,7 +23,15 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [filterLoading, setFilterLoading] = useState(false)
   const [auctionTitle, setAuctionTitle] = useState("");
-  const [responseCars, setResponseCars] = useState([] as any)
+  const [responseCars, setResponseCars] = useState([] as any);
+  const [openCarMake, setOpenCarMake] = useState(false);
+  const [openDriveType, setOpenDriveType] = useState(false);
+  const [openYearMin, setOpenYearMin] = useState(false);
+  const [openYearMax, setOpenYearMax] = useState(false);
+  const [openCylinders, setOpenCylinders] = useState(false);
+  const [openDoors, setOpenDoors] = useState(false);
+
+
   const [filters, setFilters] = useState<{
     minPrice: string | number;
     maxPrice: string | number;
@@ -171,106 +179,143 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
               <Text style={styles.modalTitle}>Filter Cars</Text>
 
               {/* Prices */}
-
               <View style={styles.inputContainer}>
-                <TextInput style={styles.input}
+                <TextInput
+                  style={styles.input}
                   placeholderTextColor="black"
                   placeholder="Min Price"
                   keyboardType="numeric"
                   value={filters.minPrice !== undefined ? String(filters.minPrice) : ""}
-                  onChangeText={(value) => setFilters({ ...filters, minPrice: value ? Number(value) : 0 })} />
-                <TextInput style={styles.input}
+                  onChangeText={(value) =>
+                    setFilters({ ...filters, minPrice: value ? Number(value) : 0 })
+                  }
+                />
+                <TextInput
+                  style={styles.input}
                   placeholderTextColor="black"
                   placeholder="Max Price"
                   keyboardType="numeric"
                   value={filters.maxPrice !== undefined ? String(filters.maxPrice) : ""}
-                  onChangeText={(value) => setFilters({ ...filters, maxPrice: value ? Number(value) : 0 })} />
+                  onChangeText={(value) =>
+                    setFilters({ ...filters, maxPrice: value ? Number(value) : 0 })
+                  }
+                />
               </View>
 
-              {/* Selects filters */}
+              {/* Car Make */}
+              <DropDownPicker
+                open={openCarMake}
+                value={filters.carMake}
+                items={[
+                  { label: 'Select Car Make', value: '' },
+                  ...generateOptions("vehicle-make", "vehicleMake")
+                ]}
+                setOpen={setOpenCarMake}
+                setValue={(callback) => {
+                  const value = callback(filters.carMake);
+                  setFilters({ ...filters, carMake: value });
+                }}
+                setItems={() => { }}
+                style={styles.dropdown}
+                dropDownContainerStyle={styles.dropdownContainer}
+              />
 
-              <View style={styles.pickerContainer}>
-                <Picker
-                  style={styles.picker}
-                  dropdownIconColor="black"
-                  selectedValue={filters.carMake}
-                  onValueChange={(value) => setFilters({ ...filters, carMake: value })}
-                >
-                  <Picker.Item label="Select Car Make" value="" />
-                  {generateOptions("vehicle-make", "vehicleMake").map((option: any) => (
-                    <Picker.Item key={option.value} label={option.label} value={option.value} />
-                  ))}
-                </Picker>
-              </View>
+              {/* Drive Type */}
+              <DropDownPicker
+                open={openDriveType}
+                value={filters.driveType}
+                items={[
+                  { label: 'Select Drive Type', value: '' },
+                  ...generateOptions("drive-type", "driveType")
+                ]}
+                setOpen={setOpenDriveType}
+                setValue={(callback) => {
+                  const value = callback(filters.driveType);
+                  setFilters({ ...filters, driveType: value });
+                }}
+                setItems={() => { }}
+                style={styles.dropdown}
+                dropDownContainerStyle={styles.dropdownContainer}
+              />
 
-              <View style={styles.pickerContainer}>
-                <Picker
-                  style={styles.picker}
-                  dropdownIconColor="black"
-                  selectedValue={filters.driveType}
-                  onValueChange={(value) => setFilters({ ...filters, driveType: value })}>
-                  <Picker.Item label="Select Drive Type" value="" />
-                  {generateOptions("drive-type", "driveType").map((option: any) => (
-                    <Picker.Item key={option.value} label={option.label} value={option.value} />
-                  ))}
-                </Picker>
-              </View>
-
-              {/*  Year */}
+              {/* Year Range */}
               <View style={styles.inputContainer}>
-                <View style={styles.pickerContainerYear}>
-                  <Picker
-                    style={styles.picker}
-                    dropdownIconColor="black"
-                    selectedValue={filters.yearMin}
-                    onValueChange={(value) => setFilters({ ...filters, yearMin: value })}>
-                    <Picker.Item label="Min Year" value="" />
-                    {generateOptions("vehicle-year", "vehicleYear").map((option: any) => (
-                      <Picker.Item key={option.value} label={option.label} value={option.value} />
-                    ))}
-                  </Picker>
+                <View style={{ width: "45%" }}>
+                  <DropDownPicker
+                    open={openYearMin}
+                    value={filters.yearMin}
+                    items={[
+                      { label: 'Min Year', value: '' },
+                      ...generateOptions("vehicle-year", "vehicleYear")
+                    ]}
+                    setOpen={setOpenYearMin}
+                    setValue={(callback) => {
+                      const value = callback(filters.yearMin);
+                      setFilters({ ...filters, yearMin: value });
+                    }}
+                    setItems={() => { }}
+                    style={styles.dropdown}
+                    dropDownContainerStyle={styles.dropdownContainer}
+                  />
                 </View>
 
-                <View style={styles.pickerContainerYear}>
-                  <Picker
-                    style={styles.picker}
-                    dropdownIconColor="black"
-                    selectedValue={filters.yearMax}
-                    onValueChange={(value) => setFilters({ ...filters, yearMax: value })}>
-                    <Picker.Item label="Max Year" value="" />
-                    {generateOptions("vehicle-year", "vehicleYear").map((option: any) => (
-                      <Picker.Item key={option.value} label={option.label} value={option.value} />
-                    ))}
-                  </Picker>
+                <View style={{ width: "45%" }}>
+                  <DropDownPicker
+                    open={openYearMax}
+                    value={filters.yearMax}
+                    items={[
+                      { label: 'Max Year', value: '' },
+                      ...generateOptions("vehicle-year", "vehicleYear")
+                    ]}
+                    setOpen={setOpenYearMax}
+                    setValue={(callback) => {
+                      const value = callback(filters.yearMax);
+                      setFilters({ ...filters, yearMax: value });
+                    }}
+                    setItems={() => { }}
+                    style={styles.dropdown}
+                    dropDownContainerStyle={styles.dropdownContainer}
+                  />
                 </View>
               </View>
 
-              <View style={styles.pickerContainer}>
-                <Picker
-                  style={styles.picker}
-                  dropdownIconColor="black"
-                  selectedValue={filters.cylinders}
-                  onValueChange={(value) => setFilters({ ...filters, cylinders: value })}>
-                  <Picker.Item label="Select Drive Type" value="" />
-                  {generateOptions("vehicle-cylinder", "vehicleCylinders").map((option: any) => (
-                    <Picker.Item key={option.value} label={option.label} value={option.value} />
-                  ))}
-                </Picker>
-              </View>
+              {/* Cylinders */}
+              <DropDownPicker
+                open={openCylinders}
+                value={filters.cylinders}
+                items={[
+                  { label: 'Select Cylinders', value: '' },
+                  ...generateOptions("vehicle-cylinder", "vehicleCylinders")
+                ]}
+                setOpen={setOpenCylinders}
+                setValue={(callback) => {
+                  const value = callback(filters.cylinders);
+                  setFilters({ ...filters, cylinders: value });
+                }}
+                setItems={() => { }}
+                style={styles.dropdown}
+                dropDownContainerStyle={styles.dropdownContainer}
+              />
 
-              <View style={styles.pickerContainer}>
-                <Picker
-                  style={styles.picker}
-                  dropdownIconColor="black"
-                  selectedValue={filters.doors}
-                  onValueChange={(value) => setFilters({ ...filters, doors: value })}>
-                  <Picker.Item label="Select Car Doors" value="" />
-                  {generateOptions("vehicle-door", "vehicleDoor").map((option: any) => (
-                    <Picker.Item key={option.value} label={option.label} value={option.value} />
-                  ))}
-                </Picker>
-              </View>
+              {/* Doors */}
+              <DropDownPicker
+                open={openDoors}
+                value={filters.doors}
+                items={[
+                  { label: 'Select Car Doors', value: '' },
+                  ...generateOptions("vehicle-door", "vehicleDoor")
+                ]}
+                setOpen={setOpenDoors}
+                setValue={(callback) => {
+                  const value = callback(filters.doors);
+                  setFilters({ ...filters, doors: value });
+                }}
+                setItems={() => { }}
+                style={styles.dropdown}
+                dropDownContainerStyle={styles.dropdownContainer}
+              />
 
+              {/* Buttons */}
               <View style={styles.buttonContainer}>
                 <Pressable
                   onPress={() => {
@@ -292,9 +337,10 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                   <Text style={styles.buttonText}>Clear All Filters</Text>
                 </Pressable>
 
-
                 <Pressable onPress={applyFilters} style={styles.applyButton}>
-                  <Text style={styles.buttonText}>{filterLoading ? "Applying Filters..." : "Apply Selected Filters"}</Text>
+                  <Text style={styles.buttonText}>
+                    {filterLoading ? "Applying Filters..." : "Apply Selected Filters"}
+                  </Text>
                 </Pressable>
               </View>
             </ScrollView>
@@ -517,4 +563,19 @@ const styles = StyleSheet.create({
     zIndex: 1,
     padding: 5,
   },
+
+  dropdown: {
+    borderColor: 'black',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginVertical: 5,
+    zIndex: 99, // required for layering
+  },
+  dropdownContainer: {
+    borderColor: 'black',
+    borderWidth: 1,
+    zIndex: 1000,
+  }
+
+
 });                
