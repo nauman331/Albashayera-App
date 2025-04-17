@@ -1,6 +1,6 @@
 import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { View, TouchableOpacity, Text, StyleSheet, Image } from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet, Image, Platform } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import CustomDrawerContent from "../CustomDrawerContent";
 import Dashboard from "../../screens/Dashboard";
@@ -94,16 +94,23 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
     backBehavior="history"
     screenOptions={{
       headerTitle: () => (
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <View
+          style={{
+            flex: 1,
+            alignItems: "center",
+            justifyContent: "center",
+            marginLeft: Platform.OS === "android" ? -50 : 0,
+          }}
+        >
           <Image
             source={require("../../assets/images/Logo.png")}
-            style={{ width: 50, height: 30, resizeMode: "contain" }}
+            style={{ width: 40, resizeMode: "contain" }}
           />
         </View>
       ),
       headerTitleAlign: "center",
       headerRight: () => (
-        <TouchableOpacity style={{ marginRight: 15 }} onPress={() => navigate("Notifications")}>
+        <TouchableOpacity style={{ marginRight: 15, }} onPress={() => navigate("Notifications")}>
           <Icon name="notifications" size={30} color="#010153" />
           <View
             style={{
@@ -118,8 +125,6 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
           />
         </TouchableOpacity>
       ),
-      drawerStyle: { height: "100%" },
-      drawerContentStyle: { paddingBottom: 60 },
     }}
     drawerContent={(props) => <CustomDrawerContent {...props} setToken={setToken} />}
   >
