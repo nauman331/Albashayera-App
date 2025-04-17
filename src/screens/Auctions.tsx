@@ -160,6 +160,7 @@ const AuctionCard: React.FC = () => {
                 <Text>{timers[item._id]?.minutes}m</Text>
                 <Text>{timers[item._id]?.seconds}s</Text>
               </View>
+              <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
               <View style={styles.detailsContainer}>
                 <Text>
                   <Icon name="location-on" size={16} /> {item.location?.auctionLocation || "N/A"}
@@ -200,6 +201,8 @@ const AuctionCard: React.FC = () => {
                 <Text>{timers[item._id]?.minutes}m</Text>
                 <Text>{timers[item._id]?.seconds}s</Text>
               </View>
+              <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
+
               <View style={styles.detailsContainer}>
                 <Text>
                   <Icon name="location-on" size={16} /> {item.location?.auctionLocation || "N/A"}
@@ -237,10 +240,10 @@ const styles = StyleSheet.create({
   header: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
   card: { backgroundColor: "#fff", padding: 15, borderRadius: 10, marginBottom: 10, borderWidth: 2 },
   cardHeader: { marginBottom: 10 },
-  cardTitle: { fontSize: 16, fontWeight: "bold" },
+  cardTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 10 },
   cardDate: { fontSize: 14, color: "gray" },
   countdownContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 10 },
-  detailsContainer: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  detailsContainer: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 },
   viewButton: {
     backgroundColor: "#010153",
     padding: 12,

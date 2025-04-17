@@ -94,11 +94,14 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
     backBehavior="history"
     screenOptions={{
       headerTitle: () => (
-        <Image
-          source={require("../../assets/images/Logo.png")}
-          style={{ width: 120, height: 40, resizeMode: "contain", marginLeft: "30%" }}
-        />
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+          <Image
+            source={require("../../assets/images/Logo.png")}
+            style={{ width: 50, height: 30, resizeMode: "contain" }}
+          />
+        </View>
       ),
+      headerTitleAlign: "center",
       headerRight: () => (
         <TouchableOpacity style={{ marginRight: 15 }} onPress={() => navigate("Notifications")}>
           <Icon name="notifications" size={30} color="#010153" />

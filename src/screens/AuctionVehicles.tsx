@@ -430,9 +430,11 @@ const styles = StyleSheet.create({
   leftFilter: { width: "60%" },
   rightFilter: {
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     width: "30%",
     borderWidth: 2,
-    paddingVertical: 2,
+    height: 40,
     borderColor: "#010153",
     borderRadius: 100,
     paddingHorizontal: 10

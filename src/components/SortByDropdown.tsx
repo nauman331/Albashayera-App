@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import DropDownPicker from "react-native-dropdown-picker";
 
 interface Auction {
     _id: string;
@@ -18,7 +18,8 @@ interface SortByDropdownProps {
 
 const SortByDropdown: React.FC<SortByDropdownProps> = ({ onChange, preselected, backendURL }) => {
     const [selectedOption, setSelectedOption] = useState<string>(preselected || "");
-    const [options, setOptions] = useState<Auction[]>([]);
+    const [dropdownItems, setDropdownItems] = useState<{ label: string; value: string }[]>([]);
+    const [open, setOpen] = useState<boolean>(false);
 
     useEffect(() => {
         const getAllAuctions = async () => {
@@ -32,20 +33,22 @@ const SortByDropdown: React.FC<SortByDropdownProps> = ({ onChange, preselected, 
                             ...auction,
                             fullAuctionDate: new Date(`${auction.auctionDate} ${auction.auctionTime}`),
                         }))
-                        .sort((a: any, b: any) => a.fullAuctionDate.getTime() - b.fullAuctionDate.getTime())
+                        .sort((a: { fullAuctionDate: { getTime: () => number; }; }, b: { fullAuctionDate: { getTime: () => number; }; }) => a.fullAuctionDate.getTime() - b.fullAuctionDate.getTime())
                         .filter((auction: { statusText: string; }) => auction.statusText?.toLowerCase() !== "compeleted");
 
-                    setOptions(sortedOptions);
+                    const formattedOptions = sortedOptions.map((auction: { auctionTitle: any; }) => ({
+                        label: auction.auctionTitle,
+                        value: auction.auctionTitle,
+                    }));
 
-                    // Ensure preselected value is updated if it exists
-                    if (preselected) {
-                        const auctionExists = sortedOptions.some((auction: { auctionTitle: string; }) => auction.auctionTitle === preselected);
-                        setSelectedOption(auctionExists ? preselected : sortedOptions[0]?.auctionTitle || "");
-                        onChange(auctionExists ? preselected : sortedOptions[0]?.auctionTitle || "");
-                    } else if (sortedOptions.length > 0) {
-                        setSelectedOption(sortedOptions[0].auctionTitle);
-                        onChange(sortedOptions[0].auctionTitle);
-                    }
+                    setDropdownItems(formattedOptions);
+
+                    const defaultOption = preselected && formattedOptions.some((opt: { value: string; }) => opt.value === preselected)
+                        ? preselected
+                        : formattedOptions[0]?.value || "";
+
+                    setSelectedOption(defaultOption);
+                    onChange(defaultOption);
                 } else {
                     console.error("Failed to fetch auctions:", res_data.message);
                 }
@@ -55,33 +58,33 @@ const SortByDropdown: React.FC<SortByDropdownProps> = ({ onChange, preselected, 
         };
 
         getAllAuctions();
-    }, [backendURL]); // Removed dependencies like preselected to avoid unnecessary calls
+    }, [backendURL]);
 
-    // Update selectedOption when preselected changes
     useEffect(() => {
-        if (preselected) {
-            const auctionExists = options.some(auction => auction.auctionTitle === preselected);
-            setSelectedOption(auctionExists ? preselected : options[0]?.auctionTitle || "");
+        if (preselected && dropdownItems.length > 0) {
+            const exists = dropdownItems.some(item => item.value === preselected);
+            const newSelection = exists ? preselected : dropdownItems[0]?.value || "";
+            setSelectedOption(newSelection);
         }
-    }, [preselected, options]);
-
-    const handleOptionChange = (value: string) => {
-        setSelectedOption(value);
-        onChange(value);
-    };
+    }, [preselected, dropdownItems]);
 
     return (
         <View style={styles.container}>
-            <Picker
-                dropdownIconColor="black"
-                selectedValue={selectedOption}
-                onValueChange={handleOptionChange}
-                style={styles.picker}
-            >
-                {options.map((option) => (
-                    <Picker.Item key={option._id} label={option.auctionTitle} value={option.auctionTitle} />
-                ))}
-            </Picker>
+            <DropDownPicker
+                open={open}
+                value={selectedOption}
+                items={dropdownItems}
+                setOpen={setOpen}
+                setValue={(callback) => {
+                    const value = callback(selectedOption);
+                    setSelectedOption(value);
+                    onChange(value);
+                }}
+                setItems={setDropdownItems}
+                style={styles.dropdown}
+                dropDownContainerStyle={styles.dropDownContainer}
+                zIndex={5000}
+            />
         </View>
     );
 };
@@ -89,16 +92,19 @@ const SortByDropdown: React.FC<SortByDropdownProps> = ({ onChange, preselected, 
 const styles = StyleSheet.create({
     container: {
         width: "100%",
-        alignSelf: "flex-start",
+        zIndex: 5000, // required when used alongside other dropdowns
     },
-    picker: {
-        height: 50,
+    dropdown: {
         backgroundColor: "#fff",
+        borderColor: "black",
+        borderWidth: 1,
         borderRadius: 8,
         elevation: 2,
-        borderWidth: 1,
-        borderColor: 'black',
-        color: 'black',
+    },
+    dropDownContainer: {
+        backgroundColor: "#fff",
+        borderColor: "black",
+        zIndex: 5000,
     },
 });
 

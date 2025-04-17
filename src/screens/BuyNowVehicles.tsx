@@ -377,13 +377,15 @@ const styles = StyleSheet.create({
   noCarsText: { textAlign: "center", fontSize: 16, color: "#666", marginTop: 10 },
   rightFilter: {
     flexDirection: "row",
-    alignSelf: 'flex-end',
+    alignItems: "center",
+    justifyContent: "center",
+    width: "30%",
     borderWidth: 2,
-    paddingVertical: 2,
+    height: 40,
     borderColor: "#010153",
     borderRadius: 100,
     paddingHorizontal: 10,
-    marginBottom: 30
+    alignSelf: "flex-end"
   },
   card: {
     backgroundColor: "#fff",
