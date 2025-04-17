@@ -1,6 +1,6 @@
 import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { View, TouchableOpacity, Text, StyleSheet, Image, Platform } from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet, Image } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import CustomDrawerContent from "../CustomDrawerContent";
 import Dashboard from "../../screens/Dashboard";
@@ -99,7 +99,6 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
             flex: 1,
             alignItems: "center",
             justifyContent: "center",
-            marginLeft: Platform.OS === "android" ? -50 : 0,
           }}
         >
           <Image
