@@ -79,7 +79,7 @@ const PayOrder: React.FC = ({ route }: any) => {
             if (response.ok) {
                 Toast.show({ type: "success", text1: "Deposit submitted successfully!" });
                 setProof(null);
-                navigation.navigate("Wallet");
+                navigation.navigate("Orders");
             } else {
                 Toast.show({ type: "error", text1: "Error:", text2: res_data.message || "Proof Uploaded Successfull" });
             }
