@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from "react-native";
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    Image,
+    StyleSheet,
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+} from "react-native";
 import { Asset, launchImageLibrary } from "react-native-image-picker";
 import Toast from "react-native-toast-message";
 import { backendURL, cloudinaryURL, UPLOAD_PRESET } from "../utils/exports";
@@ -13,9 +24,10 @@ const DepositPage: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const [amount, setAmount] = useState("");
     const [proof, setProof] = useState<string | null>(null);
-    const [uploading, setUploading] = useState<boolean>(false)
-    const [loading, setLoading] = useState<boolean>(false)
+    const [uploading, setUploading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const [token, setToken] = useState<string | null>(null);
+
     useEffect(() => {
         const fetchToken = async () => {
             const tokeninner = await getToken();
@@ -32,7 +44,6 @@ const DepositPage: React.FC = () => {
             }
         });
     };
-    
 
     const uploadToCloudinary = async (file: Asset) => {
         setUploading(true);
@@ -61,7 +72,7 @@ const DepositPage: React.FC = () => {
             return;
         }
         try {
-            setLoading(true)
+            setLoading(true);
             const res = await fetch(`${backendURL}/wallet/deposit`, {
                 method: "POST",
                 headers: {
@@ -80,72 +91,95 @@ const DepositPage: React.FC = () => {
                 setProof(null);
                 navigation.navigate("Wallet");
             } else {
-                Toast.show({ type: "error", text1: "Error:", text2: res_data.message });
+                Toast.show({ type: "error", text1: "Error", text2: res_data.message });
             }
         } catch (error) {
             Toast.show({ type: "error", text1: "Failed to submit deposit" });
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Deposit Funds</Text>
-            <View style={styles.bankDetailsCard}>
-                <View style={styles.bankHeader}>
-                    <Icon name="bank" size={26} color="#010153" />
-                    <Text style={styles.bankTitle}>Bank Details</Text>
-                </View>
-                <View style={styles.bankRow}>
-                    <Icon name="account" size={20} color="#555" />
-                    <Text style={styles.label}>Customer Name:</Text>
-                    <Text style={styles.value}>AL BASHAYERA AUTO USED TRADING AND AUCTIONS LLC SP</Text>
-                </View>
-                <View style={styles.bankRow}>
-                    <Icon name="numeric" size={20} color="#555" />
-                    <Text style={styles.label}>Account Number:</Text>
-                    <Text style={styles.value}>1015877418001</Text>
-                </View>
-                <View style={styles.bankRow}>
-                    <Icon name="credit-card-outline" size={20} color="#555" />
-                    <Text style={styles.label}>IBAN:</Text>
-                    <Text style={styles.value}>AE210260001015877418001</Text>
-                </View>
-            </View>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+        >
+            <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+                <View style={styles.container}>
+                    <Text style={styles.header}>Deposit Funds</Text>
 
-            <View style={styles.inputContainer}>
-                <Text style={styles.inputIcon}>AED</Text>
-                <TextInput
-                    style={styles.input}
-                    keyboardType="numeric"
-                    placeholder="Enter Deposit Amount"
-                    value={amount}
-                    onChangeText={setAmount}
-                    placeholderTextColor="black"
-                />
-            </View>
-            {proof ? (
-                <Image source={{ uri: proof }} style={styles.proofImage} />
-            ) : (
-                <TouchableOpacity style={styles.uploadBox} onPress={pickFile} disabled={uploading}>
-                    {uploading ? <ActivityIndicator color="#010153" /> : <Icon name="cloud-upload" size={40} color="#010153" />}
-                    <Text style={styles.uploadText}>{uploading ? "Uploading..." : "Upload Proof"}</Text>
-                </TouchableOpacity>
-            )}
-            <TouchableOpacity style={styles.submitButton} onPress={submitDeposit} disabled={loading}>
-                <Text style={styles.submitButtonText}>{loading ? "Submitting..." : "Submit Deposit"}</Text>
-            </TouchableOpacity>
-            <Toast />
-        </View>
+                    <View style={styles.bankDetailsCard}>
+                        <View style={styles.bankHeader}>
+                            <Icon name="bank" size={26} color="#010153" />
+                            <Text style={styles.bankTitle}>Bank Details</Text>
+                        </View>
+                        <View style={styles.bankRow}>
+                            <Icon name="account" size={20} color="#555" />
+                            <Text style={styles.label}>Customer Name:</Text>
+                            <Text style={styles.value}>AL BASHAYERA AUTO USED TRADING AND AUCTIONS LLC SP</Text>
+                        </View>
+                        <View style={styles.bankRow}>
+                            <Icon name="numeric" size={20} color="#555" />
+                            <Text style={styles.label}>Account Number:</Text>
+                            <Text style={styles.value}>1015877418001</Text>
+                        </View>
+                        <View style={styles.bankRow}>
+                            <Icon name="credit-card-outline" size={20} color="#555" />
+                            <Text style={styles.label}>IBAN:</Text>
+                            <Text style={styles.value}>AE210260001015877418001</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.inputIcon}>AED</Text>
+                        <TextInput
+                            style={styles.input}
+                            keyboardType="numeric"
+                            placeholder="Enter Deposit Amount"
+                            value={amount}
+                            onChangeText={setAmount}
+                            placeholderTextColor="black"
+                        />
+                    </View>
+
+                    {proof ? (
+                        <Image source={{ uri: proof }} style={styles.proofImage} />
+                    ) : (
+                        <TouchableOpacity style={styles.uploadBox} onPress={pickFile} disabled={uploading}>
+                            {uploading ? (
+                                <ActivityIndicator color="#010153" />
+                            ) : (
+                                <Icon name="cloud-upload" size={40} color="#010153" />
+                            )}
+                            <Text style={styles.uploadText}>
+                                {uploading ? "Uploading..." : "Upload Proof"}
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+
+                    <TouchableOpacity style={styles.submitButton} onPress={submitDeposit} disabled={loading}>
+                        <Text style={styles.submitButtonText}>
+                            {loading ? "Submitting..." : "Submit Deposit"}
+                        </Text>
+                    </TouchableOpacity>
+
+                    <Toast />
+                </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
+    scrollContainer: {
+        flexGrow: 1,
         padding: 20,
         backgroundColor: "#F9FAFC",
+    },
+    container: {
+        flex: 1,
         alignItems: "center",
     },
     header: {
@@ -193,9 +227,6 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         flexShrink: 1,
     },
-    icon: {
-        marginBottom: 10,
-    },
     inputContainer: {
         flexDirection: "row",
         alignItems: "center",
@@ -211,7 +242,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
         borderRightWidth: 2,
         paddingRight: 10,
-        borderRightColor: "gray"
+        borderRightColor: "gray",
     },
     input: {
         flex: 1,
