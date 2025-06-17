@@ -30,7 +30,7 @@ export type RootStackParamList = {
   BuyNowVehicles: undefined;
   CarDetails: { carId: string };
   AuctionEvents: undefined;
-  Withdraw: {balance: string | number};
+  Withdraw: { balance: string | number };
   Deposit: undefined;
   Forgot: undefined;
   Notifications: undefined;

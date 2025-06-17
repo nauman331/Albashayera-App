@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Form from '../components/Form';
 import { backendURL } from '../utils/exports';
 import Toast from 'react-native-toast-message';
-import {saveToken} from "../utils/asyncStorage"
+import { saveToken } from "../utils/asyncStorage"
 
 const Login = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<string | null>> }) => {
   const [loading, setLoading] = useState(false);
@@ -67,9 +67,8 @@ export default Login;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     paddingHorizontal: 20,
     backgroundColor: '#f8f9fa',
+    width: "100%"
   },
 });

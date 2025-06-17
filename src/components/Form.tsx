@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, TouchableOpacity, Text, View, Image, KeyboardTypeOptions } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, Text, View, Image, KeyboardTypeOptions, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import PhoneInput from 'react-native-phone-number-input';
@@ -16,7 +16,7 @@ interface FormProps {
 
 
 const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) => {
-    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [passwordVisible, setPasswordVisible] = useState<Record<string, boolean>>({});
   const [phoneNumber, setPhoneNumber] = useState<string>('');
@@ -34,92 +34,101 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) =
   };
 
   return (
-    <View style={styles.container}>
-      {/* Logo */}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+      style={{ flex: 1 }}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Logo */}
         <Image source={logo} style={styles.logo} />
-        
-      {/* Dynamic Inputs */}
-      {fields.map((field) => (
-        <View key={field.name} style={styles.inputContainer}>
-          {field.name === 'phone' ? (
-            <PhoneInput
-              ref={phoneInputRef}
-              defaultValue={phoneNumber}
-              defaultCode="AE"
-              layout="second"
-              onChangeFormattedText={(text) => {
-                setPhoneNumber(text);
-              }}
-              containerStyle={{
-                width: '100%',
-                backgroundColor: 'transparent',
-                borderRadius: 12,
-                height: 50,
-              }}
-              textContainerStyle={{
-                borderRadius: 12,
-                height: 50,
-                alignItems: 'center',
-              }}
-              textInputStyle={{
-                fontSize: 16,
-                color: 'black',
-                height: 50,
-              }}
-            />
 
-          ) : (
-            <TextInput
-              keyboardType={field.secureTextEntry ? 'default' : field.type}
-              style={styles.input}
-              placeholder={field.placeholder}
-              secureTextEntry={field.secureTextEntry && !passwordVisible[field.name]}
-              onChangeText={(value) => handleChange(field.name, value)}
-              placeholderTextColor="#888"
-            />
-          )}
+        {/* Dynamic Inputs */}
+        {fields.map((field) => (
+          <View key={field.name} style={styles.inputContainer}>
+            {field.name === 'phone' ? (
+              <PhoneInput
+                ref={phoneInputRef}
+                defaultValue={phoneNumber}
+                defaultCode="AE"
+                layout="second"
+                onChangeFormattedText={(text) => {
+                  setPhoneNumber(text);
+                }}
+                containerStyle={{
+                  width: '100%',
+                  backgroundColor: 'transparent',
+                  borderRadius: 12,
+                  height: 50,
+                }}
+                textContainerStyle={{
+                  borderRadius: 12,
+                  height: 50,
+                  alignItems: 'center',
+                }}
+                textInputStyle={{
+                  fontSize: 16,
+                  color: 'black',
+                  height: 50,
+                }}
+              />
+
+            ) : (
+              <TextInput
+                keyboardType={field.secureTextEntry ? 'default' : field.type}
+                style={styles.input}
+                placeholder={field.placeholder}
+                secureTextEntry={field.secureTextEntry && !passwordVisible[field.name]}
+                onChangeText={(value) => handleChange(field.name, value)}
+                placeholderTextColor="#888"
+              />
+            )}
 
 
-          {field.secureTextEntry && (
-            <TouchableOpacity onPress={() => togglePasswordVisibility(field.name)} style={styles.eyeIcon}>
-              <Icon name={passwordVisible[field.name] ? "eye-off-outline" : "eye-outline"} size={22} color="#666" />
-            </TouchableOpacity>
-          )}
-        </View>
-      ))}
-{
-        buttonLabel === "Login" && 
-        <View style={{ width: '100%', alignItems: 'flex-end' }}>
-        <TouchableOpacity onPress={() => navigation.navigate('Forgot')}>
-        <Text style={styles.forgotLink}> Forgotten Password?</Text>
-      </TouchableOpacity>
-      </View>
-}
-      {/* Submit Button */}
-      <TouchableOpacity style={styles.button} onPress={() => onSubmit({ ...formData, contact: phoneNumber })}>
-        <Text style={styles.buttonText}>{loading ? "Submitting..." : buttonLabel}</Text>
-      </TouchableOpacity>
-
-      {
-        buttonLabel === "Login" && (
-          <View style={styles.registerContainer}>
-            <Text style={styles.registerText}>Don't have an account?</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text style={styles.registerLink}> Register</Text>
-            </TouchableOpacity>
+            {field.secureTextEntry && (
+              <TouchableOpacity onPress={() => togglePasswordVisibility(field.name)} style={styles.eyeIcon}>
+                <Icon name={passwordVisible[field.name] ? "eye-off-outline" : "eye-outline"} size={22} color="#666" />
+              </TouchableOpacity>
+            )}
           </View>
-        )} 
+        ))}
         {
-        buttonLabel === "Register" && (
-          <View style={styles.registerContainer}>
-            <Text style={styles.registerText}>Already have an account?</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-              <Text style={styles.registerLink}> Login</Text>
+          buttonLabel === "Login" &&
+          <View style={{ width: '100%', alignItems: 'flex-end' }}>
+            <TouchableOpacity onPress={() => navigation.navigate('Forgot')}>
+              <Text style={styles.forgotLink}> Forgotten Password?</Text>
             </TouchableOpacity>
           </View>
-        )}
-      
-    </View>
+        }
+        {/* Submit Button */}
+        <TouchableOpacity style={styles.button} onPress={() => onSubmit({ ...formData, contact: phoneNumber })}>
+          <Text style={styles.buttonText}>{loading ? "Submitting..." : buttonLabel}</Text>
+        </TouchableOpacity>
+
+        {
+          buttonLabel === "Login" && (
+            <View style={styles.registerContainer}>
+              <Text style={styles.registerText}>Don't have an account?</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                <Text style={styles.registerLink}> Register</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        {
+          buttonLabel === "Register" && (
+            <View style={styles.registerContainer}>
+              <Text style={styles.registerText}>Already have an account?</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                <Text style={styles.registerLink}> Login</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -137,6 +146,14 @@ const styles = StyleSheet.create({
     height: 100,
     resizeMode: 'contain',
     marginBottom: 20,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    backgroundColor: '#fff',
   },
 
   inputContainer: {

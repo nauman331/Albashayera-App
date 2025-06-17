@@ -6,6 +6,7 @@ import fuel from "../assets/images/fuel.png";
 import speedometer from "../assets/images/speedometer.png";
 import gearbox from "../assets/images/gearbox.png";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import DropDownPicker from 'react-native-dropdown-picker';
 import { backendURL } from "../utils/exports";
 import Toast from 'react-native-toast-message';
@@ -134,7 +135,8 @@ const BuyNowVehicles: React.FC = () => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Pressable style={styles.closeButton} onPress={() => setFilterVisible(false)}>
-              <FontAwesome6 name="xmark" size={24} color="#555" />
+              {/* Replace FontAwesome6 xmark with MaterialIcons close */}
+              <MaterialIcons name="close" size={28} color="#555" />
             </Pressable>
             <ScrollView>
               <Text style={styles.modalTitle}>Filter Cars</Text>
@@ -528,4 +530,4 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   }
 
-});                
+});

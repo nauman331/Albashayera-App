@@ -19,7 +19,7 @@ const Register = () => {
       const response = await fetch(`${backendURL}/user/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({...formData, role: "buyer"}),
+        body: JSON.stringify({ ...formData, role: "buyer" }),
       });
 
       const res_data = await response.json();
