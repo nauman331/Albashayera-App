@@ -1,4 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -10,17 +10,27 @@ import {
   Modal,
   Pressable,
   ScrollView,
-  Linking
+  Linking,
+  ActivityIndicator
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Asset, launchImageLibrary } from "react-native-image-picker";
-import { getToken } from "../utils/asyncStorage";
+import { getToken, removeToken, removeData } from "../utils/asyncStorage";
 import Toast from "react-native-toast-message";
 import { cloudinaryURL, backendURL, UPLOAD_PRESET } from "../utils/exports";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
 
-const Profile = () => {
+
+
+type ProfileProps = {
+  setToken: (token: string | null) => void;
+};
+
+const Profile: React.FC<ProfileProps> = ({ setToken }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [firstName, setFirstName] = useState("");
@@ -28,8 +38,11 @@ const Profile = () => {
   const [email, setEmail] = useState("");
   const [contact, setContact] = useState("");
   const [address, setAddress] = useState("");
-  const [uploading, setUploading] = useState<boolean>(false);
   const [proof, setProof] = useState<string | undefined>(undefined);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -61,7 +74,6 @@ const Profile = () => {
   };
 
   const uploadToCloudinary = async (file: Asset) => {
-    setUploading(true);
     const formData = new FormData();
     formData.append("file", { uri: file.uri, type: file.type, name: file.fileName });
     formData.append("upload_preset", UPLOAD_PRESET);
@@ -73,8 +85,6 @@ const Profile = () => {
       Toast.show({ type: "success", text1: "Proof uploaded successfully!" });
     } catch (error) {
       Toast.show({ type: "error", text1: "Upload failed" });
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -82,7 +92,7 @@ const Profile = () => {
     try {
       const token = await getToken();
       if (!token) {
-        console.error("No token found");
+       Toast.show({ type: "error", text1: "Not Authenticated" });;
         return;
       }
       const updatedUser = { firstName, lastName, email, contact, address, avatarImage: proof };
@@ -95,12 +105,62 @@ const Profile = () => {
       if (response.ok) {
         setUser((prevUser: any) => ({ ...prevUser, ...updatedUser }));
         await AsyncStorage.setItem("@userdata", JSON.stringify({ ...user, ...updatedUser }));
+      Toast.show({ type: "success", text1: "Profile Updated successfully!" });
         setModalVisible(false);
       } else {
-        console.error("Update failed:", result.message);
+        Toast.show({ type: "error", text1: "Update Failed", text2: result.message });
       }
     } catch (error) {
+      Toast.show({ type: "error", text1: "Error while Updating Profile" });
       console.error("Error updating profile:", error);
+    }
+  };
+
+  const handleDeleteProfile = async () => {
+    if (!deletePassword) {
+      Toast.show({ type: "error", text1: "Password required" });
+      return;
+    }
+    setDeleteLoading(true);
+    try {
+      // 1. Verify password
+      const verifyRes = await fetch(`${backendURL}/user/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email, password: deletePassword }),
+      });
+      const verifyData = await verifyRes.json();
+      if (!verifyRes.ok) {
+        Toast.show({ type: "error", text1: "Verification Failed", text2: verifyData.message });
+        setDeleteLoading(false);
+        return;
+      }
+      // 2. Delete user
+      const token = await getToken();
+      const deleteRes = await fetch(`${backendURL}/user`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!deleteRes.ok) {
+        const deleteData = await deleteRes.json();
+        Toast.show({ type: "error", text1: "Delete Failed", text2: deleteData.message });
+        setDeleteLoading(false);
+        return;
+      }
+      await removeToken();
+      await removeData();
+      setToken(null);
+
+      setDeleteModalVisible(false);
+      Toast.show({ type: "success", text1: "Account deleted successfully" });
+    } catch (error) {
+      Toast.show({ type: "error", text1: "Error", text2: "Something went wrong" });
+    } finally {
+      setDeleteLoading(false);
+      setDeletePassword("");
     }
   };
 
@@ -183,6 +243,61 @@ const Profile = () => {
         </TouchableOpacity>
       </View>
 
+      {/* Delete Profile Button */}
+      <TouchableOpacity
+        style={styles.deleteProfileButton}
+        onPress={() => setDeleteModalVisible(true)}
+      >
+        <Text style={styles.deleteProfileText}>Delete My Profile</Text>
+      </TouchableOpacity>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={deleteModalVisible}
+        onRequestClose={() => setDeleteModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.deleteModalContainer}>
+            <Text style={styles.modalTitle}>Confirm Deletion</Text>
+            <Text style={{ marginBottom: 10, color: "#333" }}>
+              Please enter your password to confirm account deletion.
+            </Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              secureTextEntry
+              value={deletePassword}
+              onChangeText={setDeletePassword}
+              editable={!deleteLoading}
+            />
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={[styles.saveButton, { backgroundColor: "#d32f2f" }]}
+                onPress={handleDeleteProfile}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.saveText}>Delete</Text>
+                )}
+              </TouchableOpacity>
+              <Pressable
+                style={styles.cancelButton}
+                onPress={() => {
+                  setDeleteModalVisible(false);
+                  setDeletePassword("");
+                }}
+                disabled={deleteLoading}
+              >
+                <Text style={styles.cancelText}>Cancel</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
     </ScrollView>
   ) : (
@@ -294,12 +409,11 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 
-  // ✨ MODAL STYLES ✨
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContainer: {
     backgroundColor: "#fff",
@@ -351,5 +465,29 @@ const styles = StyleSheet.create({
     color: "#333",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  deleteProfileButton: {
+    backgroundColor: "#d32f2f",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 70,
+    alignSelf: "center",
+    width: "100%",
+  },
+  deleteProfileText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+    letterSpacing: 1,
+  },
+  deleteModalContainer: {
+    backgroundColor: "#fff",
+    width: "90%",
+    padding: 20,
+    borderRadius: 15,
+    elevation: 10,
+    alignItems: "center",
   },
 });

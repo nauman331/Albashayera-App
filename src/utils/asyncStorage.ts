@@ -28,3 +28,11 @@ export const removeToken = async () => {
     console.error("Error removing token:", error);
   }
 };
+
+export const removeData = async () => {
+  try {
+    await AsyncStorage.removeItem("@userdata");
+  } catch (error) {
+    console.error("Error removing data:", error);
+  }
+};
