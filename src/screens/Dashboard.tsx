@@ -158,25 +158,25 @@ const Dashboard: React.FC = () => {
       {loading ? (
         <ActivityIndicator size="large" color="#010153" style={styles.loader} />
       ) : (
-          <View style={{marginBottom: 110}}>
-        <View style={styles.chartContainer}>
-          <Text style={styles.chartTitle}>Spending Trend (Line Chart)</Text>
-          <LineChart
-            data={chartData}
-            width={screenWidth - 40}
-            height={220}
-            chartConfig={{
-              backgroundGradientFrom: "#fff",
-              backgroundGradientTo: "#fff",
-              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              propsForLabels: {
-                fontSize: 8,
-              },
-            }}
-            bezier
-            style={styles.chartStyle}
-          />
-</View>
+        <View style={{ marginBottom: 110 }}>
+          <View style={styles.chartContainer}>
+            <Text style={styles.chartTitle}>Spending Trend (Line Chart)</Text>
+            <LineChart
+              data={chartData}
+              width={screenWidth - 40}
+              height={220}
+              chartConfig={{
+                backgroundGradientFrom: "#fff",
+                backgroundGradientTo: "#fff",
+                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                propsForLabels: {
+                  fontSize: 8,
+                },
+              }}
+              bezier
+              style={styles.chartStyle}
+            />
+          </View>
         </View>
       )}
     </ScrollView>
@@ -205,3 +205,4 @@ const styles = StyleSheet.create({
 });
 
 export default Dashboard;
+// No changes needed here, navigation guard is handled in DrawerNavigator.

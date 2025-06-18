@@ -137,7 +137,7 @@ const InvoiceSlip = ({ route, navigation }: any) => {
           <Icon name="plus" size={14} color="#777" />
         </TouchableOpacity>
         <View style={styles.row}>
-        <View style={styles.column}>
+          <View style={styles.column}>
             <Text style={styles.label}>CAR PRICE</Text>
             <Text style={styles.value}>{invoice?.carAmount} AED</Text>
           </View>
@@ -147,7 +147,7 @@ const InvoiceSlip = ({ route, navigation }: any) => {
           </View>
         </View>
         <View style={styles.row}>
-        <View style={styles.column}>
+          <View style={styles.column}>
             <Text style={styles.label}>Total</Text>
             <Text style={styles.value}>{invoice?.totalAmount} AED</Text>
           </View>
@@ -156,7 +156,7 @@ const InvoiceSlip = ({ route, navigation }: any) => {
             <Text style={styles.value}>{invoice?.walletDeduction} AED</Text>
           </View>
         </View>
-       
+
         <Text style={styles.totalAmount}>PENDING AMOUNT: {invoice?.pendingAmount} AED</Text>
         {
           invoice?.paymentStatus ?

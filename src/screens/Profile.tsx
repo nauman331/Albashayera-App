@@ -1,4 +1,4 @@
- import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -92,7 +92,7 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
     try {
       const token = await getToken();
       if (!token) {
-       Toast.show({ type: "error", text1: "Not Authenticated" });;
+        Toast.show({ type: "error", text1: "Not Authenticated" });;
         return;
       }
       const updatedUser = { firstName, lastName, email, contact, address, avatarImage: proof };
@@ -105,7 +105,7 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
       if (response.ok) {
         setUser((prevUser: any) => ({ ...prevUser, ...updatedUser }));
         await AsyncStorage.setItem("@userdata", JSON.stringify({ ...user, ...updatedUser }));
-      Toast.show({ type: "success", text1: "Profile Updated successfully!" });
+        Toast.show({ type: "success", text1: "Profile Updated successfully!" });
         setModalVisible(false);
       } else {
         Toast.show({ type: "error", text1: "Update Failed", text2: result.message });
@@ -114,6 +114,16 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
       Toast.show({ type: "error", text1: "Error while Updating Profile" });
       console.error("Error updating profile:", error);
     }
+  };
+
+  const handleLogout = async () => {
+    await removeToken();
+    await removeData();
+    setToken(null);
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "AuctionVehicles" }],
+    });
   };
 
   const handleDeleteProfile = async () => {
@@ -153,9 +163,12 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
       await removeToken();
       await removeData();
       setToken(null);
-
       setDeleteModalVisible(false);
       Toast.show({ type: "success", text1: "Account deleted successfully" });
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "AuctionVehicles" }],
+      });
     } catch (error) {
       Toast.show({ type: "error", text1: "Error", text2: "Something went wrong" });
     } finally {
@@ -298,7 +311,6 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
           </View>
         </View>
       </Modal>
-
     </ScrollView>
   ) : (
     <Text>Loading....</Text>

@@ -323,11 +323,10 @@ const App = () => {
         <ActivityIndicator size="large" color="blue" />
       </View>
     );
-
   return (
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
-        {token ? <DrawerNavigator setToken={setToken} /> : <UnauthenticatedTabs setToken={setToken} />}
+        <DrawerNavigator setToken={setToken} token={token} />
       </NavigationContainer>
       <Toast />
     </SafeAreaProvider>

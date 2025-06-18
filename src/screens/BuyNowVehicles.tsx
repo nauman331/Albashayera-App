@@ -117,7 +117,7 @@ const BuyNowVehicles: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Auction Vehicles</Text>
+      <Text style={styles.title}>Buy Now Vehicles</Text>
 
       {/* Filters Section */}
       <Pressable onPress={toggleFilterModal} style={styles.rightFilter}>

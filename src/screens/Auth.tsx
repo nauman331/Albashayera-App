@@ -13,7 +13,7 @@ type RootStackParamList = {
 type AuthScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const Auth = () => {
-  const navigation = useNavigation<AuthScreenNavigationProp>(); 
+  const navigation = useNavigation<AuthScreenNavigationProp>();
 
   return (
     <View style={styles.container}>
@@ -51,8 +51,8 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
   },
   middleContainer: {
-    flexGrow: 1, 
-    justifyContent: 'center', 
+    flexGrow: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   topText: {
@@ -104,3 +104,4 @@ const styles = StyleSheet.create({
     color: '#010153',
   },
 });
+// No changes needed here for App Store compliance.

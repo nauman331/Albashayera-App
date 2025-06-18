@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { View, TouchableOpacity, Text, StyleSheet, Image } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -21,10 +21,22 @@ import { RootStackParamList } from "../../../App";
 import { DrawerNavigationProp } from "@react-navigation/drawer";
 import CarDetailsScreen from "../../screens/CarDetailsScreen";
 import { navigate } from "../../utils/navigationRef";
-
+import { getToken } from "../../utils/asyncStorage";
+import Login from "../../screens/Login";
+import Register from "../../screens/Register";
+import Auth from "../../screens/Auth";
 
 const Drawer = createDrawerNavigator();
 
+// Wrapper Component for Each Screen
+const ScreenWrapper = ({ children }: { children: React.ReactNode }) => (
+  <View style={styles.container}>
+    <View style={styles.screenContent}>{children}</View>
+    <CustomBottomBar />
+  </View>
+);
+
+// Fix: Forward all props to the child screen
 const CarDetailsScreenWrapper = (props: any) => (
   <ScreenWrapper>
     <CarDetailsScreen {...props} />
@@ -80,17 +92,51 @@ const CustomBottomBar = () => {
   );
 };
 
-// Wrapper Component for Each Screen
-const ScreenWrapper = ({ children }: { children: React.ReactNode }) => (
-  <View style={styles.container}>
-    <View style={styles.screenContent}>{children}</View>
-    <CustomBottomBar />
-  </View>
-);
+// Helper hook
+const useIsAuthenticated = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  useEffect(() => {
+    getToken().then(token => setIsAuthenticated(!!token));
+  }, []);
+  return isAuthenticated;
+};
+
+// Guarded screen wrapper
+function withAuthGuard(Component: React.ComponentType<any>) {
+  return (props: any) => {
+    const isAuthenticated = useIsAuthenticated();
+    const navigation = useNavigation<DrawerNavigationProp<RootStackParamList>>();
+    useEffect(() => {
+      if (!isAuthenticated) {
+        navigation.navigate("Login");
+      }
+    }, [isAuthenticated]);
+    if (!isAuthenticated) return null;
+    return <Component {...props} />;
+  };
+}
+
+// Wrapper for Profile screen to handle setToken and auth check
+const ProfileScreenWrapper = (props: any) => {
+  const navigation = useNavigation<DrawerNavigationProp<RootStackParamList>>();
+  const { setToken, token } = props;
+  useEffect(() => {
+    if (!token) {
+      navigation.navigate("Login");
+    }
+  }, [token]);
+  if (!token) return null;
+  return (
+    <ScreenWrapper>
+      <Profile {...props} setToken={setToken} />
+    </ScreenWrapper>
+  );
+};
 
 // Drawer Navigator with Custom Bottom Bar
-const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<string | null>> }) => (
+const DrawerNavigator = ({ setToken, token, initialRouteName = "AuctionVehicles" }: { setToken: React.Dispatch<React.SetStateAction<string | null>>, token: string | null, initialRouteName?: string }) => (
   <Drawer.Navigator
+    initialRouteName={initialRouteName}
     backBehavior="history"
     screenOptions={{
       headerTitle: () => (
@@ -125,22 +171,74 @@ const DrawerNavigator = ({ setToken }: { setToken: React.Dispatch<React.SetState
         </TouchableOpacity>
       ),
     }}
-    drawerContent={(props) => <CustomDrawerContent {...props} setToken={setToken} />}
+    drawerContent={(props) => <CustomDrawerContent {...props} setToken={setToken} token={token} />}
   >
-    <Drawer.Screen name="Dashboard" component={() => <ScreenWrapper><Dashboard /></ScreenWrapper>} />
-    <Drawer.Screen name="Orders" component={() => <ScreenWrapper><Orders /></ScreenWrapper>} />
-    <Drawer.Screen name="Wallet" component={() => <ScreenWrapper><Wallet /></ScreenWrapper>} />
-    <Drawer.Screen name="Profile" component={() => <ScreenWrapper><Profile setToken={setToken} /></ScreenWrapper>} />
+    {/* Protected screens */}
+    <Drawer.Screen
+      name="Dashboard"
+      component={(props: React.JSX.IntrinsicAttributes) => {
+        if (!token) {
+          // @ts-ignore
+          props.navigation.navigate("Login");
+          return null;
+        }
+        return <ScreenWrapper><Dashboard {...props} /></ScreenWrapper>;
+      }}
+    />
+    <Drawer.Screen
+      name="Orders"
+      component={(props: React.JSX.IntrinsicAttributes) => {
+        if (!token) {
+          // @ts-ignore
+          props.navigation.navigate("Login");
+          return null;
+        }
+        return <ScreenWrapper><Orders {...props} /></ScreenWrapper>;
+      }}
+    />
+    <Drawer.Screen
+      name="Wallet"
+      component={(props: React.JSX.IntrinsicAttributes) => {
+        if (!token) {
+          // @ts-ignore
+          props.navigation.navigate("Login");
+          return null;
+        }
+        return <ScreenWrapper><Wallet {...props} /></ScreenWrapper>;
+      }}
+    />
+    <Drawer.Screen
+      name="Profile"
+      // Fix: Use wrapper component for Profile
+      children={(props) => <ProfileScreenWrapper {...props} setToken={setToken} token={token} />}
+    />
+    <Drawer.Screen name="Deposit" component={withAuthGuard(() => <ScreenWrapper><Deposit /></ScreenWrapper>)} />
+    <Drawer.Screen name="Withdraw" component={withAuthGuard(WithdrawWrapper)} />
+    <Drawer.Screen name="OrderDetails" component={withAuthGuard(OrderDetailsWrapper)} />
+    <Drawer.Screen name="PayOrder" component={withAuthGuard(PayOrderWrapper)} />
+    {/* Public screens */}
     <Drawer.Screen name="Notifications" component={() => <ScreenWrapper><NotificationScreen /></ScreenWrapper>} />
-    <Drawer.Screen name="Deposit" component={() => <ScreenWrapper><Deposit /></ScreenWrapper>} />
     <Drawer.Screen name="AuctionEvents" component={() => <ScreenWrapper><Auctions /></ScreenWrapper>} />
     <Drawer.Screen name="ContactUs" component={() => <ScreenWrapper><ContactScreen /></ScreenWrapper>} />
     <Drawer.Screen name="BuyNowVehicles" component={() => <ScreenWrapper><BuyNowVehicles /></ScreenWrapper>} />
-    <Drawer.Screen name="Withdraw" component={WithdrawWrapper} />
     <Drawer.Screen name="CarDetails" component={CarDetailsScreenWrapper} />
     <Drawer.Screen name="AuctionVehicles" component={AuctionWrapper} />
-    <Drawer.Screen name="OrderDetails" component={OrderDetailsWrapper} />
-    <Drawer.Screen name="PayOrder" component={PayOrderWrapper} />
+    {/* Add Login, Register, Auth as hidden screens */}
+    <Drawer.Screen
+      name="Login"
+      options={{ drawerLabel: () => null, title: undefined, drawerIcon: () => null, drawerItemStyle: { height: 0 } }}
+      children={(props) => <Login {...props} setToken={setToken} />}
+    />
+    <Drawer.Screen
+      name="Register"
+      options={{ drawerLabel: () => null, title: undefined, drawerIcon: () => null, drawerItemStyle: { height: 0 } }}
+      component={Register}
+    />
+    <Drawer.Screen
+      name="Auth"
+      options={{ drawerLabel: () => null, title: undefined, drawerIcon: () => null, drawerItemStyle: { height: 0 } }}
+      component={Auth}
+    />
   </Drawer.Navigator>
 );
 

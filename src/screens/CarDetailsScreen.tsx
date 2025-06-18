@@ -14,8 +14,13 @@ import PurchaseModal from '../components/PurchaseModal';
 import EventBus from '../utils/EventBus';
 
 
+type UnauthenticatedTabParamList = {
+    CarDetails: { carId: string };
+};
+
 type CarDetailsScreenProps = {
-    route: RouteProp<{ params: { carId: string } }, 'params'>;
+    route: RouteProp<UnauthenticatedTabParamList, "CarDetails">;
+    navigation: any; // or the correct navigation type if you have it
 };
 
 interface BidData {
@@ -32,7 +37,7 @@ interface CarColor {
 
 const { width } = Dimensions.get('window');
 
-const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
+const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }) => {
     const { carId } = route.params;
     const [car, setCar] = useState<any>(null);
     const [loading, setLoading] = useState(false);
@@ -49,6 +54,16 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
 
 
     const handlePlaceBid = () => {
+        if (!token) {
+            Toast.show({
+                type: "error",
+                text1: "Login Required",
+                text2: "Please login to place a bid."
+            });
+            navigation.navigate("Login");
+            return;
+        }
+
         if (socketService.isConnected && token && car?._id) {
             if (!bid || isNaN(Number(bid))) {
                 Toast.show({
@@ -117,6 +132,16 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route }) => {
     };
 
     const purchaseCar = async () => {
+        if (!token) {
+            Toast.show({
+                type: "error",
+                text1: "Login Required",
+                text2: "Please login to purchase."
+            });
+            navigation.navigate("Login");
+            return;
+        }
+
         const authorizationToken = `Bearer ${token}`;
         try {
             setBuyLoading(true);

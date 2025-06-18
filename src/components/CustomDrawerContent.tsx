@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from "react-native";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
-import { useNavigationState } from "@react-navigation/native";
+import { useNavigationState, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getToken, removeToken } from "../utils/asyncStorage";
@@ -11,31 +11,35 @@ interface CustomDrawerContentProps {
   navigation: any;
   setToken: React.Dispatch<React.SetStateAction<string | null>>;
 }
+
 interface Car {
   _id: string;
 }
 
-const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, setToken }) => {
+const CustomDrawerContent: React.FC<CustomDrawerContentProps & { token: string | null }> = ({ navigation, setToken, token }) => {
   const [vehiclesExpanded, setVehiclesExpanded] = useState(false);
   const [auctionsExpanded, setAuctionsExpanded] = useState(false);
   const [currentCar, setCurrentCar] = useState<Car | null>(null);
   const [user, setUser] = useState<any>(null);
   const [isModalVisible, setModalVisible] = useState(false);
+  const isAuthenticated = !!token;
+  const nav = useNavigation();
 
   useEffect(() => {
     const fetchUserData = async () => {
       const token = await getToken();
       if (token) {
-        const userDataString = await AsyncStorage.getItem("@userdata"); // Get data as string
+        const userDataString = await AsyncStorage.getItem("@userdata");
         if (userDataString) {
-          const userData = JSON.parse(userDataString); // Parse JSON
+          const userData = JSON.parse(userDataString);
           setUser(userData);
         }
+      } else {
+        setUser(null);
       }
     };
-
     fetchUserData();
-  }, []);
+  }, [isAuthenticated]);
 
   const currentRoute = useNavigationState((state) => {
     if (!state || !state.routes || state.index === undefined) return null;
@@ -45,8 +49,12 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
   const handleLogout = async () => {
     try {
       await removeToken();
-      setToken(null)
+      setToken(null);
       setModalVisible(false);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "AuctionVehicles" }],
+      });
     } catch (error) {
       console.error("Error logging out:", error);
     }
@@ -60,11 +68,9 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
       const res_data = await response.json();
       if (response.ok) {
         setCurrentCar(res_data);
-      } else {
-        console.log(res_data.message || "Failed to fetch the current car.");
       }
     } catch (error) {
-      console.log("Error in getting the current car:", error);
+      // ignore
     }
   };
 
@@ -78,157 +84,111 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
     } else {
       navigation.navigate("AuctionVehicles")
     };
-  }
+  };
 
+  // Only show these menu items if authenticated
+  const protectedMenuItems = [
+    { route: "Dashboard", label: "Dashboard", icon: "dashboard" },
+    { route: "Orders", label: "Orders", icon: "receipt" },
+    { route: "Wallet", label: "Wallet", icon: "account-balance-wallet" },
+  ];
+
+  // Always show these menu items
+  const publicMenuItems = [
+    { route: "AuctionVehicles", label: "Auction Vehicles", icon: "directions-car" },
+    { route: "BuyNowVehicles", label: "Buy Now Vehicles", icon: "directions-car" },
+    { route: "AuctionEvents", label: "Auction Events", icon: "gavel" },
+    { route: "ContactUs", label: "Contact Us", icon: "phone" },
+  ];
 
   return (
     <View style={{ flex: 1 }}>
       {/* Profile Section */}
-      {
-        user ? (
-          <View style={styles.profileSection}>
-            <Image
-              source={{ uri: user.avatarImage }}
-              style={styles.profileImage}
-            />
-            <View>
-              <Text style={styles.profileName}>{user.firstName} {user.lastName}</Text>
-              <Text style={styles.profileEmail}>{user.email.length > 20 ? `${user.email.slice(0, 20)}...` : user.email}</Text>
-            </View>
+      {isAuthenticated && user ? (
+        <View style={styles.profileSection}>
+          <Image
+            source={{ uri: user.avatarImage }}
+            style={styles.profileImage}
+          />
+          <View>
+            <Text style={styles.profileName}>{user.firstName} {user.lastName}</Text>
+            <Text style={styles.profileEmail}>{user.email.length > 20 ? `${user.email.slice(0, 20)}...` : user.email}</Text>
           </View>
-
-        ) : (
-          <Text style={styles.profileName}>Loading...</Text>
-        )}
+        </View>
+      ) : (
+        <View style={styles.profileSection}>
+          <Icon name="person" size={40} color="#fff" />
+          <Text style={styles.profileName}>Guest</Text>
+        </View>
+      )}
 
       <DrawerContentScrollView>
-        {/* Menu Items */}
-        {menuItems.map((item, index) => {
-          if (item.isExpandable) {
-            return (
-              <View key={index}>
-                <TouchableOpacity
-                  style={[styles.menuItem, currentRoute === item.route && styles.activeMenuItem]}
-                  onPress={() => {
-                    if (item.label === "Vehicles") {
-                      setVehiclesExpanded(!vehiclesExpanded);
-                    } else if (item.label === "Auctions") {
-                      setAuctionsExpanded(!auctionsExpanded);
-                    }
-                  }}
-                >
-                  <View
-                    style={[styles.activeIndicator, currentRoute === item.route && styles.activeIndicatorActive]}
-                  />
-                  <Icon
-                    name={item.icon}
-                    size={20}
-                    color={currentRoute === item.route ? "#010153" : "#000"}
-                  />
-                  <Text
-                    style={[styles.menuText, currentRoute === item.route && styles.activeMenuText]}
-                  >
-                    {item.label}
-                  </Text>
-                  <Icon name={vehiclesExpanded || auctionsExpanded ? "keyboard-arrow-up" : "keyboard-arrow-down"} size={15} color="#000" />
-                </TouchableOpacity>
+        {/* Protected Menu Items */}
+        {isAuthenticated && protectedMenuItems.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[styles.menuItem, currentRoute === item.route && styles.activeMenuItem]}
+            onPress={() => navigation.navigate(item.route)}
+          >
+            <View style={[styles.activeIndicator, currentRoute === item.route && styles.activeIndicatorActive]} />
+            <Icon name={item.icon} size={20} color={currentRoute === item.route ? "#010153" : "#000"} />
+            <Text style={[styles.menuText, currentRoute === item.route && styles.activeMenuText]}>{item.label}</Text>
+          </TouchableOpacity>
+        ))}
 
-                {/* Submenu Items */}
-                {item.label === "Vehicles" && vehiclesExpanded && (
-                  <View style={styles.subMenu}>
-                    <TouchableOpacity
-                      style={styles.subMenuItem}
-                      onPress={() => navigation.navigate("AuctionVehicles")}
-                    >
-                      <Text style={styles.subMenuText}>Auction Vehicles</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.subMenuItem}
-                      onPress={() => navigation.navigate("BuyNowVehicles")}
-                    >
-                      <Text style={styles.subMenuText}>Buy Now Vehicles</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
+        {/* Public Menu Items */}
+        {publicMenuItems.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[styles.menuItem, currentRoute === item.route && styles.activeMenuItem]}
+            onPress={() => navigation.navigate(item.route)}
+          >
+            <View style={[styles.activeIndicator, currentRoute === item.route && styles.activeIndicatorActive]} />
+            <Icon name={item.icon} size={20} color={currentRoute === item.route ? "#010153" : "#000"} />
+            <Text style={[styles.menuText, currentRoute === item.route && styles.activeMenuText]}>{item.label}</Text>
+          </TouchableOpacity>
+        ))}
 
-                {item.label === "Auctions" && auctionsExpanded && (
-                  <View style={styles.subMenu}>
-                    <TouchableOpacity
-                      style={styles.subMenuItem}
-                      onPress={() => navigation.navigate("AuctionEvents")}
-                    >
-                      <Text style={styles.subMenuText}>Auctions Events</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.subMenuItem}
-                      onPress={handleJoin}
-                    >
-                      <Text style={styles.subMenuText}>Live Auction</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
-            );
-          } else {
-            return (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.menuItem,
-                  currentRoute === item.route && styles.activeMenuItem,
-                ]}
-                onPress={() => navigation.navigate(item.route)}
-              >
-                <View
-                  style={[
-                    styles.activeIndicator,
-                    currentRoute === item.route && styles.activeIndicatorActive,
-                  ]}
-                />
-                <Icon
-                  name={item.icon}
-                  size={20}
-                  color={currentRoute === item.route ? "#010153" : "#000"}
-                />
-                <Text
-                  style={[styles.menuText, currentRoute === item.route && styles.activeMenuText]}
-                >
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            );
-          }
-        })}
+        {/* Live Auction (always visible) */}
+        <TouchableOpacity
+          style={[styles.menuItem, currentRoute === "CarDetails" && styles.activeMenuItem]}
+          onPress={handleJoin}
+        >
+          <View style={[styles.activeIndicator, currentRoute === "CarDetails" && styles.activeIndicatorActive]} />
+          <Icon name="live-tv" size={20} color={currentRoute === "CarDetails" ? "#010153" : "#000"} />
+          <Text style={[styles.menuText, currentRoute === "CarDetails" && styles.activeMenuText]}>Live Auction</Text>
+        </TouchableOpacity>
       </DrawerContentScrollView>
 
       {/* Bottom Section */}
       <View style={styles.bottomSection}>
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("Profile")}>
-          <Icon name="person" size={20} color="#000" />
-          <Text style={styles.menuText}>Profile</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("ContactUs")}>
-          <Icon name="phone" size={20} color="#000" />
-          <Text style={styles.menuText}>Contact Us</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.menuItem} onPress={() => setModalVisible(true)}>
-          <Icon name="exit-to-app" size={20} color="#000" />
-          <Text style={styles.menuText}>Logout</Text>
-        </TouchableOpacity>
+        {isAuthenticated ? (
+          <>
+            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("Profile")}>
+              <Icon name="person" size={20} color="#000" />
+              <Text style={styles.menuText}>Profile</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={() => setModalVisible(true)}>
+              <Icon name="exit-to-app" size={20} color="#000" />
+              <Text style={styles.menuText}>Logout</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("Login")}>
+            <Icon name="login" size={20} color="#000" />
+            <Text style={styles.menuText}>Login</Text>
+          </TouchableOpacity>
+        )}
       </View>
       <Modal visible={isModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Confirm Logout</Text>
             <Text style={styles.modalMessage}>Are you sure you want to logout?</Text>
-
             <View style={styles.modalButtons}>
               <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
                 <Text style={styles.cancelText}>Cancel</Text>
               </TouchableOpacity>
-
               <TouchableOpacity style={styles.confirmButton} onPress={handleLogout}>
                 <Text style={styles.confirmText}>Logout</Text>
               </TouchableOpacity>
@@ -236,20 +196,9 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps> = ({ navigation, s
           </View>
         </View>
       </Modal>
-
-
     </View>
   );
 };
-
-// Menu Items Array
-const menuItems = [
-  { route: "Dashboard", label: "Dashboard", icon: "dashboard" },
-  { route: "Orders", label: "Orders", icon: "receipt" },
-  { route: "Wallet", label: "Wallet", icon: "account-balance-wallet" },
-  { route: "Vehicles", label: "Vehicles", icon: "directions-car", isExpandable: true },
-  { route: "Auctions", label: "Auctions", icon: "gavel", isExpandable: true },
-];
 
 const styles = StyleSheet.create({
   profileSection: {

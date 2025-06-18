@@ -89,7 +89,7 @@ const OrdersScreen: React.FC = () => {
 
 
 
-  
+
   const renderItem = ({ item }: { item: Order }) => {
 
     const status = item.statusText as Order["paymentStatus"];

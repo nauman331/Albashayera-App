@@ -8,7 +8,6 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../App";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import toast from "react-native-toast-message"
 
 const PayOrder: React.FC = ({ route }: any) => {
     const { invoiceNumber, pendingAmount } = route.params;
