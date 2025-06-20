@@ -25,6 +25,8 @@ import { getToken } from "../../utils/asyncStorage";
 import Login from "../../screens/Login";
 import Register from "../../screens/Register";
 import Auth from "../../screens/Auth";
+import Forgot from "../../screens/Forgot";
+import Otp from "../../screens/Otp";
 
 const Drawer = createDrawerNavigator();
 
@@ -238,6 +240,16 @@ const DrawerNavigator = ({ setToken, token, initialRouteName = "AuctionVehicles"
       name="Auth"
       options={{ drawerLabel: () => null, title: undefined, drawerIcon: () => null, drawerItemStyle: { height: 0 } }}
       component={Auth}
+    />
+    <Drawer.Screen
+      name="Forgot"
+      options={{ drawerLabel: () => null, title: undefined, drawerIcon: () => null, drawerItemStyle: { height: 0 } }}
+      component={Forgot}
+    />
+    <Drawer.Screen
+      name="Otp"
+      options={{ drawerLabel: () => null, title: undefined, drawerIcon: () => null, drawerItemStyle: { height: 0 } }}
+      component={Otp}
     />
   </Drawer.Navigator>
 );
