@@ -4,12 +4,13 @@ import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import { backendURL } from '../utils/exports';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../App'; 
+import { RootStackParamList } from '../../App';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 type OtpScreenRouteProp = RouteProp<RootStackParamList, 'Otp'>;
 
 const Otp = () => {
-  const route = useRoute<OtpScreenRouteProp>(); 
+  const route = useRoute<OtpScreenRouteProp>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Login'>>();
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
@@ -39,6 +40,13 @@ const Otp = () => {
 
   return (
     <View style={styles.container}>
+      {/* Back Arrow */}
+      <TouchableOpacity
+        style={{ alignSelf: 'flex-start', marginBottom: 10 }}
+        onPress={() => navigation.goBack()}
+      >
+        <Ionicons name="arrow-back" size={28} color="#010153" />
+      </TouchableOpacity>
       <Text style={styles.title}>Verify OTP</Text>
       <Text style={styles.subtitle}>Enter the OTP sent to:</Text>
       <Text style={styles.email}>{route.params.email}</Text>
@@ -66,7 +74,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,

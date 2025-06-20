@@ -93,6 +93,13 @@ const ForgotPassword = () => {
 
   return (
     <View style={styles.container}>
+      {/* Back Arrow */}
+      <TouchableOpacity
+        style={{ alignSelf: 'flex-start', marginBottom: 10 }}
+        onPress={() => navigation.goBack()}
+      >
+        <Ionicons name="arrow-back" size={28} color="#010153" />
+      </TouchableOpacity>
       <Text style={styles.heading}>Reset Password</Text>
 
       {step === 1 && (
@@ -175,7 +182,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#fff",
   },
   heading: {
     fontSize: 24,
@@ -224,4 +231,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-});                
+});

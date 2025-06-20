@@ -6,6 +6,7 @@ import logo from "../assets/images/Logo.png";
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface FormProps {
   fields: { name: string; placeholder: string; secureTextEntry?: boolean; type?: KeyboardTypeOptions; }[];
@@ -43,6 +44,13 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) =
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
+        {/* Back Arrow */}
+        <TouchableOpacity
+          style={{ alignSelf: 'flex-start', marginBottom: 10 }}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={28} color="#010153" />
+        </TouchableOpacity>
         {/* Logo */}
         <Image source={logo} style={styles.logo} />
 
