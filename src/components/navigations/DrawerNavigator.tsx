@@ -214,7 +214,17 @@ const DrawerNavigator = ({ setToken, token, initialRouteName = "Dashboard" }: { 
       // Fix: Use wrapper component for Profile
       children={(props) => <ProfileScreenWrapper {...props} setToken={setToken} token={token} />}
     />
-    <Drawer.Screen name="Deposit" component={withAuthGuard(() => <ScreenWrapper><Deposit /></ScreenWrapper>)} />
+    <Drawer.Screen
+      name="Deposit"
+      component={(props: React.JSX.IntrinsicAttributes) => {
+        if (!token) {
+          // @ts-ignore
+          props.navigation.navigate("Login");
+          return null;
+        }
+        return <ScreenWrapper><Deposit {...props} /></ScreenWrapper>;
+      }}
+    />
     <Drawer.Screen name="Withdraw" component={withAuthGuard(WithdrawWrapper)} />
     <Drawer.Screen name="OrderDetails" component={withAuthGuard(OrderDetailsWrapper)} />
     <Drawer.Screen name="PayOrder" component={withAuthGuard(PayOrderWrapper)} />

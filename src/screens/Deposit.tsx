@@ -27,11 +27,14 @@ const DepositPage: React.FC = () => {
     const [uploading, setUploading] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [token, setToken] = useState<string | null>(null);
+    const [tokenLoading, setTokenLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const fetchToken = async () => {
+            setTokenLoading(true);
             const tokeninner = await getToken();
             setToken(tokeninner);
+            setTokenLoading(false);
         };
         fetchToken();
     }, []);
@@ -67,6 +70,10 @@ const DepositPage: React.FC = () => {
     };
 
     const submitDeposit = async () => {
+        if (!token) {
+            Toast.show({ type: "error", text1: "Please wait, still loading your session." });
+            return;
+        }
         if (!amount || !proof) {
             Toast.show({ type: "error", text1: "Please enter an amount and upload proof" });
             return;
@@ -99,6 +106,14 @@ const DepositPage: React.FC = () => {
             setLoading(false);
         }
     };
+
+    if (tokenLoading) {
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#fff" }}>
+                <ActivityIndicator size="large" color="#010153" />
+            </View>
+        );
+    }
 
     return (
         <KeyboardAvoidingView

@@ -78,14 +78,17 @@ const WalletHistoryScreen = () => {
   const [selectedTab, setSelectedTab] = useState<"withdraw" | "deposit">("deposit");
   const [balance, setBalance] = useState<number>(0);
   const [token, setToken] = useState<string | null>(null);
+  const [tokenLoading, setTokenLoading] = useState<boolean>(true); // <-- add
   const [loading, setLoading] = useState<boolean>(false);
   const [withdrawHistory, setWithdrawHistory] = useState<Transaction[]>([]);
   const [depositHistory, setDepositHistory] = useState<Transaction[]>([]);
 
   useEffect(() => {
     const fetchToken = async () => {
+      setTokenLoading(true); // <-- add
       const tokeninner = await getToken();
       setToken(tokeninner)
+      setTokenLoading(false); // <-- add
     }
     fetchToken()
   }, [])
@@ -140,10 +143,12 @@ const WalletHistoryScreen = () => {
 
   const handleWithdraw = () => {
     if (balance < 1) {
+      return
+    } else if (!token || tokenLoading) {
       Toast.show({
         type: "error",
-        text1: "Insufficient Amount"
-      })
+        text1: "Please wait, still loading your session."
+      });
     } else {
       navigation.navigate("Withdraw", { balance })
     }
@@ -164,11 +169,21 @@ const WalletHistoryScreen = () => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.actionButton} onPress={() => navigation.navigate("Deposit")}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => {
+            if (!token || tokenLoading) {
+              Toast.show({ type: "error", text1: "Please wait, still loading your session." });
+              return;
+            }
+            navigation.navigate("Deposit");
+          }}
+          disabled={!token || tokenLoading}
+        >
           <Icon name="cash-plus" size={20} color="#FFF" />
           <Text style={styles.buttonText}>Deposit</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton} onPress={handleWithdraw}>
+        <TouchableOpacity style={styles.actionButton} onPress={handleWithdraw} disabled={!token || tokenLoading}>
           <Icon name="cash-minus" size={20} color="#FFF" />
           <Text style={styles.buttonText}>Withdraw</Text>
         </TouchableOpacity>
