@@ -4,9 +4,13 @@ import Form from '../components/Form';
 import { backendURL } from '../utils/exports';
 import Toast from 'react-native-toast-message';
 import { saveToken } from "../utils/asyncStorage"
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
 
 const Login = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<string | null>> }) => {
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleLogin = async (formData: Record<string, string>) => {
     try {
@@ -26,8 +30,12 @@ const Login = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<str
           text1: 'Welcome',
           text2: 'User logged In successfully 👋'
         });
-        await saveToken(res_data.token)
         setToken(res_data.token);
+        await saveToken(res_data.token)
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Dashboard" }],
+        });
       } else {
         Toast.show({
           type: "error",

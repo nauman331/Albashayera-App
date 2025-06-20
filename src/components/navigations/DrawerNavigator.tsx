@@ -136,7 +136,7 @@ const ProfileScreenWrapper = (props: any) => {
 };
 
 // Drawer Navigator with Custom Bottom Bar
-const DrawerNavigator = ({ setToken, token, initialRouteName = "AuctionVehicles" }: { setToken: React.Dispatch<React.SetStateAction<string | null>>, token: string | null, initialRouteName?: string }) => (
+const DrawerNavigator = ({ setToken, token, initialRouteName = "Dashboard" }: { setToken: React.Dispatch<React.SetStateAction<string | null>>, token: string | null, initialRouteName?: string }) => (
   <Drawer.Navigator
     initialRouteName={initialRouteName}
     backBehavior="history"
