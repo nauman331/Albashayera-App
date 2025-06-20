@@ -84,6 +84,8 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
         ?.toLowerCase()
         .includes(auctionTitle?.toLowerCase())
     )
+      // Sort by lotNo in increasing order
+      .sort((a, b) => Number(a.lotNo) - Number(b.lotNo))
     : [];
 
 
@@ -573,7 +575,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     marginVertical: 5,
-    zIndex: 99, // required for layering
+    zIndex: 99,
   },
   dropdownContainer: {
     borderColor: 'black',
