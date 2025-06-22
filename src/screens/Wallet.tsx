@@ -143,6 +143,10 @@ const WalletHistoryScreen = () => {
 
   const handleWithdraw = () => {
     if (balance < 1) {
+      Toast.show({
+        type: "error",
+        text1: "Not Enough Balance"
+      });
       return
     } else if (!token || tokenLoading) {
       Toast.show({
