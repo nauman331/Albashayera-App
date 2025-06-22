@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  StyleSheet, Text, TextInput, View, TouchableOpacity, Alert, ActivityIndicator
+  StyleSheet, Text, TextInput, View, TouchableOpacity, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { backendURL } from "../utils/exports";
@@ -92,85 +92,94 @@ const ForgotPassword = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Back Arrow */}
-      <TouchableOpacity
-        style={{ alignSelf: 'flex-start', marginBottom: 10 }}
-        onPress={() => navigation.goBack()}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
+    >
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
       >
-        <Ionicons name="arrow-back" size={28} color="#010153" />
-      </TouchableOpacity>
-      <Text style={styles.heading}>Reset Password</Text>
+        {/* Back Arrow */}
+        <TouchableOpacity
+          style={{ alignSelf: 'flex-start', marginBottom: 10 }}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={28} color="#010153" />
+        </TouchableOpacity>
+        <Text style={styles.heading}>Reset Password</Text>
 
-      {step === 1 && (
-        <>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your email"
-            placeholderTextColor="gray"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={email}
-            onChangeText={setEmail}
-          />
-          <TouchableOpacity style={styles.button} onPress={handleSendOTP} disabled={loading}>
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Send OTP</Text>}
-          </TouchableOpacity>
-        </>
-      )}
-
-      {step === 2 && (
-        <>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter OTP"
-            placeholderTextColor="gray"
-            keyboardType="numeric"
-            value={otp}
-            onChangeText={setOtp}
-          />
-          <TouchableOpacity style={styles.button} onPress={handleVerifyOTP} disabled={loading}>
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Verify OTP</Text>}
-          </TouchableOpacity>
-        </>
-      )}
-
-      {step === 3 && (
-        <>
-          <View style={styles.passwordContainer}>
+        {step === 1 && (
+          <>
             <TextInput
-              style={styles.passwordInput}
-              placeholder="New Password"
+              style={styles.input}
+              placeholder="Enter your email"
               placeholderTextColor="gray"
-              secureTextEntry={!showPassword}
+              keyboardType="email-address"
               autoCapitalize="none"
-              value={newPassword}
-              onChangeText={setNewPassword}
+              value={email}
+              onChangeText={setEmail}
             />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-              <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color="gray" />
+            <TouchableOpacity style={styles.button} onPress={handleSendOTP} disabled={loading}>
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Send OTP</Text>}
             </TouchableOpacity>
-          </View>
-          <View style={styles.passwordContainer}>
+          </>
+        )}
+
+        {step === 2 && (
+          <>
             <TextInput
-              style={styles.passwordInput}
-              placeholder="Confirm New Password"
+              style={styles.input}
+              placeholder="Enter OTP"
               placeholderTextColor="gray"
-              secureTextEntry={!showConfirmPassword}
-              autoCapitalize="none"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
+              keyboardType="numeric"
+              value={otp}
+              onChangeText={setOtp}
             />
-            <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-              <Ionicons name={showConfirmPassword ? "eye-off" : "eye"} size={24} color="gray" />
+            <TouchableOpacity style={styles.button} onPress={handleVerifyOTP} disabled={loading}>
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Verify OTP</Text>}
             </TouchableOpacity>
-          </View>
-          <TouchableOpacity style={styles.button} onPress={handleResetPassword} disabled={loading}>
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Reset Password</Text>}
-          </TouchableOpacity>
-        </>
-      )}
-    </View>
+          </>
+        )}
+
+        {step === 3 && (
+          <>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder="New Password"
+                placeholderTextColor="gray"
+                secureTextEntry={!showPassword}
+                autoCapitalize="none"
+                value={newPassword}
+                onChangeText={setNewPassword}
+              />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color="gray" />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder="Confirm New Password"
+                placeholderTextColor="gray"
+                secureTextEntry={!showConfirmPassword}
+                autoCapitalize="none"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+              />
+              <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+                <Ionicons name={showConfirmPassword ? "eye-off" : "eye"} size={24} color="gray" />
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity style={styles.button} onPress={handleResetPassword} disabled={loading}>
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Reset Password</Text>}
+            </TouchableOpacity>
+          </>
+        )}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

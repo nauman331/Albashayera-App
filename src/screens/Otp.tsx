@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
@@ -39,30 +39,39 @@ const Otp = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Back Arrow */}
-      <TouchableOpacity
-        style={{ alignSelf: 'flex-start', marginBottom: 10 }}
-        onPress={() => navigation.goBack()}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+    >
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
       >
-        <Ionicons name="arrow-back" size={28} color="#010153" />
-      </TouchableOpacity>
-      <Text style={styles.title}>Verify OTP</Text>
-      <Text style={styles.subtitle}>Enter the OTP sent to:</Text>
-      <Text style={styles.email}>{route.params.email}</Text>
+        {/* Back Arrow */}
+        <TouchableOpacity
+          style={{ alignSelf: 'flex-start', marginBottom: 10 }}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={28} color="#010153" />
+        </TouchableOpacity>
+        <Text style={styles.title}>Verify OTP</Text>
+        <Text style={styles.subtitle}>Enter the OTP sent to:</Text>
+        <Text style={styles.email}>{route.params.email}</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Enter 6-digit OTP"
-        keyboardType="numeric"
-        value={otp}
-        onChangeText={setOtp}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="Enter 6-digit OTP"
+          keyboardType="numeric"
+          value={otp}
+          onChangeText={setOtp}
+        />
 
-      <TouchableOpacity style={styles.button} onPress={handleVerifyOtp} disabled={loading}>
-        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Verify OTP</Text>}
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity style={styles.button} onPress={handleVerifyOtp} disabled={loading}>
+          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Verify OTP</Text>}
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
