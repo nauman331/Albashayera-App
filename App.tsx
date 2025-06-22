@@ -326,7 +326,11 @@ const App = () => {
   return (
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
-        <DrawerNavigator setToken={setToken} token={token} />
+        <DrawerNavigator
+          setToken={setToken}
+          token={token}
+          initialRouteName={token ? "Dashboard" : "AuctionVehicles"}
+        />
       </NavigationContainer>
       <Toast />
     </SafeAreaProvider>

@@ -31,38 +31,11 @@ import Otp from "../../screens/Otp";
 const Drawer = createDrawerNavigator();
 
 // Wrapper Component for Each Screen
-const ScreenWrapper = ({ children }: { children: React.ReactNode }) => (
+const ScreenWrapper = ({ children, token }: { children: React.ReactNode, token: string | null }) => (
   <View style={styles.container}>
     <View style={styles.screenContent}>{children}</View>
-    <CustomBottomBar />
+    {token && <CustomBottomBar />}
   </View>
-);
-
-// Fix: Forward all props to the child screen
-const CarDetailsScreenWrapper = (props: any) => (
-  <ScreenWrapper>
-    <CarDetailsScreen {...props} />
-  </ScreenWrapper>
-);
-const AuctionWrapper = (props: any) => (
-  <ScreenWrapper>
-    <AuctionVehicles {...props} />
-  </ScreenWrapper>
-);
-const OrderDetailsWrapper = (props: any) => (
-  <ScreenWrapper>
-    <OrderDetails {...props} />
-  </ScreenWrapper>
-);
-const PayOrderWrapper = (props: any) => (
-  <ScreenWrapper>
-    <PayOrder {...props} />
-  </ScreenWrapper>
-);
-const WithdrawWrapper = (props: any) => (
-  <ScreenWrapper>
-    <WithDraw {...props} />
-  </ScreenWrapper>
 );
 
 
@@ -129,7 +102,7 @@ const ProfileScreenWrapper = (props: any) => {
   }, [token]);
   if (!token) return null;
   return (
-    <ScreenWrapper>
+    <ScreenWrapper token={token}>
       <Profile {...props} setToken={setToken} />
     </ScreenWrapper>
   );
@@ -184,7 +157,7 @@ const DrawerNavigator = ({ setToken, token, initialRouteName = "Dashboard" }: { 
           props.navigation.navigate("Login");
           return null;
         }
-        return <ScreenWrapper><Dashboard {...props} /></ScreenWrapper>;
+        return <ScreenWrapper token={token}><Dashboard {...props} /></ScreenWrapper>;
       }}
     />
     <Drawer.Screen
@@ -195,7 +168,7 @@ const DrawerNavigator = ({ setToken, token, initialRouteName = "Dashboard" }: { 
           props.navigation.navigate("Login");
           return null;
         }
-        return <ScreenWrapper><Orders {...props} /></ScreenWrapper>;
+        return <ScreenWrapper token={token}><Orders {...props} /></ScreenWrapper>;
       }}
     />
     <Drawer.Screen
@@ -206,12 +179,11 @@ const DrawerNavigator = ({ setToken, token, initialRouteName = "Dashboard" }: { 
           props.navigation.navigate("Login");
           return null;
         }
-        return <ScreenWrapper><Wallet {...props} /></ScreenWrapper>;
+        return <ScreenWrapper token={token}><Wallet {...props} /></ScreenWrapper>;
       }}
     />
     <Drawer.Screen
       name="Profile"
-      // Fix: Use wrapper component for Profile
       children={(props) => <ProfileScreenWrapper {...props} setToken={setToken} token={token} />}
     />
     <Drawer.Screen
@@ -222,19 +194,19 @@ const DrawerNavigator = ({ setToken, token, initialRouteName = "Dashboard" }: { 
           props.navigation.navigate("Login");
           return null;
         }
-        return <ScreenWrapper><Deposit {...props} /></ScreenWrapper>;
+        return <ScreenWrapper token={token}><Deposit {...props} /></ScreenWrapper>;
       }}
     />
-    <Drawer.Screen name="Withdraw" component={withAuthGuard(WithdrawWrapper)} />
-    <Drawer.Screen name="OrderDetails" component={withAuthGuard(OrderDetailsWrapper)} />
-    <Drawer.Screen name="PayOrder" component={withAuthGuard(PayOrderWrapper)} />
+    <Drawer.Screen name="Withdraw" component={withAuthGuard((props) => <ScreenWrapper token={token}><WithDraw {...props} /></ScreenWrapper>)} />
+    <Drawer.Screen name="OrderDetails" component={withAuthGuard((props) => <ScreenWrapper token={token}><OrderDetails {...props} /></ScreenWrapper>)} />
+    <Drawer.Screen name="PayOrder" component={withAuthGuard((props) => <ScreenWrapper token={token}><PayOrder {...props} /></ScreenWrapper>)} />
     {/* Public screens */}
-    <Drawer.Screen name="Notifications" component={() => <ScreenWrapper><NotificationScreen /></ScreenWrapper>} />
-    <Drawer.Screen name="AuctionEvents" component={() => <ScreenWrapper><Auctions /></ScreenWrapper>} />
-    <Drawer.Screen name="ContactUs" component={() => <ScreenWrapper><ContactScreen /></ScreenWrapper>} />
-    <Drawer.Screen name="BuyNowVehicles" component={() => <ScreenWrapper><BuyNowVehicles /></ScreenWrapper>} />
-    <Drawer.Screen name="CarDetails" component={CarDetailsScreenWrapper} />
-    <Drawer.Screen name="AuctionVehicles" component={AuctionWrapper} />
+    <Drawer.Screen name="Notifications" component={() => <ScreenWrapper token={token}><NotificationScreen /></ScreenWrapper>} />
+    <Drawer.Screen name="AuctionEvents" component={() => <ScreenWrapper token={token}><Auctions /></ScreenWrapper>} />
+    <Drawer.Screen name="ContactUs" component={() => <ScreenWrapper token={token}><ContactScreen /></ScreenWrapper>} />
+    <Drawer.Screen name="BuyNowVehicles" component={() => <ScreenWrapper token={token}><BuyNowVehicles /></ScreenWrapper>} />
+    <Drawer.Screen name="CarDetails" component={(props: any) => <ScreenWrapper token={token}><CarDetailsScreen {...props} /></ScreenWrapper>} />
+    <Drawer.Screen name="AuctionVehicles" component={(props: any) => <ScreenWrapper token={token}><AuctionVehicles {...props} /></ScreenWrapper>} />
     {/* Add Login, Register, Auth as hidden screens */}
     <Drawer.Screen
       name="Login"
