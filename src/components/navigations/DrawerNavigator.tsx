@@ -197,8 +197,24 @@ const DrawerNavigator = ({ setToken, token, initialRouteName = "Dashboard" }: { 
         return <ScreenWrapper token={token}><Deposit {...props} /></ScreenWrapper>;
       }}
     />
-    <Drawer.Screen name="Withdraw" component={withAuthGuard((props) => <ScreenWrapper token={token}><WithDraw {...props} /></ScreenWrapper>)} />
-    <Drawer.Screen name="OrderDetails" component={withAuthGuard((props) => <ScreenWrapper token={token}><OrderDetails {...props} /></ScreenWrapper>)} />
+    <Drawer.Screen name="Withdraw"
+      component={(props: React.JSX.IntrinsicAttributes) => {
+        if (!token) {
+          // @ts-ignore
+          props.navigation.navigate("Login");
+          return null;
+        }
+        return <ScreenWrapper token={token}><WithDraw {...props} /></ScreenWrapper>;
+      }} />
+    <Drawer.Screen name="OrderDetails"
+      component={(props: React.JSX.IntrinsicAttributes) => {
+        if (!token) {
+          // @ts-ignore
+          props.navigation.navigate("Login");
+          return null;
+        }
+        return <ScreenWrapper token={token}><OrderDetails {...props} /></ScreenWrapper>;
+      }} />
     <Drawer.Screen name="PayOrder" component={withAuthGuard((props) => <ScreenWrapper token={token}><PayOrder {...props} /></ScreenWrapper>)} />
     {/* Public screens */}
     <Drawer.Screen name="Notifications" component={() => <ScreenWrapper token={token}><NotificationScreen /></ScreenWrapper>} />
