@@ -34,8 +34,8 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
 
 
   const [filters, setFilters] = useState<{
-    minPrice: string | number;
-    maxPrice: string | number;
+    priceMin: string | number;
+    priceMax: string | number;
     carMake: string;
     yearMin: string;
     yearMax: string;
@@ -43,8 +43,8 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
     doors: string;
     cylinders: string;
   }>({
-    minPrice: 1,
-    maxPrice: 10000,
+    priceMin: 1,
+    priceMax: 10000,
     carMake: "",
     yearMin: "",
     yearMax: "",
@@ -189,9 +189,9 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                   placeholderTextColor="black"
                   placeholder="Min Price"
                   keyboardType="numeric"
-                  value={filters.minPrice !== undefined ? String(filters.minPrice) : ""}
+                  value={filters.priceMin !== undefined ? String(filters.priceMin) : ""}
                   onChangeText={(value) =>
-                    setFilters({ ...filters, minPrice: value ? Number(value) : 0 })
+                    setFilters({ ...filters, priceMin: value ? Number(value) : 0 })
                   }
                 />
                 <TextInput
@@ -199,9 +199,9 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                   placeholderTextColor="black"
                   placeholder="Max Price"
                   keyboardType="numeric"
-                  value={filters.maxPrice !== undefined ? String(filters.maxPrice) : ""}
+                  value={filters.priceMax !== undefined ? String(filters.priceMax) : ""}
                   onChangeText={(value) =>
-                    setFilters({ ...filters, maxPrice: value ? Number(value) : 0 })
+                    setFilters({ ...filters, priceMax: value ? Number(value) : 0 })
                   }
                 />
               </View>
@@ -324,8 +324,8 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                 <Pressable
                   onPress={() => {
                     setFilters({
-                      minPrice: "",
-                      maxPrice: "",
+                      priceMin: "",
+                      priceMax: "",
                       carMake: "",
                       yearMin: "",
                       yearMax: "",

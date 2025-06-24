@@ -64,6 +64,15 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
             return;
         }
 
+        if (currentBalance < 1000) {
+            Toast.show({
+                type: "error",
+                text1: "Low Balance",
+                text2: "Minimum 1000 AED required in wallet to place bid"
+            });
+            return;
+        }
+
         if (socketService.isConnected && token && car?._id) {
             if (!bid || isNaN(Number(bid))) {
                 Toast.show({
