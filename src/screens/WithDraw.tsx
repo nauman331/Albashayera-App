@@ -87,18 +87,20 @@ const WithDraw = ({ route }: any) => {
                     contentContainerStyle={styles.scrollContainer}
                     keyboardShouldPersistTaps="handled"
                 >
-                    <Text style={styles.header}>Withdraw Funds</Text>
-                    <Form
-                        fields={[
-                            { name: 'accountHolderName', placeholder: 'Account Holder Name', type: 'default' },
-                            { name: 'accountNumber', placeholder: 'Account/IBAN Number', type: 'default' },
-                            { name: 'bankName', placeholder: 'Bank Name', type: 'default' },
-                            { name: 'amount', placeholder: `Balance - ${balance}`, type: 'numeric' },
-                        ]}
-                        buttonLabel="Withdraw"
-                        onSubmit={handleWithdraw}
-                        loading={loading}
-                    />
+                    <View style={styles.centeredContent}>
+                        <Text style={styles.header}>Withdraw Funds</Text>
+                        <Form
+                            fields={[
+                                { name: 'accountHolderName', placeholder: 'Account Holder Name', type: 'default' },
+                                { name: 'accountNumber', placeholder: 'Account/IBAN Number', type: 'default' },
+                                { name: 'bankName', placeholder: 'Bank Name', type: 'default' },
+                                { name: 'amount', placeholder: `Balance - ${balance}`, type: 'numeric' },
+                            ]}
+                            buttonLabel="Withdraw"
+                            onSubmit={handleWithdraw}
+                            loading={loading}
+                        />
+                    </View>
                 </ScrollView>
             </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
@@ -110,11 +112,18 @@ export default WithDraw;
 const styles = StyleSheet.create({
     scrollContainer: {
         flexGrow: 1,
+        justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 20,
-        backgroundColor: '#f8f9fa',
+        backgroundColor: '#fff',
         paddingTop: 20,
         paddingBottom: 40,
+        minHeight: '100%',
+    },
+    centeredContent: {
+        width: '100%',
+        justifyContent: 'center',
+        flex: 1,
     },
     header: {
         fontSize: 24,

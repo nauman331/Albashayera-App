@@ -85,10 +85,10 @@ const WalletHistoryScreen = () => {
 
   useEffect(() => {
     const fetchToken = async () => {
-      setTokenLoading(true); // <-- add
+      setTokenLoading(true);
       const tokeninner = await getToken();
       setToken(tokeninner)
-      setTokenLoading(false); // <-- add
+      setTokenLoading(false);
     }
     fetchToken()
   }, [])
@@ -153,6 +153,7 @@ const WalletHistoryScreen = () => {
         type: "error",
         text1: "Please wait, still loading your session."
       });
+      return;
     } else {
       navigation.navigate("Withdraw", { balance })
     }
@@ -189,7 +190,9 @@ const WalletHistoryScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton} onPress={handleWithdraw} disabled={!token || tokenLoading}>
           <Icon name="cash-minus" size={20} color="#FFF" />
-          <Text style={styles.buttonText}>Withdraw</Text>
+          <Text
+            disabled={!token || tokenLoading}
+            style={styles.buttonText}>Withdraw</Text>
         </TouchableOpacity>
       </View>
 
