@@ -8,6 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../App";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { requestMediaPermissions } from "../utils/permissions";
 
 const PayOrder: React.FC = ({ route }: any) => {
     const { invoiceNumber, pendingAmount } = route.params;
@@ -24,7 +25,12 @@ const PayOrder: React.FC = ({ route }: any) => {
         fetchToken();
     }, []);
 
-    const pickFile = () => {
+    const pickFile = async () => {
+        const granted = await requestMediaPermissions();
+        if (!granted) {
+            Toast.show({ type: "error", text1: "Permission denied" });
+            return;
+        }
         launchImageLibrary({ mediaType: "photo", includeBase64: false }, (response) => {
             if (response.didCancel) return;
             if (response.assets) {

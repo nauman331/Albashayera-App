@@ -23,7 +23,7 @@ import { cloudinaryURL, backendURL, UPLOAD_PRESET } from "../utils/exports";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
-
+import { requestMediaPermissions } from "../utils/permissions";
 
 
 type ProfileProps = {
@@ -64,7 +64,12 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
     fetchUserData();
   }, []);
 
-  const pickFile = () => {
+  const pickFile = async () => {
+    const granted = await requestMediaPermissions();
+    if (!granted) {
+      Toast.show({ type: "error", text1: "Permission denied" });
+      return;
+    }
     launchImageLibrary({ mediaType: "photo", includeBase64: false }, (response) => {
       if (response.didCancel) return;
       if (response.assets) {
