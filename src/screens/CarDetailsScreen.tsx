@@ -335,7 +335,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
                     width={width}
                     height={200}
                     autoPlay={true}
-                    data={car?.carImages.slice(0, 8)}
+                    data={car?.carImages.slice(0, 10)}
                     scrollAnimationDuration={1000}
                     renderItem={({ item }) => (
                         <Image source={{ uri: item as string }} style={{ width: '90%', height: '100%', borderRadius: 10 }} />
