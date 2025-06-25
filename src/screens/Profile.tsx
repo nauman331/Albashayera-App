@@ -230,7 +230,7 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
           <MaterialCommunityIcons name="arrow-right" size={20} color="#888" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.socialItem} onPress={() => Linking.openURL(" https://www.facebook.com/albashayeraautoauction/")}>
+        <TouchableOpacity style={styles.socialItem} onPress={() => Linking.openURL("https://www.facebook.com/albashayeraautoauction/")}>
           <FontAwesome name="facebook" size={24} color="#1877F2" />
           <Text style={styles.socialText}>Facebook</Text>
           <MaterialCommunityIcons name="arrow-right" size={20} color="#888" />
