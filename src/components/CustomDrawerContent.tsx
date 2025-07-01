@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from "react-native";
-import { DrawerContentScrollView } from "@react-navigation/drawer";
+import { DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
 import { useNavigationState, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getToken, removeToken } from "../utils/asyncStorage";
 import { backendURL } from "../utils/exports";
+import { useLanguage } from "../context/LanguageContext";
+import { useTranslation } from "react-i18next";
 
 interface CustomDrawerContentProps {
   navigation: any;
@@ -24,6 +26,9 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps & { token: string |
   const [isModalVisible, setModalVisible] = useState(false);
   const isAuthenticated = !!token;
   const nav = useNavigation();
+  const { language, setLanguage } = useLanguage();
+  const { t } = useTranslation();
+  const isRTL = language === "ar";
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -158,6 +163,58 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps & { token: string |
           <Icon name="live-tv" size={20} color={currentRoute === "CarDetails" ? "#010153" : "#000"} />
           <Text style={[styles.menuText, currentRoute === "CarDetails" && styles.activeMenuText]}>Live Auction</Text>
         </TouchableOpacity>
+
+        {/* Language Switcher */}
+        <View style={{ marginTop: 30, paddingHorizontal: 20 }}>
+          <Text
+            style={{
+              fontWeight: "bold",
+              marginBottom: 10,
+              textAlign: isRTL ? "right" : "left",
+            }}
+          >
+            {t("language") || "Language"}
+          </Text>
+          <TouchableOpacity
+            style={{
+              backgroundColor: language === "en" ? "#010153" : "#fff",
+              padding: 10,
+              borderRadius: 8,
+              marginBottom: 5,
+              borderWidth: 1,
+              borderColor: "#010153",
+            }}
+            onPress={() => setLanguage("en")}
+          >
+            <Text
+              style={{
+                color: language === "en" ? "#fff" : "#010153",
+                textAlign: isRTL ? "right" : "left",
+              }}
+            >
+              English
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              backgroundColor: language === "ar" ? "#010153" : "#fff",
+              padding: 10,
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: "#010153",
+            }}
+            onPress={() => setLanguage("ar")}
+          >
+            <Text
+              style={{
+                color: language === "ar" ? "#fff" : "#010153",
+                textAlign: isRTL ? "right" : "left",
+              }}
+            >
+              العربية
+            </Text>
+          </TouchableOpacity>
+        </View>
       </DrawerContentScrollView>
 
       {/* Bottom Section */}

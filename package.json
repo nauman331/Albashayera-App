@@ -19,6 +19,7 @@
     "@react-navigation/stack": "^7.2.1",
     "events": "^3.3.0",
     "react": "19.0.0",
+    "react-i18next": "^15.5.3",
     "react-native": "0.78.0",
     "react-native-animatable": "^1.4.0",
     "react-native-chart-kit": "^6.12.0",

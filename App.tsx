@@ -13,6 +13,8 @@ import Sound from "react-native-sound";
 import { navigate, navigationRef } from "./src/utils/navigationRef";
 import { ActivityIndicator, View, StyleSheet } from "react-native";
 import EventBus from "./src/utils/EventBus";
+import './src/i18n'; // <-- Add this line to initialize i18n
+import { LanguageProvider } from "./src/context/LanguageContext";
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -324,16 +326,18 @@ const App = () => {
       </View>
     );
   return (
-    <SafeAreaProvider>
-      <NavigationContainer ref={navigationRef}>
-        <DrawerNavigator
-          setToken={setToken}
-          token={token}
-          initialRouteName={token ? "Dashboard" : "AuctionVehicles"}
-        />
-      </NavigationContainer>
-      <Toast />
-    </SafeAreaProvider>
+    <LanguageProvider>
+      <SafeAreaProvider>
+        <NavigationContainer ref={navigationRef}>
+          <DrawerNavigator
+            setToken={setToken}
+            token={token}
+            initialRouteName={token ? "Dashboard" : "AuctionVehicles"}
+          />
+        </NavigationContainer>
+        <Toast />
+      </SafeAreaProvider>
+    </LanguageProvider>
   );
 };
 

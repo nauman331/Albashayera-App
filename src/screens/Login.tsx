@@ -7,11 +7,12 @@ import { saveToken } from "../utils/asyncStorage"
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { useTranslation } from 'react-i18next';
 
 const Login = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<string | null>> }) => {
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
+  const { t } = useTranslation();
   const handleLogin = async (formData: Record<string, string>) => {
     try {
       setLoading(true)
@@ -62,7 +63,7 @@ const Login = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<str
           { name: 'email', placeholder: 'Email', type: 'email-address' },
           { name: 'password', placeholder: 'Password', secureTextEntry: true },
         ]}
-        buttonLabel="Login"
+        buttonLabel={t("login")}
         onSubmit={handleLogin}
         loading={loading}
       />

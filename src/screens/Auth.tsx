@@ -3,7 +3,7 @@ import React from 'react';
 import logo from '../assets/images/Logo.png';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
+import { useTranslation } from 'react-i18next';
 
 type RootStackParamList = {
   Login: undefined;
@@ -14,26 +14,27 @@ type AuthScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 const Auth = () => {
   const navigation = useNavigation<AuthScreenNavigationProp>();
+  const { t } = useTranslation();
 
   return (
     <View style={styles.container}>
       {/* Middle Section: Welcome, Logo, and Description */}
       <View style={styles.middleContainer}>
-        <Text style={styles.topText}>Welcome to</Text>
+        <Text style={styles.topText}>{t("welcome")}</Text>
         <Image source={logo} style={styles.logo} />
-        <Text style={styles.description}>Auctions made simple, just for you!</Text>
+        <Text style={styles.description}>{t("auctions_simple")}</Text>
       </View>
 
       {/* Bottom Section: Button & Register */}
       <View style={styles.bottomContainer}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.buttonText}>Login</Text>
+          <Text style={styles.buttonText}>{t("login")}</Text>
         </TouchableOpacity>
 
         <View style={styles.registerContainer}>
-          <Text style={styles.registerText}>Don't have an account?</Text>
+          <Text style={styles.registerText}>{t("dont_have_account")}</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-            <Text style={styles.registerLink}> Register</Text>
+            <Text style={styles.registerLink}> {t("register")}</Text>
           </TouchableOpacity>
         </View>
       </View>
