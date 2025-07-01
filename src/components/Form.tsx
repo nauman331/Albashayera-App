@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useTranslation } from 'react-i18next';
 
 interface FormProps {
   fields: { name: string; placeholder: string; secureTextEntry?: boolean; type?: KeyboardTypeOptions; }[];
@@ -18,6 +19,7 @@ interface FormProps {
 
 const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [passwordVisible, setPasswordVisible] = useState<Record<string, boolean>>({});
   const [phoneNumber, setPhoneNumber] = useState<string>('');
@@ -63,6 +65,7 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) =
                 defaultValue={phoneNumber}
                 defaultCode="AE"
                 layout="second"
+                placeholder={t("phone")}
                 onChangeFormattedText={(text) => {
                   setPhoneNumber(text);
                 }}
@@ -104,33 +107,33 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) =
           </View>
         ))}
         {
-          buttonLabel === "Login" &&
+          buttonLabel === t("login") &&
           <View style={{ width: '100%', alignItems: 'flex-end' }}>
             <TouchableOpacity onPress={() => navigation.navigate('Forgot')}>
-              <Text style={styles.forgotLink}> Forgotten Password?</Text>
+              <Text style={styles.forgotLink}> {t("forgot_password")} ?</Text>
             </TouchableOpacity>
           </View>
         }
         {/* Submit Button */}
         <TouchableOpacity style={styles.button} onPress={() => onSubmit({ ...formData, contact: phoneNumber })}>
-          <Text style={styles.buttonText}>{loading ? "Submitting..." : buttonLabel}</Text>
+          <Text style={styles.buttonText}>{loading ? t("submitting") : buttonLabel}</Text>
         </TouchableOpacity>
 
         {
-          buttonLabel === "Login" && (
+          buttonLabel === t("login") && (
             <View style={styles.registerContainer}>
-              <Text style={styles.registerText}>Don't have an account?</Text>
+              <Text style={styles.registerText}>{t("dont_have_account")}</Text>
               <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                <Text style={styles.registerLink}> Register</Text>
+                <Text style={styles.registerLink}>{t("register")}</Text>
               </TouchableOpacity>
             </View>
           )}
         {
-          buttonLabel === "Register" && (
+          buttonLabel === t("register") && (
             <View style={styles.registerContainer}>
-              <Text style={styles.registerText}>Already have an account?</Text>
+              <Text style={styles.registerText}>{t("already_have_account")}</Text>
               <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.registerLink}> Login</Text>
+                <Text style={styles.registerLink}>{t("login")}</Text>
               </TouchableOpacity>
             </View>
           )}

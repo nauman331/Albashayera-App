@@ -3,7 +3,8 @@
   "auctions_simple": "Auctions made simple, just for you!",
   "login": "Login",
   "register": "Register",
-  "dont_have_account": "Don't have an account?",
+  "dont_have_account": "Don't have an account? ",
+  "already_have_account": "Already have an account? ",
   "withdraw_funds": "Withdraw Funds",
   "account_holder_name": "Account Holder Name",
   "account_number": "Account/IBAN Number",
@@ -30,7 +31,6 @@
   "phone": "Phone",
   "address": "Address",
   "password": "Password",
-  "register_btn": "Register",
   "contact_us": "Contact Us",
   "message": "Message",
   "success": "Success",
@@ -77,5 +77,6 @@
   "auction_events": "Auction Events",
   "live_auction": "Live Auction",
   "profile": "Profile",
-  "logout": "Logout"
+  "logout": "Logout",
+  "forgot_password": "Forgotten Password"
 }

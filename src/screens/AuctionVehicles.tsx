@@ -13,14 +13,14 @@ import { backendURL } from "../utils/exports";
 import Toast from 'react-native-toast-message';
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../App";
-
+import { useTranslation } from 'react-i18next';
 
 
 const AuctionVehicles: React.FC = ({ route }: any) => {
   const selectedAuctionProp = route.params?.selectedAuctionProp || "";
   const { cars, loading, error, categoriesData, refetch } = useFetchCarsAndCategories();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-
+  const { t } = useTranslation();
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [filterLoading, setFilterLoading] = useState(false)
   const [auctionTitle, setAuctionTitle] = useState("");
@@ -148,7 +148,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Auction Vehicles</Text>
+      <Text style={styles.title}>{t("auction_vehicles")}</Text>
 
       {/* Filters Section */}
       <View style={styles.filterSection}>
@@ -161,7 +161,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
         </View>
 
         <Pressable onPress={toggleFilterModal} style={styles.rightFilter}>
-          <Text style={{ fontSize: 15, color: "#010153" }}>Filters </Text>
+          <Text style={{ fontSize: 15, color: "#010153" }}>{t("filters")}</Text>
           <FontAwesome6
             name="arrow-right-arrow-left"
             size={15}
@@ -338,12 +338,12 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                   }}
                   style={styles.clearButton}
                 >
-                  <Text style={styles.buttonText}>Clear All Filters</Text>
+                  <Text style={styles.buttonText}>{t("clear_all_filters")}</Text>
                 </Pressable>
 
                 <Pressable onPress={applyFilters} style={styles.applyButton}>
                   <Text style={styles.buttonText}>
-                    {filterLoading ? "Applying Filters..." : "Apply Selected Filters"}
+                    {filterLoading ? "Applying Filters..." : t("apply_selected_filters")}
                   </Text>
                 </Pressable>
               </View>
@@ -355,7 +355,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
       {/* Display Cars */}
       {filteredCars.length === 0 ? (
         <View style={styles.notfound}>
-          <Text style={styles.notfoundText}>No Cars Found</Text>
+          <Text style={styles.notfoundText}>{t("no_cars_found")}</Text>
           <Image source={require("../assets/images/towing.png")} style={styles.carImage} />
         </View>
       ) : (
@@ -401,7 +401,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                   <View style={styles.footer}>
                     <Text style={styles.price}>AED {item.startingBid || "N/A"}</Text>
                     <Pressable onPress={() => navigation.navigate('CarDetails', { carId: item._id })}>
-                      <Text style={styles.viewDetails}>View Details <FontAwesome6 name="arrow-up-right-from-square" /></Text>
+                      <Text style={styles.viewDetails}>{t("view_details")}<FontAwesome6 name="arrow-up-right-from-square" /></Text>
                     </Pressable>
                   </View>
                 </View>

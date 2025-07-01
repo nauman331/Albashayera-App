@@ -60,8 +60,8 @@ const Login = ({ setToken }: { setToken: React.Dispatch<React.SetStateAction<str
     <View style={styles.container}>
       <Form
         fields={[
-          { name: 'email', placeholder: 'Email', type: 'email-address' },
-          { name: 'password', placeholder: 'Password', secureTextEntry: true },
+          { name: 'email', placeholder: t("email"), type: 'email-address' },
+          { name: 'password', placeholder: t("password"), secureTextEntry: true },
         ]}
         buttonLabel={t("login")}
         onSubmit={handleLogin}

@@ -8,9 +8,11 @@ import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { useTranslation } from 'react-i18next';
 
 const ForgotPassword = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Login'>>();
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -131,14 +133,14 @@ const ForgotPassword = () => {
           <>
             <TextInput
               style={styles.input}
-              placeholder="Enter OTP"
+              placeholder={t("enter_otp_placeholder")}
               placeholderTextColor="gray"
               keyboardType="numeric"
               value={otp}
               onChangeText={setOtp}
             />
             <TouchableOpacity style={styles.button} onPress={handleVerifyOTP} disabled={loading}>
-              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Verify OTP</Text>}
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>{t("verify_otp")}</Text>}
             </TouchableOpacity>
           </>
         )}
