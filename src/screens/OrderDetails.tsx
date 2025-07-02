@@ -4,6 +4,7 @@ import React, { useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useFocusEffect } from '@react-navigation/native';
+import { useTranslation } from "react-i18next";
 
 interface Order {
   carAmount: number;
@@ -30,6 +31,7 @@ const InvoiceSlip = ({ route, navigation }: any) => {
   const { orderId } = route.params;
   const [loading, setLoading] = useState<boolean>(true);
   const [invoice, setInvoice] = useState<Order | null>(null);
+  const { t } = useTranslation();
 
   const getInvoice = async (tokenValue: string) => {
     try {
@@ -86,78 +88,76 @@ const InvoiceSlip = ({ route, navigation }: any) => {
             <View style={[styles.iconContainer, invoice?.statusText === 'rejected' ? styles.iconContainerLarge : styles.iconCenterFaded]}>
               <Icon name="x-circle" size={invoice?.statusText === 'rejected' ? 28 : 20} color="#DC2626" />
             </View>
-            <Text style={invoice?.statusText === 'rejected' ? styles.iconTextP : styles.iconText}>Rejected</Text>
+            <Text style={invoice?.statusText === 'rejected' ? styles.iconTextP : styles.iconText}>{t("rejected") || "Rejected"}</Text>
           </View>
 
           <View style={[styles.iconWrapper, invoice?.statusText === 'payment pending' ? styles.iconCenter : styles.iconCenterFaded]}>
             <View style={[styles.iconContainer, invoice?.statusText === 'payment pending' ? styles.iconContainerLarge : styles.iconCenterFaded]}>
               <Icon name="clock" size={invoice?.statusText === 'payment pending' ? 28 : 20} color="#FBBF24" />
             </View>
-            <Text style={invoice?.statusText === 'payment pending' ? styles.iconTextP : styles.iconText}>Pending</Text>
+            <Text style={invoice?.statusText === 'payment pending' ? styles.iconTextP : styles.iconText}>{t("pending") || "Pending"}</Text>
           </View>
 
           <View style={styles.iconWrapper}>
             <View style={[styles.iconContainer, invoice?.statusText === 'approved' ? styles.iconContainerLarge : styles.iconCenterFaded]}>
               <Icon name="check-circle" size={invoice?.statusText === 'approved' ? 28 : 20} color="#22C55E" />
             </View>
-            <Text style={invoice?.statusText === 'approved' ? styles.iconTextP : styles.iconText}>Completed</Text>
+            <Text style={invoice?.statusText === 'approved' ? styles.iconTextP : styles.iconText}>{t("completed") || "Completed"}</Text>
           </View>
         </View>
-
       </View>
-
 
       {/* Invoice Box */}
       <View style={styles.invoiceBox}>
         <View style={styles.invoiceHeader}>
-          <Text style={styles.invoiceText}>INVOICE</Text>
+          <Text style={styles.invoiceText}>{t("invoice") || "INVOICE"}</Text>
         </View>
         <View style={styles.row}>
           <View style={styles.column}>
-            <Text style={styles.label}>CUSTOMER</Text>
+            <Text style={styles.label}>{t("customer") || "CUSTOMER"}</Text>
             <Text style={styles.value}>{invoice?.userId?.firstName} {invoice?.userId?.lastName}</Text>
           </View>
           <View style={styles.column}>
-            <Text style={styles.label}>DUE ON</Text>
-            <Text style={styles.value}>{invoice?.createdAt ? new Date(invoice.createdAt).toLocaleDateString() : 'N/A'}</Text>
+            <Text style={styles.label}>{t("due_on") || "DUE ON"}</Text>
+            <Text style={styles.value}>{invoice?.createdAt ? new Date(invoice.createdAt).toLocaleDateString() : t("n_a") || 'N/A'}</Text>
           </View>
         </View>
         <View style={styles.row}>
           <View style={styles.column}>
-            <Text style={styles.label}>VEHICLE NAME</Text>
+            <Text style={styles.label}>{t("vehicle_name") || "VEHICLE NAME"}</Text>
             <Text style={styles.value}>{invoice?.carId?.listingTitle}</Text>
           </View>
           <View style={styles.column}>
-            <Text style={styles.label}>VEHICLE VIN</Text>
+            <Text style={styles.label}>{t("vehicle_vin") || "VEHICLE VIN"}</Text>
             <Text style={styles.value}>{invoice?.carId?.vin}</Text>
           </View>
         </View>
         <TouchableOpacity style={styles.detailsButton}>
-          <Text style={styles.detailsText}>PRICE DETAILS</Text>
+          <Text style={styles.detailsText}>{t("price_details") || "PRICE DETAILS"}</Text>
           <Icon name="plus" size={14} color="#777" />
         </TouchableOpacity>
         <View style={styles.row}>
           <View style={styles.column}>
-            <Text style={styles.label}>CAR PRICE</Text>
+            <Text style={styles.label}>{t("car_price") || "CAR PRICE"}</Text>
             <Text style={styles.value}>{invoice?.carAmount} AED</Text>
           </View>
           <View style={styles.column}>
-            <Text style={styles.label}>VAT (5%)</Text>
+            <Text style={styles.label}>{t("vat_5") || "VAT (5%)"}</Text>
             <Text style={styles.value}>{invoice?.vat} AED</Text>
           </View>
         </View>
         <View style={styles.row}>
           <View style={styles.column}>
-            <Text style={styles.label}>Total</Text>
+            <Text style={styles.label}>{t("total") || "Total"}</Text>
             <Text style={styles.value}>{invoice?.totalAmount} AED</Text>
           </View>
           <View style={styles.column}>
-            <Text style={styles.label}>WALLET DEDUCTION</Text>
+            <Text style={styles.label}>{t("wallet_deduction") || "WALLET DEDUCTION"}</Text>
             <Text style={styles.value}>{invoice?.walletDeduction} AED</Text>
           </View>
         </View>
 
-        <Text style={styles.totalAmount}>PENDING AMOUNT: {invoice?.pendingAmount} AED</Text>
+        <Text style={styles.totalAmount}>{t("pending_amount_label") || "PENDING AMOUNT"}: {invoice?.pendingAmount} AED</Text>
         {
           invoice?.paymentStatus ?
             <TouchableOpacity style={styles.payButton1}>
@@ -167,7 +167,7 @@ const InvoiceSlip = ({ route, navigation }: any) => {
             <TouchableOpacity
               onPress={() => navigation.navigate("PayOrder", { invoiceNumber: invoice?.invNumber, pendingAmount: invoice?.pendingAmount })}
               style={styles.payButton}>
-              <Text style={styles.payButtonText}>PAY NOW</Text>
+              <Text style={styles.payButtonText}>{t("pay_now") || "PAY NOW"}</Text>
             </TouchableOpacity>
         }
       </View>

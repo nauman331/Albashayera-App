@@ -181,5 +181,20 @@
   "notifications": "Notifications",
   "notification": "Notification",
   "no_notifications_available": "No notifications available",
-  "close": "Close"
+  "close": "Close",
+  "unknown_vehicle": "Unknown Vehicle",
+  "rejected": "Rejected",
+  "pending": "Pending",
+  "completed": "Completed",
+  "invoice": "INVOICE",
+  "customer": "CUSTOMER",
+  "due_on": "DUE ON",
+  "vehicle_name": "VEHICLE NAME",
+  "vehicle_vin": "VEHICLE VIN",
+  "price_details": "PRICE DETAILS",
+  "car_price": "CAR PRICE",
+  "vat_5": "VAT (5%)",
+  "wallet_deduction": "WALLET DEDUCTION",
+  "pending_amount_label": "PENDING AMOUNT",
+  "pay_now": "PAY NOW"
 }

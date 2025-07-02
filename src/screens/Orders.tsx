@@ -6,6 +6,7 @@ import { getToken } from "../utils/asyncStorage";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../App";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 
 interface Order {
@@ -25,6 +26,7 @@ const OrdersScreen: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState<boolean>(false)
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -99,11 +101,10 @@ const OrdersScreen: React.FC = () => {
         <Image source={{ uri: item?.carId?.carImages[0] || "" }} style={styles.image} />
         <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
         <View style={styles.detailsContainer}>
-          <Text style={styles.carName}>{item?.carId?.listingTitle || "Unknown Vehicle"}</Text>
-          <Text style={styles.carVin}>VIN: {item?.carId?.vin || ""}</Text>
-          <Text style={styles.amount}>Total: {item.totalAmount || 0} AED</Text>
+          <Text style={styles.carName}>{item?.carId?.listingTitle || t("unknown_vehicle") || "Unknown Vehicle"}</Text>
+          <Text style={styles.carVin}>{t("vin")}{item?.carId?.vin || ""}</Text>
+          <Text style={styles.amount}>{t("total")}: {item.totalAmount || 0} AED</Text>
         </View>
-
         <View
           style={[
             styles.statusBar,
@@ -121,9 +122,8 @@ const OrdersScreen: React.FC = () => {
               statusTextStyleMapping[status] || { color: "black" }
             ]}
           >
-            {item?.statusText?.charAt(0).toUpperCase() + item?.statusText?.slice(1) || "N/A"}
+            {item?.statusText?.charAt(0).toUpperCase() + item?.statusText?.slice(1) || t("n_a") || "N/A"}
           </Text>
-
         </View>
       </TouchableOpacity>
     );
@@ -131,13 +131,12 @@ const OrdersScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Orders</Text>
-
+      <Text style={styles.header}>{t("orders")}</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#010153" />
       ) : orders.length < 1 ? (
         <View style={styles.notfound}>
-          <Text style={styles.notfoundText}>No Orders Found</Text>
+          <Text style={styles.notfoundText}>{t("no_orders_found")}</Text>
           <Image source={require("../assets/images/orders.png")} style={styles.carImage} />
         </View>
       ) : (
