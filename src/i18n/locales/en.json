@@ -175,5 +175,11 @@
   "uploading": "Uploading...",
   "withdrawal_request_submitted": "Withdrawal request submitted",
   "withdraw_more_than_balance": "You can't withdraw more than your balance",
-  "error_while_sending_request": "Error while sending request"
+  "error_while_sending_request": "Error while sending request",
+  "language": "Language",
+  "Guest": "GUEST",
+  "notifications": "Notifications",
+  "notification": "Notification",
+  "no_notifications_available": "No notifications available",
+  "close": "Close"
 }

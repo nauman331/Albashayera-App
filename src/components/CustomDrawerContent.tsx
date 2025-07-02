@@ -120,7 +120,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps & { token: string |
       ) : (
         <View style={styles.profileSection}>
           <Icon name="person" size={40} color="#fff" />
-          <Text style={styles.profileName}>Guest</Text>
+          <Text style={styles.profileName}>{t("Guest")}</Text>
         </View>
       )}
 

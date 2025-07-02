@@ -175,5 +175,11 @@
   "uploading": "جاري الرفع...",
   "withdrawal_request_submitted": "تم إرسال طلب السحب",
   "withdraw_more_than_balance": "لا يمكنك سحب أكثر من رصيدك",
-  "error_while_sending_request": "حدث خطأ أثناء إرسال الطلب"
+  "error_while_sending_request": "حدث خطأ أثناء إرسال الطلب",
+  "language": "اللغة",
+  "Guest": "زائر",
+  "notifications": "الإشعارات",
+  "notification": "إشعار",
+  "no_notifications_available": "لا توجد إشعارات متاحة",
+  "close": "إغلاق"
 }

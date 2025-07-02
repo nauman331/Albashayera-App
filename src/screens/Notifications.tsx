@@ -13,6 +13,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { backendURL } from "../utils/exports";
 import { getToken } from "../utils/asyncStorage";
 import { useFocusEffect } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 interface Notification {
   _id: string;
@@ -28,6 +29,7 @@ const NotificationScreen: React.FC = () => {
   const [token, setToken] = useState<string | null>(null);
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -111,8 +113,8 @@ const NotificationScreen: React.FC = () => {
         <Icon name={item.readStatus ? "bell-outline" : "bell-ring"} size={24} color={item.readStatus ? "#888" : "#010153"} />
       </View>
       <View style={styles.textContainer}>
-        <Text style={[styles.title, item.readStatus && styles.readTitle]}>Notification</Text>
-        <Text style={styles.message}>{item.message.slice(0,30)}...</Text>
+        <Text style={[styles.title, item.readStatus && styles.readTitle]}>{t("notification") || "Notification"}</Text>
+        <Text style={styles.message}>{item.message.slice(0, 30)}...</Text>
         <Text style={styles.time}>{item.time}</Text>
       </View>
     </TouchableOpacity>
@@ -120,7 +122,7 @@ const NotificationScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Notifications</Text>
+      <Text style={styles.header}>{t("notifications") || "Notifications"}</Text>
       {notificationsLoading ? (
         <ActivityIndicator size="large" color="#010153" style={{ marginTop: 20 }} />
       ) : (
@@ -133,11 +135,11 @@ const NotificationScreen: React.FC = () => {
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Image
-                source={require("../assets/images/notification.png")} 
+                source={require("../assets/images/notification.png")}
                 style={styles.emptyImage}
                 resizeMode="contain"
               />
-              <Text style={styles.emptyText}>No notifications available</Text>
+              <Text style={styles.emptyText}>{t("no_notifications_available") || "No notifications available"}</Text>
             </View>
           }
         />
@@ -156,7 +158,7 @@ const NotificationScreen: React.FC = () => {
             <Text style={styles.modalMessage}>{selectedNotification?.message}</Text>
             <Text style={styles.modalTime}>{selectedNotification?.time}</Text>
             <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Close</Text>
+              <Text style={styles.closeButtonText}>{t("close") || "Close"}</Text>
             </TouchableOpacity>
           </View>
         </View>
