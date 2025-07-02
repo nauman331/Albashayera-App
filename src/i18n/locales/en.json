@@ -78,5 +78,9 @@
   "live_auction": "Live Auction",
   "profile": "Profile",
   "logout": "Logout",
-  "forgot_password": "Forgotten Password"
+  "forgot_password": "Forgotten Password",
+  "error_in_applying_filters": "Error in applying filters",
+  "filter_cars": "Filter Cars",
+  "min_price": "Min Price",
+  "max_price": "Max Price"
 }

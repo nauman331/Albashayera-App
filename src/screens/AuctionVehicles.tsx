@@ -108,7 +108,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
         setResponseCars([]);
       }
     } catch (error) {
-      Toast.show({ type: 'error', text1: 'Error', text2: 'Error in applying filters' });
+      Toast.show({ type: 'error', text1: t("error"), text2: t("error_in_applying_filters") });
     } finally {
       setFilterLoading(false);
       setFilterVisible(false);
@@ -141,7 +141,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
       </View>
     );
   if (error) {
-    return <Text style={styles.errorText}>Error: {error}</Text>;
+    return <Text style={styles.errorText}>{t("error")}: {error}</Text>;
   }
 
 
@@ -180,14 +180,14 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
               <MaterialIcons name="close" size={28} color="#555" />
             </Pressable>
             <ScrollView>
-              <Text style={styles.modalTitle}>Filter Cars</Text>
+              <Text style={styles.modalTitle}>{t("filter_cars")}</Text>
 
               {/* Prices */}
               <View style={styles.inputContainer}>
                 <TextInput
                   style={styles.input}
                   placeholderTextColor="black"
-                  placeholder="Min Price"
+                  placeholder={t("min_price")}
                   keyboardType="numeric"
                   value={filters.priceMin !== undefined ? String(filters.priceMin) : ""}
                   onChangeText={(value) =>
@@ -197,7 +197,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                 <TextInput
                   style={styles.input}
                   placeholderTextColor="black"
-                  placeholder="Max Price"
+                  placeholder={t("max_price")}
                   keyboardType="numeric"
                   value={filters.priceMax !== undefined ? String(filters.priceMax) : ""}
                   onChangeText={(value) =>
