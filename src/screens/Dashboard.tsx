@@ -16,6 +16,7 @@ import { getToken } from "../utils/asyncStorage";
 import { RootStackParamList } from "../../App";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 interface PeriodicData {
   month: number;
@@ -38,6 +39,7 @@ const Dashboard: React.FC = () => {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentCar, setCurrentCar] = useState<Car | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -127,17 +129,17 @@ const Dashboard: React.FC = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.header}>Dashboard</Text>
+      <Text style={styles.header}>{t("dashboard")}</Text>
 
       <View style={styles.statsContainer}>
         <View style={styles.card}>
           <Icon name="cart-outline" size={30} color="#010153" style={styles.icon} />
-          <Text style={styles.cardTitle}>Purchases</Text>
+          <Text style={styles.cardTitle}>{t("orders")}</Text>
           <Text style={styles.cardValue}>{purchaseCount}</Text>
         </View>
         <View style={styles.card}>
           <Icon name="bank-transfer" size={25} color="#010153" style={styles.icon} />
-          <Text style={styles.cardTitle}>Total Spent</Text>
+          <Text style={styles.cardTitle}>{t("total_spent") || "Total Spent"}</Text>
           <Text style={styles.cardValue}>{`AED ${formatNumber(data?.totalSpent || 0)}`}</Text>
         </View>
       </View>
@@ -149,7 +151,7 @@ const Dashboard: React.FC = () => {
           imageStyle={{ borderRadius: 10 }}
         >
           <View style={styles.bannerOverlay}>
-            <Text style={styles.bannerText}>Join Live Auction Now</Text>
+            <Text style={styles.bannerText}>{t("join_live_auction_now") || "Join Live Auction Now"}</Text>
             <Icon name="arrow-right" size={24} color="#fff" />
           </View>
         </ImageBackground>
@@ -160,7 +162,7 @@ const Dashboard: React.FC = () => {
       ) : (
         <View style={{ marginBottom: 110 }}>
           <View style={styles.chartContainer}>
-            <Text style={styles.chartTitle}>Spending Trend (Line Chart)</Text>
+            <Text style={styles.chartTitle}>{t("spending_trend") || "Spending Trend (Line Chart)"}</Text>
             <LineChart
               data={chartData}
               width={screenWidth - 40}

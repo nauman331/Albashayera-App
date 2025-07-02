@@ -50,7 +50,7 @@
   "save": "Save",
   "cancel": "Cancel",
   "delete_my_profile": "Delete My Profile",
-  "confirm_deletion": "Confirm Deletion",
+  "confirm_deletion": "Confirm Logout",
   "please_enter_password": "Please enter your password to confirm account deletion.",
   "delete": "Delete",
   "our_social_media": "Our Social Media",
@@ -151,5 +151,18 @@
   "invalid_email": "Invalid Email",
   "please_enter_valid_email": "Please enter a valid email address.",
   "password_mismatch": "Password Mismatch",
-  "new_passwords_do_not_match": "New passwords do not match."
+  "new_passwords_do_not_match": "New passwords do not match.",
+  "total_spent": "Total Spent",
+  "join_live_auction_now": "Join Live Auction Now",
+  "spending_trend": "Spending Trend (Line Chart)",
+  "permission_denied": "Permission denied",
+  "not_authenticated": "Not Authenticated",
+  "profile_updated_successfully": "Profile Updated successfully!",
+  "update_failed": "Update Failed",
+  "error_updating_profile": "Error while Updating Profile",
+  "password_required": "Password required",
+  "verification_failed": "Verification Failed",
+  "delete_failed": "Delete Failed",
+  "account_deleted_successfully": "Account deleted successfully",
+  "something_went_wrong": "Something went wrong"
 }

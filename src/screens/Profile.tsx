@@ -24,6 +24,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { requestMediaPermissions } from "../utils/permissions";
+import { useTranslation } from "react-i18next";
 
 
 type ProfileProps = {
@@ -43,6 +44,7 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteLoading, setDeleteLoading] = useState(false);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -67,7 +69,7 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
   const pickFile = async () => {
     const granted = await requestMediaPermissions();
     if (!granted) {
-      Toast.show({ type: "error", text1: "Permission denied" });
+      Toast.show({ type: "error", text1: t("permission_denied") || "Permission denied" });
       return;
     }
     launchImageLibrary({ mediaType: "photo", includeBase64: false }, (response) => {
@@ -97,7 +99,7 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
     try {
       const token = await getToken();
       if (!token) {
-        Toast.show({ type: "error", text1: "Not Authenticated" });;
+        Toast.show({ type: "error", text1: t("not_authenticated") || "Not Authenticated" });
         return;
       }
       const updatedUser = { firstName, lastName, email, contact, address, avatarImage: proof };
@@ -110,13 +112,13 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
       if (response.ok) {
         setUser((prevUser: any) => ({ ...prevUser, ...updatedUser }));
         await AsyncStorage.setItem("@userdata", JSON.stringify({ ...user, ...updatedUser }));
-        Toast.show({ type: "success", text1: "Profile Updated successfully!" });
+        Toast.show({ type: "success", text1: t("profile_updated_successfully") || "Profile Updated successfully!" });
         setModalVisible(false);
       } else {
-        Toast.show({ type: "error", text1: "Update Failed", text2: result.message });
+        Toast.show({ type: "error", text1: t("update_failed") || "Update Failed", text2: result.message });
       }
     } catch (error) {
-      Toast.show({ type: "error", text1: "Error while Updating Profile" });
+      Toast.show({ type: "error", text1: t("error_updating_profile") || "Error while Updating Profile" });
       console.error("Error updating profile:", error);
     }
   };
@@ -133,7 +135,7 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
 
   const handleDeleteProfile = async () => {
     if (!deletePassword) {
-      Toast.show({ type: "error", text1: "Password required" });
+      Toast.show({ type: "error", text1: t("password_required") || "Password required" });
       return;
     }
     setDeleteLoading(true);
@@ -146,7 +148,7 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
       });
       const verifyData = await verifyRes.json();
       if (!verifyRes.ok) {
-        Toast.show({ type: "error", text1: "Verification Failed", text2: verifyData.message });
+        Toast.show({ type: "error", text1: t("verification_failed") || "Verification Failed", text2: verifyData.message });
         setDeleteLoading(false);
         return;
       }
@@ -161,7 +163,7 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
       });
       if (!deleteRes.ok) {
         const deleteData = await deleteRes.json();
-        Toast.show({ type: "error", text1: "Delete Failed", text2: deleteData.message });
+        Toast.show({ type: "error", text1: t("delete_failed") || "Delete Failed", text2: deleteData.message });
         setDeleteLoading(false);
         return;
       }
@@ -169,13 +171,13 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
       await removeData();
       setToken(null);
       setDeleteModalVisible(false);
-      Toast.show({ type: "success", text1: "Account deleted successfully" });
+      Toast.show({ type: "success", text1: t("account_deleted_successfully") || "Account deleted successfully" });
       navigation.reset({
         index: 0,
         routes: [{ name: "AuctionVehicles" }],
       });
     } catch (error) {
-      Toast.show({ type: "error", text1: "Error", text2: "Something went wrong" });
+      Toast.show({ type: "error", text1: t("error") || "Error", text2: t("something_went_wrong") || "Something went wrong" });
     } finally {
       setDeleteLoading(false);
       setDeletePassword("");
@@ -193,70 +195,70 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
 
         <TouchableOpacity style={styles.editButton} onPress={() => setModalVisible(true)}>
           <Icon name="edit" size={20} color="#fff" />
-          <Text style={styles.editText}>Edit Profile</Text>
+          <Text style={styles.editText}>{t("edit_profile")}</Text>
         </TouchableOpacity>
       </View>
 
       <Modal animationType="slide" transparent={true} visible={modalVisible}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Edit Profile</Text>
+            <Text style={styles.modalTitle}>{t("edit_profile")}</Text>
             <TouchableOpacity onPress={pickFile}>
               <Image source={{ uri: proof ?? undefined }} style={styles.avatar} />
               <Icon name="photo-camera" size={25} color="#fff" style={styles.cameraIcon} />
             </TouchableOpacity>
-            <TextInput style={styles.input} placeholder="First Name" value={firstName} onChangeText={setFirstName} />
-            <TextInput style={styles.input} placeholder="Last Name" value={lastName} onChangeText={setLastName} />
-            <TextInput style={styles.input} placeholder="Email" value={email} keyboardType="email-address" onChangeText={setEmail} />
-            <TextInput style={styles.input} placeholder="Contact" value={contact} onChangeText={setContact} />
-            <TextInput style={styles.input} placeholder="Address" value={address} onChangeText={setAddress} />
+            <TextInput style={styles.input} placeholder={t("first_name")} value={firstName} onChangeText={setFirstName} />
+            <TextInput style={styles.input} placeholder={t("last_name")} value={lastName} onChangeText={setLastName} />
+            <TextInput style={styles.input} placeholder={t("email")} value={email} keyboardType="email-address" onChangeText={setEmail} />
+            <TextInput style={styles.input} placeholder={t("phone")} value={contact} onChangeText={setContact} />
+            <TextInput style={styles.input} placeholder={t("address")} value={address} onChangeText={setAddress} />
             <View style={styles.buttonRow}>
               <TouchableOpacity style={styles.saveButton} onPress={updateProfile}>
-                <Text style={styles.saveText}>Save</Text>
+                <Text style={styles.saveText}>{t("save")}</Text>
               </TouchableOpacity>
               <Pressable style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-                <Text style={styles.cancelText}>Cancel</Text>
+                <Text style={styles.cancelText}>{t("cancel")}</Text>
               </Pressable>
             </View>
           </View>
         </View>
       </Modal>
-      <Text style={styles.socialheading}>Our Social Media</Text>
+      <Text style={styles.socialheading}>{t("our_social_media")}</Text>
 
       <View style={styles.socialCard}>
         <TouchableOpacity style={styles.socialItem} onPress={() => Linking.openURL("https://www.tiktok.com/@albashayeraautoauction?_t=ZS-8u3T6j55U8X&_r=1")}>
           <FontAwesome name="music" size={24} color="#010153" />
-          <Text style={styles.socialText}>TikTok</Text>
+          <Text style={styles.socialText}>{t("tiktok")}</Text>
           <MaterialCommunityIcons name="arrow-right" size={20} color="#888" />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.socialItem} onPress={() => Linking.openURL("https://www.facebook.com/albashayeraautoauction/")}>
           <FontAwesome name="facebook" size={24} color="#1877F2" />
-          <Text style={styles.socialText}>Facebook</Text>
+          <Text style={styles.socialText}>{t("facebook")}</Text>
           <MaterialCommunityIcons name="arrow-right" size={20} color="#888" />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.socialItem} onPress={() => Linking.openURL("https://www.instagram.com/albashayeraautoauction?igsh=ODZjODYwOTJzZmwx&utm_source=qr")}>
           <FontAwesome name="instagram" size={24} color="#C13584" />
-          <Text style={styles.socialText}>Instagram</Text>
+          <Text style={styles.socialText}>{t("instagram")}</Text>
           <MaterialCommunityIcons name="arrow-right" size={20} color="#888" />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.socialItem} onPress={() => Linking.openURL("mailto:Info@abaautoauctions.com")}>
           <MaterialCommunityIcons name="email" size={24} color="#EA4335" />
-          <Text style={styles.socialText}>Email</Text>
+          <Text style={styles.socialText}>{t("email_label")}</Text>
           <MaterialCommunityIcons name="arrow-right" size={20} color="#888" />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.socialItem} onPress={() => Linking.openURL("tel:+971 509496511")}>
           <FontAwesome name="phone" size={24} color="#34A853" />
-          <Text style={styles.socialText}>Phone</Text>
+          <Text style={styles.socialText}>{t("phone_label")}</Text>
           <MaterialCommunityIcons name="arrow-right" size={20} color="#888" />
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.socialItem} onPress={() => Linking.openURL("https://www.google.com/maps/search/?api=1&query=Al+bashayera+Auto+Auction")}>
           <MaterialCommunityIcons name="map-marker" size={24} color="#FF5722" />
-          <Text style={styles.socialText}>Address</Text>
+          <Text style={styles.socialText}>{t("address_label")}</Text>
           <MaterialCommunityIcons name="arrow-right" size={20} color="#888" />
         </TouchableOpacity>
       </View>
@@ -266,7 +268,7 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
         style={styles.deleteProfileButton}
         onPress={() => setDeleteModalVisible(true)}
       >
-        <Text style={styles.deleteProfileText}>Delete My Profile</Text>
+        <Text style={styles.deleteProfileText}>{t("delete_my_profile")}</Text>
       </TouchableOpacity>
 
       {/* Delete Confirmation Modal */}
@@ -278,13 +280,13 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.deleteModalContainer}>
-            <Text style={styles.modalTitle}>Confirm Deletion</Text>
+            <Text style={styles.modalTitle}>{t("confirm_deletion")}</Text>
             <Text style={{ marginBottom: 10, color: "#333" }}>
-              Please enter your password to confirm account deletion.
+              {t("please_enter_password")}
             </Text>
             <TextInput
               style={styles.input}
-              placeholder="Password"
+              placeholder={t("password")}
               secureTextEntry
               value={deletePassword}
               onChangeText={setDeletePassword}
@@ -299,7 +301,7 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
                 {deleteLoading ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text style={styles.saveText}>Delete</Text>
+                  <Text style={styles.saveText}>{t("delete")}</Text>
                 )}
               </TouchableOpacity>
               <Pressable
@@ -310,7 +312,7 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
                 }}
                 disabled={deleteLoading}
               >
-                <Text style={styles.cancelText}>Cancel</Text>
+                <Text style={styles.cancelText}>{t("cancel")}</Text>
               </Pressable>
             </View>
           </View>
@@ -318,7 +320,7 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
       </Modal>
     </ScrollView>
   ) : (
-    <Text>Loading....</Text>
+    <Text>{t("loading") || "Loading...."}</Text>
   );
 };
 

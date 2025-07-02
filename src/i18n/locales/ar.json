@@ -51,7 +51,7 @@
   "save": "حفظ",
   "cancel": "إلغاء",
   "delete_my_profile": "حذف ملفي الشخصي",
-  "confirm_deletion": "تأكيد الحذف",
+  "confirm_deletion": "تأكيد تسجيل الخروج",
   "please_enter_password": "يرجى إدخال كلمة المرور لتأكيد حذف الحساب.",
   "delete": "حذف",
   "our_social_media": "وسائل التواصل الاجتماعي الخاصة بنا",
@@ -151,5 +151,18 @@
   "invalid_email": "بريد إلكتروني غير صالح",
   "please_enter_valid_email": "يرجى إدخال بريد إلكتروني صالح.",
   "password_mismatch": "عدم تطابق كلمة المرور",
-  "new_passwords_do_not_match": "كلمات المرور الجديدة غير متطابقة."
+  "new_passwords_do_not_match": "كلمات المرور الجديدة غير متطابقة.",
+  "total_spent": "إجمالي الإنفاق",
+  "join_live_auction_now": "انضم إلى المزاد المباشر الآن",
+  "spending_trend": "اتجاه الإنفاق (مخطط بياني)",
+  "permission_denied": "تم رفض الإذن",
+  "not_authenticated": "غير مصرح",
+  "profile_updated_successfully": "تم تحديث الملف الشخصي بنجاح!",
+  "update_failed": "فشل التحديث",
+  "error_updating_profile": "حدث خطأ أثناء تحديث الملف الشخصي",
+  "password_required": "كلمة المرور مطلوبة",
+  "verification_failed": "فشل التحقق",
+  "delete_failed": "فشل الحذف",
+  "account_deleted_successfully": "تم حذف الحساب بنجاح",
+  "something_went_wrong": "حدث خطأ ما"
 }

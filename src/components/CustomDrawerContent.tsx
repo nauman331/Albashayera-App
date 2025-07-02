@@ -19,13 +19,10 @@ interface Car {
 }
 
 const CustomDrawerContent: React.FC<CustomDrawerContentProps & { token: string | null }> = ({ navigation, setToken, token }) => {
-  const [vehiclesExpanded, setVehiclesExpanded] = useState(false);
-  const [auctionsExpanded, setAuctionsExpanded] = useState(false);
   const [currentCar, setCurrentCar] = useState<Car | null>(null);
   const [user, setUser] = useState<any>(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const isAuthenticated = !!token;
-  const nav = useNavigation();
   const { language, setLanguage } = useLanguage();
   const { t } = useTranslation();
   const isRTL = language === "ar";
@@ -93,17 +90,17 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps & { token: string |
 
   // Only show these menu items if authenticated
   const protectedMenuItems = [
-    { route: "Dashboard", label: "Dashboard", icon: "dashboard" },
-    { route: "Orders", label: "Orders", icon: "receipt" },
-    { route: "Wallet", label: "Wallet", icon: "account-balance-wallet" },
+    { route: "Dashboard", label: t("dashboard"), icon: "dashboard" },
+    { route: "Orders", label: t("orders"), icon: "receipt" },
+    { route: "Wallet", label: t("wallet"), icon: "account-balance-wallet" },
   ];
 
   // Always show these menu items
   const publicMenuItems = [
-    { route: "AuctionVehicles", label: "Auction Vehicles", icon: "directions-car" },
-    { route: "BuyNowVehicles", label: "Buy Now Vehicles", icon: "directions-car" },
-    { route: "AuctionEvents", label: "Auction Events", icon: "gavel" },
-    { route: "ContactUs", label: "Contact Us", icon: "phone" },
+    { route: "AuctionVehicles", label: t("auction_vehicles"), icon: "directions-car" },
+    { route: "BuyNowVehicles", label: t("buy_now_vehicles"), icon: "directions-car" },
+    { route: "AuctionEvents", label: t("auction_events"), icon: "gavel" },
+    { route: "ContactUs", label: t("contact_us"), icon: "phone" },
   ];
 
   return (
@@ -161,7 +158,9 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps & { token: string |
         >
           <View style={[styles.activeIndicator, currentRoute === "CarDetails" && styles.activeIndicatorActive]} />
           <Icon name="live-tv" size={20} color={currentRoute === "CarDetails" ? "#010153" : "#000"} />
-          <Text style={[styles.menuText, currentRoute === "CarDetails" && styles.activeMenuText]}>Live Auction</Text>
+          <Text style={[styles.menuText, currentRoute === "CarDetails" && styles.activeMenuText]}>
+            {t("live_auction")}
+          </Text>
         </TouchableOpacity>
 
         {/* Language Switcher */}
@@ -223,31 +222,31 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps & { token: string |
           <>
             <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("Profile")}>
               <Icon name="person" size={20} color="#000" />
-              <Text style={styles.menuText}>Profile</Text>
+              <Text style={styles.menuText}>{t("profile")}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={() => setModalVisible(true)}>
               <Icon name="exit-to-app" size={20} color="#000" />
-              <Text style={styles.menuText}>Logout</Text>
+              <Text style={styles.menuText}>{t("logout")}</Text>
             </TouchableOpacity>
           </>
         ) : (
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("Login")}>
             <Icon name="login" size={20} color="#000" />
-            <Text style={styles.menuText}>Login</Text>
+            <Text style={styles.menuText}>{t("login")}</Text>
           </TouchableOpacity>
         )}
       </View>
       <Modal visible={isModalVisible} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Confirm Logout</Text>
-            <Text style={styles.modalMessage}>Are you sure you want to logout?</Text>
+            <Text style={styles.modalTitle}>{t("confirm_deletion") || "Confirm Logout"}</Text>
+            <Text style={styles.modalMessage}>{t("are_you_sure_logout") || "Are you sure you want to logout?"}</Text>
             <View style={styles.modalButtons}>
               <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-                <Text style={styles.cancelText}>Cancel</Text>
+                <Text style={styles.cancelText}>{t("cancel")}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.confirmButton} onPress={handleLogout}>
-                <Text style={styles.confirmText}>Logout</Text>
+                <Text style={styles.confirmText}>{t("logout")}</Text>
               </TouchableOpacity>
             </View>
           </View>
