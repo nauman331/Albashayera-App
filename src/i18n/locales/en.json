@@ -82,5 +82,9 @@
   "error_in_applying_filters": "Error in applying filters",
   "filter_cars": "Filter Cars",
   "min_price": "Min Price",
-  "max_price": "Max Price"
+  "max_price": "Max Price",
+  "select_car_make": "Select Car Make",
+  "select_driver_type": "Select Driver Type",
+  "min_year": "Min Year",
+  "max_year": "Max Year"
 }

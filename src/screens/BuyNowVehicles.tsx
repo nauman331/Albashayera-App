@@ -12,12 +12,13 @@ import { backendURL } from "../utils/exports";
 import Toast from 'react-native-toast-message';
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../App";
-
+import { useTranslation } from 'react-i18next';
 
 
 const BuyNowVehicles: React.FC = () => {
   const { cars, loading, error, categoriesData, refetch } = useFetchCarsAndCategories();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, "CarDetails">>();
+  const { t } = useTranslation();
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [filterLoading, setFilterLoading] = useState(false)
   const [responseCars, setResponseCars] = useState([] as any)
@@ -91,7 +92,7 @@ const BuyNowVehicles: React.FC = () => {
         setResponseCars([]);
       }
     } catch (error) {
-      Toast.show({ type: 'error', text1: 'Error', text2: 'Error in applying filters' });
+      Toast.show({ type: 'error', text1: t("error"), text2: t("error_in_applying_filters") });
     } finally {
       setFilterLoading(false);
       setFilterVisible(false);
@@ -112,16 +113,16 @@ const BuyNowVehicles: React.FC = () => {
       </View>
     );
   if (error) {
-    return <Text style={styles.errorText}>Error: {error}</Text>;
+    return <Text style={styles.errorText}>{t("error")}: {error}</Text>;
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Buy Now Vehicles</Text>
+      <Text style={styles.title}>{t("buy_now_vehicles")}</Text>
 
       {/* Filters Section */}
       <Pressable onPress={toggleFilterModal} style={styles.rightFilter}>
-        <Text style={{ fontSize: 15, color: "#010153" }}>Filters </Text>
+        <Text style={{ fontSize: 15, color: "#010153" }}>{t("filters")}</Text>
         <FontAwesome6
           name="arrow-right-arrow-left"
           size={15}
@@ -139,14 +140,14 @@ const BuyNowVehicles: React.FC = () => {
               <MaterialIcons name="close" size={28} color="#555" />
             </Pressable>
             <ScrollView>
-              <Text style={styles.modalTitle}>Filter Cars</Text>
+              <Text style={styles.modalTitle}>{t("filter_cars")}</Text>
 
               {/* Prices */}
               <View style={styles.inputContainer}>
                 <TextInput
                   style={styles.input}
                   placeholderTextColor="black"
-                  placeholder="Min Price"
+                  placeholder={t("min_price")}
                   keyboardType="numeric"
                   value={filters.minPrice !== undefined ? String(filters.minPrice) : ""}
                   onChangeText={(value) =>
@@ -156,7 +157,7 @@ const BuyNowVehicles: React.FC = () => {
                 <TextInput
                   style={styles.input}
                   placeholderTextColor="black"
-                  placeholder="Max Price"
+                  placeholder={t("max_price")}
                   keyboardType="numeric"
                   value={filters.maxPrice !== undefined ? String(filters.maxPrice) : ""}
                   onChangeText={(value) =>
@@ -170,7 +171,7 @@ const BuyNowVehicles: React.FC = () => {
                 open={openCarMake}
                 value={filters.carMake}
                 items={[
-                  { label: 'Select Car Make', value: '' },
+                  { label: t("select_car_make"), value: '' },
                   ...generateOptions("vehicle-make", "vehicleMake")
                 ]}
                 setOpen={setOpenCarMake}
@@ -188,7 +189,7 @@ const BuyNowVehicles: React.FC = () => {
                 open={openDriveType}
                 value={filters.driveType}
                 items={[
-                  { label: 'Select Drive Type', value: '' },
+                  { label: t("select_driver_type"), value: '' },
                   ...generateOptions("drive-type", "driveType")
                 ]}
                 setOpen={setOpenDriveType}
@@ -208,7 +209,7 @@ const BuyNowVehicles: React.FC = () => {
                     open={openYearMin}
                     value={filters.yearMin}
                     items={[
-                      { label: 'Min Year', value: '' },
+                      { label: t("min_year"), value: '' },
                       ...generateOptions("vehicle-year", "vehicleYear")
                     ]}
                     setOpen={setOpenYearMin}
@@ -227,7 +228,7 @@ const BuyNowVehicles: React.FC = () => {
                     open={openYearMax}
                     value={filters.yearMax}
                     items={[
-                      { label: 'Max Year', value: '' },
+                      { label: t("max_year"), value: '' },
                       ...generateOptions("vehicle-year", "vehicleYear")
                     ]}
                     setOpen={setOpenYearMax}
@@ -247,7 +248,7 @@ const BuyNowVehicles: React.FC = () => {
                 open={openCylinders}
                 value={filters.cylinders}
                 items={[
-                  { label: 'Select Cylinders', value: '' },
+                  { label: t("select_cylinders"), value: '' },
                   ...generateOptions("vehicle-cylinder", "vehicleCylinders")
                 ]}
                 setOpen={setOpenCylinders}
@@ -265,7 +266,7 @@ const BuyNowVehicles: React.FC = () => {
                 open={openDoors}
                 value={filters.doors}
                 items={[
-                  { label: 'Select Car Doors', value: '' },
+                  { label: t("select_car_doors"), value: '' },
                   ...generateOptions("vehicle-door", "vehicleDoor")
                 ]}
                 setOpen={setOpenDoors}
@@ -297,12 +298,12 @@ const BuyNowVehicles: React.FC = () => {
                   }}
                   style={styles.clearButton}
                 >
-                  <Text style={styles.buttonText}>Clear All Filters</Text>
+                  <Text style={styles.buttonText}>{t("clear_all_filters")}</Text>
                 </Pressable>
 
                 <Pressable onPress={applyFilters} style={styles.applyButton}>
                   <Text style={styles.buttonText}>
-                    {filterLoading ? "Applying Filters..." : "Apply Selected Filters"}
+                    {filterLoading ? t("applying_filters") : t("apply_selected_filters")}
                   </Text>
                 </Pressable>
               </View>
@@ -314,7 +315,7 @@ const BuyNowVehicles: React.FC = () => {
       {/* Display Cars */}
       {filteredCars.length === 0 ? (
         <View style={styles.notfound}>
-          <Text style={styles.notfoundText}>No Cars Found</Text>
+          <Text style={styles.notfoundText}>{t("no_cars_found")}</Text>
           <Image source={require("../assets/images/towing.png")} style={styles.carImage} />
         </View>
       ) : (
@@ -356,7 +357,7 @@ const BuyNowVehicles: React.FC = () => {
                 <View style={styles.footer}>
                   <Text style={styles.price}>AED {item.discountedPrice || item.price || "N/A"}</Text>
                   <Pressable onPress={() => navigation.navigate('CarDetails', { carId: item._id })}>
-                    <Text style={styles.viewDetails}>View Details <FontAwesome6 name="arrow-up-right-from-square" /></Text>
+                    <Text style={styles.viewDetails}>{t("view_details")}<FontAwesome6 name="arrow-up-right-from-square" /></Text>
                   </Pressable>
                 </View>
               </View>

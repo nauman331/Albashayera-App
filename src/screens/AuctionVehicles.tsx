@@ -211,7 +211,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                 open={openCarMake}
                 value={filters.carMake}
                 items={[
-                  { label: 'Select Car Make', value: '' },
+                  { label: t("select_car_make"), value: '' },
                   ...generateOptions("vehicle-make", "vehicleMake")
                 ]}
                 setOpen={setOpenCarMake}
@@ -229,7 +229,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                 open={openDriveType}
                 value={filters.driveType}
                 items={[
-                  { label: 'Select Drive Type', value: '' },
+                  { label: t("select_driver_type"), value: '' },
                   ...generateOptions("drive-type", "driveType")
                 ]}
                 setOpen={setOpenDriveType}
@@ -249,7 +249,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                     open={openYearMin}
                     value={filters.yearMin}
                     items={[
-                      { label: 'Min Year', value: '' },
+                      { label: t("min_year"), value: '' },
                       ...generateOptions("vehicle-year", "vehicleYear")
                     ]}
                     setOpen={setOpenYearMin}
@@ -268,7 +268,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                     open={openYearMax}
                     value={filters.yearMax}
                     items={[
-                      { label: 'Max Year', value: '' },
+                      { label: t("max_year"), value: '' },
                       ...generateOptions("vehicle-year", "vehicleYear")
                     ]}
                     setOpen={setOpenYearMax}
@@ -288,7 +288,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                 open={openCylinders}
                 value={filters.cylinders}
                 items={[
-                  { label: 'Select Cylinders', value: '' },
+                  { label: t("select_cylinders"), value: '' },
                   ...generateOptions("vehicle-cylinder", "vehicleCylinders")
                 ]}
                 setOpen={setOpenCylinders}
@@ -306,7 +306,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                 open={openDoors}
                 value={filters.doors}
                 items={[
-                  { label: 'Select Car Doors', value: '' },
+                  { label: t("select_car_doors"), value: '' },
                   ...generateOptions("vehicle-door", "vehicleDoor")
                 ]}
                 setOpen={setOpenDoors}
