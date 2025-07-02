@@ -164,5 +164,16 @@
   "verification_failed": "فشل التحقق",
   "delete_failed": "فشل الحذف",
   "account_deleted_successfully": "تم حذف الحساب بنجاح",
-  "something_went_wrong": "حدث خطأ ما"
+  "something_went_wrong": "حدث خطأ ما",
+  "please_wait_loading_session": "يرجى الانتظار، لا يزال يتم تحميل الجلسة.",
+  "proof_uploaded_successfully": "تم رفع الإثبات بنجاح!",
+  "upload_failed": "فشل الرفع",
+  "please_enter_amount_and_upload_proof": "يرجى إدخال المبلغ ورفع الإثبات",
+  "deposit_submitted_successfully": "تم إرسال الإيداع بنجاح!",
+  "failed_to_submit_deposit": "فشل في إرسال الإيداع",
+  "enter_deposit_amount": "أدخل مبلغ الإيداع",
+  "uploading": "جاري الرفع...",
+  "withdrawal_request_submitted": "تم إرسال طلب السحب",
+  "withdraw_more_than_balance": "لا يمكنك سحب أكثر من رصيدك",
+  "error_while_sending_request": "حدث خطأ أثناء إرسال الطلب"
 }

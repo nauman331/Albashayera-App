@@ -20,6 +20,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../App";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { requestMediaPermissions } from '../utils/permissions';
+import { useTranslation } from "react-i18next";
 
 const DepositPage: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -29,6 +30,7 @@ const DepositPage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [token, setToken] = useState<string | null>(null);
     const [tokenLoading, setTokenLoading] = useState<boolean>(true);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const fetchToken = async () => {
@@ -43,7 +45,7 @@ const DepositPage: React.FC = () => {
     const pickFile = async () => {
         const granted = await requestMediaPermissions();
         if (!granted) {
-            Toast.show({ type: "error", text1: "Permission denied" });
+            Toast.show({ type: "error", text1: t("permission_denied") || "Permission denied" });
             return;
         }
         launchImageLibrary({ mediaType: "photo", includeBase64: false }, (response) => {
@@ -67,9 +69,9 @@ const DepositPage: React.FC = () => {
             });
             const data = await res.json();
             setProof(data.secure_url);
-            Toast.show({ type: "success", text1: "Proof uploaded successfully!" });
+            Toast.show({ type: "success", text1: t("proof_uploaded_successfully") || "Proof uploaded successfully!" });
         } catch (error) {
-            Toast.show({ type: "error", text1: "Upload failed" });
+            Toast.show({ type: "error", text1: t("upload_failed") || "Upload failed" });
         } finally {
             setUploading(false);
         }
@@ -77,11 +79,11 @@ const DepositPage: React.FC = () => {
 
     const submitDeposit = async () => {
         if (!token) {
-            Toast.show({ type: "error", text1: "Please wait, still loading your session." });
+            Toast.show({ type: "error", text1: t("please_wait_loading_session") || "Please wait, still loading your session." });
             return;
         }
         if (!amount || !proof) {
-            Toast.show({ type: "error", text1: "Please enter an amount and upload proof" });
+            Toast.show({ type: "error", text1: t("please_enter_amount_and_upload_proof") || "Please enter an amount and upload proof" });
             return;
         }
         try {
@@ -99,15 +101,15 @@ const DepositPage: React.FC = () => {
             });
             const res_data = await res.json();
             if (res.ok) {
-                Toast.show({ type: "success", text1: "Deposit submitted successfully!" });
+                Toast.show({ type: "success", text1: t("deposit_submitted_successfully") || "Deposit submitted successfully!" });
                 setAmount("");
                 setProof(null);
                 navigation.navigate("Wallet");
             } else {
-                Toast.show({ type: "error", text1: "Error", text2: res_data.message });
+                Toast.show({ type: "error", text1: t("error") || "Error", text2: res_data.message });
             }
         } catch (error) {
-            Toast.show({ type: "error", text1: "Failed to submit deposit" });
+            Toast.show({ type: "error", text1: t("failed_to_submit_deposit") || "Failed to submit deposit" });
         } finally {
             setLoading(false);
         }
@@ -129,26 +131,26 @@ const DepositPage: React.FC = () => {
         >
             <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
                 <View style={styles.container}>
-                    <Text style={styles.header}>Deposit Funds</Text>
+                    <Text style={styles.header}>{t("deposit_funds")}</Text>
 
                     <View style={styles.bankDetailsCard}>
                         <View style={styles.bankHeader}>
                             <Icon name="bank" size={26} color="#010153" />
-                            <Text style={styles.bankTitle}>Bank Details</Text>
+                            <Text style={styles.bankTitle}>{t("bank_details")}</Text>
                         </View>
                         <View style={styles.bankRow}>
                             <Icon name="account" size={20} color="#555" />
-                            <Text style={styles.label}>Customer Name:</Text>
+                            <Text style={styles.label}>{t("customer_name")}</Text>
                             <Text style={styles.value}>AL BASHAYERA AUTO USED TRADING AND AUCTIONS LLC SP</Text>
                         </View>
                         <View style={styles.bankRow}>
                             <Icon name="numeric" size={20} color="#555" />
-                            <Text style={styles.label}>Account Number:</Text>
+                            <Text style={styles.label}>{t("account_number_label")}</Text>
                             <Text style={styles.value}>1015877418001</Text>
                         </View>
                         <View style={styles.bankRow}>
                             <Icon name="credit-card-outline" size={20} color="#555" />
-                            <Text style={styles.label}>IBAN:</Text>
+                            <Text style={styles.label}>{t("iban")}</Text>
                             <Text style={styles.value}>AE210260001015877418001</Text>
                         </View>
                     </View>
@@ -158,7 +160,7 @@ const DepositPage: React.FC = () => {
                         <TextInput
                             style={styles.input}
                             keyboardType="numeric"
-                            placeholder="Enter Deposit Amount"
+                            placeholder={t("enter_deposit_amount") || "Enter Deposit Amount"}
                             value={amount}
                             onChangeText={setAmount}
                             placeholderTextColor="black"
@@ -175,14 +177,14 @@ const DepositPage: React.FC = () => {
                                 <Icon name="cloud-upload" size={40} color="#010153" />
                             )}
                             <Text style={styles.uploadText}>
-                                {uploading ? "Uploading..." : "Upload Proof"}
+                                {uploading ? t("uploading") || "Uploading..." : t("upload_proof")}
                             </Text>
                         </TouchableOpacity>
                     )}
 
                     <TouchableOpacity style={styles.submitButton} onPress={submitDeposit} disabled={loading}>
                         <Text style={styles.submitButtonText}>
-                            {loading ? "Submitting..." : "Submit Deposit"}
+                            {loading ? t("submitting") || "Submitting..." : t("submit_deposit")}
                         </Text>
                     </TouchableOpacity>
 

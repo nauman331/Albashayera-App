@@ -16,6 +16,7 @@ import Toast from "react-native-toast-message";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { useTranslation } from "react-i18next";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -82,6 +83,7 @@ const WalletHistoryScreen = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [withdrawHistory, setWithdrawHistory] = useState<Transaction[]>([]);
   const [depositHistory, setDepositHistory] = useState<Transaction[]>([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -145,13 +147,13 @@ const WalletHistoryScreen = () => {
     if (balance < 1) {
       Toast.show({
         type: "error",
-        text1: "Not Enough Balance"
+        text1: t("not_enough_balance")
       });
       return
     } else if (!token || tokenLoading) {
       Toast.show({
         type: "error",
-        text1: "Please wait, still loading your session."
+        text1: t("please_wait_loading_session") || "Please wait, still loading your session."
       });
       return;
     } else {
@@ -169,7 +171,7 @@ const WalletHistoryScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.balanceContainer}>
-        <Text style={styles.balanceTitle}>Current Balance</Text>
+        <Text style={styles.balanceTitle}>{t("current_balance")}</Text>
         <Text style={styles.balanceAmount}>{balance} AED</Text>
       </View>
 
@@ -178,7 +180,7 @@ const WalletHistoryScreen = () => {
           style={styles.actionButton}
           onPress={() => {
             if (!token || tokenLoading) {
-              Toast.show({ type: "error", text1: "Please wait, still loading your session." });
+              Toast.show({ type: "error", text1: t("please_wait_loading_session") || "Please wait, still loading your session." });
               return;
             }
             navigation.navigate("Deposit");
@@ -186,13 +188,13 @@ const WalletHistoryScreen = () => {
           disabled={!token || tokenLoading}
         >
           <Icon name="cash-plus" size={20} color="#FFF" />
-          <Text style={styles.buttonText}>Deposit</Text>
+          <Text style={styles.buttonText}>{t("deposit")}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton} onPress={handleWithdraw} disabled={!token || tokenLoading}>
           <Icon name="cash-minus" size={20} color="#FFF" />
           <Text
             disabled={!token || tokenLoading}
-            style={styles.buttonText}>Withdraw</Text>
+            style={styles.buttonText}>{t("withdraw")}</Text>
         </TouchableOpacity>
       </View>
 
@@ -202,7 +204,7 @@ const WalletHistoryScreen = () => {
           onPress={() => setSelectedTab("deposit")}
         >
           <Text style={[styles.tabText, selectedTab === "deposit" && styles.activeTabText]}>
-            Deposit History
+            {t("deposit_history")}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -210,7 +212,7 @@ const WalletHistoryScreen = () => {
           onPress={() => setSelectedTab("withdraw")}
         >
           <Text style={[styles.tabText, selectedTab === "withdraw" && styles.activeTabText]}>
-            Withdraw History
+            {t("withdraw_history")}
           </Text>
         </TouchableOpacity>
       </View>
