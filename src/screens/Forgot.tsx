@@ -24,7 +24,7 @@ const ForgotPassword = () => {
 
   const handleSendOTP = async () => {
     if (!email.includes("@")) {
-      Alert.alert("Invalid Email", "Please enter a valid email address.");
+      Alert.alert(t("invalid_email"), t("please_enter_valid_email"));
       return;
     }
     setLoading(true);
@@ -70,7 +70,7 @@ const ForgotPassword = () => {
 
   const handleResetPassword = async () => {
     if (newPassword !== confirmPassword) {
-      Alert.alert("Password Mismatch", "New passwords do not match.");
+      Alert.alert(t("password_mismatch"), t("new_passwords_do_not_match"));
       return;
     }
     setLoading(true);
@@ -110,13 +110,13 @@ const ForgotPassword = () => {
         >
           <Ionicons name="arrow-back" size={28} color="#010153" />
         </TouchableOpacity>
-        <Text style={styles.heading}>Reset Password</Text>
+        <Text style={styles.heading}>{t("reset_password")}</Text>
 
         {step === 1 && (
           <>
             <TextInput
               style={styles.input}
-              placeholder="Enter your email"
+              placeholder={t("enter_your_email")}
               placeholderTextColor="gray"
               keyboardType="email-address"
               autoCapitalize="none"
@@ -124,7 +124,7 @@ const ForgotPassword = () => {
               onChangeText={setEmail}
             />
             <TouchableOpacity style={styles.button} onPress={handleSendOTP} disabled={loading}>
-              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Send OTP</Text>}
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>{t("send_otp")}</Text>}
             </TouchableOpacity>
           </>
         )}
@@ -150,7 +150,7 @@ const ForgotPassword = () => {
             <View style={styles.passwordContainer}>
               <TextInput
                 style={styles.passwordInput}
-                placeholder="New Password"
+                placeholder={t("new_password")}
                 placeholderTextColor="gray"
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
@@ -164,7 +164,7 @@ const ForgotPassword = () => {
             <View style={styles.passwordContainer}>
               <TextInput
                 style={styles.passwordInput}
-                placeholder="Confirm New Password"
+                placeholder={t("confirm_new_password")}
                 placeholderTextColor="gray"
                 secureTextEntry={!showConfirmPassword}
                 autoCapitalize="none"
@@ -176,7 +176,7 @@ const ForgotPassword = () => {
               </TouchableOpacity>
             </View>
             <TouchableOpacity style={styles.button} onPress={handleResetPassword} disabled={loading}>
-              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Reset Password</Text>}
+              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>{t("reset_password")}</Text>}
             </TouchableOpacity>
           </>
         )}

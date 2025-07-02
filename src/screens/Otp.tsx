@@ -6,12 +6,14 @@ import { backendURL } from '../utils/exports';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useTranslation } from 'react-i18next';
 
 type OtpScreenRouteProp = RouteProp<RootStackParamList, 'Otp'>;
 
 const Otp = () => {
   const route = useRoute<OtpScreenRouteProp>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Login'>>();
+  const { t } = useTranslation();
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -55,20 +57,20 @@ const Otp = () => {
         >
           <Ionicons name="arrow-back" size={28} color="#010153" />
         </TouchableOpacity>
-        <Text style={styles.title}>Verify OTP</Text>
-        <Text style={styles.subtitle}>Enter the OTP sent to:</Text>
+        <Text style={styles.title}>{t("verify_otp")}</Text>
+        <Text style={styles.subtitle}>{t("enter_otp")}</Text>
         <Text style={styles.email}>{route.params.email}</Text>
 
         <TextInput
           style={styles.input}
-          placeholder="Enter 6-digit OTP"
+          placeholder={t("enter_otp_placeholder")}
           keyboardType="numeric"
           value={otp}
           onChangeText={setOtp}
         />
 
         <TouchableOpacity style={styles.button} onPress={handleVerifyOtp} disabled={loading}>
-          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Verify OTP</Text>}
+          {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>{t("verify_otp")}</Text>}
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>

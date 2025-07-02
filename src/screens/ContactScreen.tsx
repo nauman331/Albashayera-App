@@ -6,12 +6,13 @@ import Toast from 'react-native-toast-message';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { useTranslation } from 'react-i18next';
 
 const Contact = () => {
   const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Otp'>>();
-
+  const { t } = useTranslation();
   const handleContact = async (formData: Record<string, string>) => {
 
     try {
@@ -19,7 +20,7 @@ const Contact = () => {
       const response = await fetch(`${backendURL}/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({...formData, role: "buyer"}),
+        body: JSON.stringify({ ...formData, role: "buyer" }),
       });
 
       const res_data = await response.json();
@@ -53,13 +54,13 @@ const Contact = () => {
     <View style={styles.container}>
       <Form
         fields={[
-          { name: 'firstName', placeholder: 'First Name', type: 'default' },
-          { name: 'lastName', placeholder: 'Last Name', type: 'default' },
-          { name: 'email', placeholder: 'Email', type: 'email-address' },
-          { name: 'phone', placeholder: 'Phone', type: 'phone-pad' },
-          { name: 'comment', placeholder: 'Message', type: 'default' },
+          { name: 'firstName', placeholder: t("first_name"), type: 'default' },
+          { name: 'lastName', placeholder: t("last_name"), type: 'default' },
+          { name: 'email', placeholder: t("email"), type: 'email-address' },
+          { name: 'phone', placeholder: t("phone"), type: 'phone-pad' },
+          { name: 'comment', placeholder: t("message"), type: 'default' },
         ]}
-        buttonLabel="Contact Us"
+        buttonLabel={t("contact_us")}
         onSubmit={handleContact}
         loading={loading}
       />

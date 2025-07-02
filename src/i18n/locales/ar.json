@@ -135,5 +135,21 @@
   "cylinders": "الأسطوانات",
   "color": "اللون",
   "no_color": "لا يوجد لون",
-  "no_vin": "لا يوجد رقم هيكل"
+  "no_vin": "لا يوجد رقم هيكل",
+  "live_events": "الفعاليات المباشرة",
+  "no_ongoing_events": "لا توجد فعاليات مباشرة متاحة",
+  "join_auction": "انضم إلى المزاد",
+  "upcoming_auctions": "المزادات القادمة",
+  "no_upcoming_events": "لا توجد مزادات قادمة متاحة",
+  "view_all_cars": "عرض جميع السيارات",
+  "total_cars": "إجمالي السيارات",
+  "reset_password": "إعادة تعيين كلمة المرور",
+  "send_otp": "إرسال رمز التحقق",
+  "enter_your_email": "أدخل بريدك الإلكتروني",
+  "new_password": "كلمة المرور الجديدة",
+  "confirm_new_password": "تأكيد كلمة المرور الجديدة",
+  "invalid_email": "بريد إلكتروني غير صالح",
+  "please_enter_valid_email": "يرجى إدخال بريد إلكتروني صالح.",
+  "password_mismatch": "عدم تطابق كلمة المرور",
+  "new_passwords_do_not_match": "كلمات المرور الجديدة غير متطابقة."
 }

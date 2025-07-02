@@ -135,5 +135,21 @@
   "cylinders": "Cylinders",
   "color": "Color",
   "no_color": "No Color",
-  "no_vin": "No VIN"
+  "no_vin": "No VIN",
+  "live_events": "Live Events",
+  "no_ongoing_events": "No Ongoing Events Available",
+  "join_auction": "Join Auction",
+  "upcoming_auctions": "Upcoming Auctions",
+  "no_upcoming_events": "No Upcoming Events Available",
+  "view_all_cars": "View All Cars",
+  "total_cars": "Total Cars",
+  "reset_password": "Reset Password",
+  "send_otp": "Send OTP",
+  "enter_your_email": "Enter your email",
+  "new_password": "New Password",
+  "confirm_new_password": "Confirm New Password",
+  "invalid_email": "Invalid Email",
+  "please_enter_valid_email": "Please enter a valid email address.",
+  "password_mismatch": "Password Mismatch",
+  "new_passwords_do_not_match": "New passwords do not match."
 }

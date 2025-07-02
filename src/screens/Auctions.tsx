@@ -5,6 +5,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { backendURL } from "../utils/exports";
 import { RootStackParamList } from "../../App";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useTranslation } from 'react-i18next';
 
 interface Auction {
   _id: string;
@@ -29,6 +30,7 @@ interface Car {
 
 const AuctionCard: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { t } = useTranslation();
   const [auctions, setAuctions] = useState<Auction[]>([]);
   const [currentCar, setCurrentCar] = useState<Car | null>(null);
   const [timers, setTimers] = useState<{ [key: string]: Timer }>({});
@@ -76,7 +78,7 @@ const AuctionCard: React.FC = () => {
       getCurrentCar();
     }, [])
   );
-  
+
 
   const handleJoin = (auctionTitle: string) => {
     if (currentCar) {
@@ -138,13 +140,13 @@ const AuctionCard: React.FC = () => {
     return () => clearInterval(interval);
   }, [auctions]);
 
-  if(loading) {
+  if (loading) {
     return <ActivityIndicator size="large" color="blue" style={styles.loader} />
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Live Events</Text>
+      <Text style={styles.header}>{t("live_events")}</Text>
       {auctions.some((auction) => auction.statusText === "Ongoing") ? (
         <FlatList
           data={auctions.filter((auction) => auction.statusText === "Ongoing")}
@@ -152,7 +154,7 @@ const AuctionCard: React.FC = () => {
           renderItem={({ item }) => (
             <View style={styles.card}>
               <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle}>{item.auctionTitle || "N/A"}</Text>
+                <Text style={styles.cardTitle}>{item.auctionTitle || t("n_a")}</Text>
               </View>
               <View style={styles.countdownContainer}>
                 <Text>{timers[item._id]?.days}d</Text>
@@ -163,29 +165,29 @@ const AuctionCard: React.FC = () => {
               <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
               <View style={styles.detailsContainer}>
                 <Text>
-                  <Icon name="location-on" size={16} /> {item.location?.auctionLocation || "N/A"}
+                  <Icon name="location-on" size={16} /> {item.location?.auctionLocation || t("n_a")}
                 </Text>
                 <Text>
-                  <Icon name="directions-car" size={16} /> Total Cars {item.totalVehicles || 0}
+                  <Icon name="directions-car" size={16} /> {t("total_cars")} {item.totalVehicles || 0}
                 </Text>
               </View>
               <TouchableOpacity
                 style={styles.viewButton}
                 onPress={() => handleJoin(item.auctionTitle)}
               >
-                <Text style={styles.viewButtonText}>Join Auction</Text>
+                <Text style={styles.viewButtonText}>{t("join_auction")}</Text>
               </TouchableOpacity>
             </View>
           )}
         />
       ) : (
         <View style={styles.notfound}>
-          <Text style={styles.notfoundText}>No Ongoing Events Available</Text>
+          <Text style={styles.notfoundText}>{t("no_ongoing_events")}</Text>
           <Image source={require("../assets/images/vintage.png")} style={styles.carImage} />
         </View>
       )}
 
-      <Text style={styles.header}>Upcoming Auctions</Text>
+      <Text style={styles.header}>{t("upcoming_auctions")}</Text>
       {auctions.some((auction) => auction.statusText === "Pending") ? (
         <FlatList
           data={auctions.filter((auction) => auction.statusText === "Pending")}
@@ -193,7 +195,7 @@ const AuctionCard: React.FC = () => {
           renderItem={({ item }) => (
             <View style={styles.card}>
               <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle}>{item.auctionTitle || "N/A"}</Text>
+                <Text style={styles.cardTitle}>{item.auctionTitle || t("n_a")}</Text>
               </View>
               <View style={styles.countdownContainer}>
                 <Text>{timers[item._id]?.days}d</Text>
@@ -205,24 +207,24 @@ const AuctionCard: React.FC = () => {
 
               <View style={styles.detailsContainer}>
                 <Text>
-                  <Icon name="location-on" size={16} /> {item.location?.auctionLocation || "N/A"}
+                  <Icon name="location-on" size={16} /> {item.location?.auctionLocation || t("n_a")}
                 </Text>
                 <Text>
-                  <Icon name="directions-car" size={16} /> Total Cars {item.totalVehicles || 0}
+                  <Icon name="directions-car" size={16} /> {t("total_cars")} {item.totalVehicles || 0}
                 </Text>
               </View>
               <TouchableOpacity
                 style={styles.viewButton}
                 onPress={() => handleJoin(item.auctionTitle)}
               >
-                <Text style={styles.viewButtonText}>View All Cars</Text>
+                <Text style={styles.viewButtonText}>{t("view_all_cars")}</Text>
               </TouchableOpacity>
             </View>
           )}
         />
       ) : (
         <View style={styles.notfound}>
-          <Text style={styles.notfoundText}>No Upcoming Events Available</Text>
+          <Text style={styles.notfoundText}>{t("no_upcoming_events")}</Text>
           <Image source={require("../assets/images/towing.png")} style={styles.carImage} />
         </View>
       )}
