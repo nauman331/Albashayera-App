@@ -196,5 +196,8 @@
   "vat_5": "ضريبة القيمة المضافة (5%)",
   "wallet_deduction": "خصم المحفظة",
   "pending_amount_label": "المبلغ المتبقي",
-  "pay_now": "ادفع الآن"
+  "pay_now": "ادفع الآن",
+  "no_internet_connection": "لا يوجد اتصال بالإنترنت",
+  "please_check_connection": "يرجى التحقق من الاتصال وحاول مرة أخرى.",
+  "retry": "إعادة المحاولة"
 }

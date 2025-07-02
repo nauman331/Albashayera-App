@@ -1,8 +1,10 @@
 import React from "react";
 import { View, Text, StyleSheet, Button, Image } from "react-native";
 import NetInfo from "@react-native-community/netinfo";
+import { useTranslation } from "react-i18next";
 
 const NoInternetScreen = () => {
+    const { t } = useTranslation();
     const checkConnection = () => {
         NetInfo.fetch().then((state) => {
             if (state.isConnected) {
@@ -16,9 +18,9 @@ const NoInternetScreen = () => {
     return (
         <View style={styles.container}>
             <Image source={require("../assets/images/signal-searching.png")} style={styles.carImage} />
-            <Text style={styles.text}>No Internet Connection</Text>
-            <Text style={styles.subText}>Please check your connection and try again.</Text>
-            <Button title="Retry" onPress={checkConnection} />
+            <Text style={styles.text}>{t("no_internet_connection") || "No Internet Connection"}</Text>
+            <Text style={styles.subText}>{t("please_check_connection") || "Please check your connection and try again."}</Text>
+            <Button title={t("retry") || "Retry"} onPress={checkConnection} />
         </View>
     );
 };
