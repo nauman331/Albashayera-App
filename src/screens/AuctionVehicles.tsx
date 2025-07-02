@@ -343,7 +343,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
 
                 <Pressable onPress={applyFilters} style={styles.applyButton}>
                   <Text style={styles.buttonText}>
-                    {filterLoading ? "Applying Filters..." : t("apply_selected_filters")}
+                    {filterLoading ? t("applying_filters") : t("apply_selected_filters")}
                   </Text>
                 </Pressable>
               </View>

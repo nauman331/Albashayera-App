@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Dimensions, TouchableOpacity, TextInput, Animated } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import { Image } from 'react-native';
@@ -12,7 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import PurchaseModal from '../components/PurchaseModal';
 import EventBus from '../utils/EventBus';
-
+import { useTranslation } from 'react-i18next';
 
 type UnauthenticatedTabParamList = {
     CarDetails: { carId: string };
@@ -39,6 +39,7 @@ const { width } = Dimensions.get('window');
 
 const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }) => {
     const { carId } = route.params;
+    const { t } = useTranslation();
     const [car, setCar] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [buyLoading, setBuyLoading] = useState(false)
@@ -57,8 +58,8 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
         if (!token) {
             Toast.show({
                 type: "error",
-                text1: "Login Required",
-                text2: "Please login to place a bid."
+                text1: t("login_required"),
+                text2: t("please_login_to_place_bid")
             });
             navigation.navigate("Login");
             return;
@@ -67,8 +68,8 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
         if (currentBalance < 1000) {
             Toast.show({
                 type: "error",
-                text1: "Low Balance",
-                text2: "Minimum 1000 AED required in wallet to place bid"
+                text1: t("not_enough_balance"),
+                text2: t("min_balance_required")
             });
             return;
         }
@@ -77,7 +78,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
             if (!bid || isNaN(Number(bid))) {
                 Toast.show({
                     type: "error",
-                    text1: "Invalid bid amount"
+                    text1: t("invalid_bid_amount")
                 });
                 return;
             }
@@ -91,8 +92,8 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
             if (Number(bid) <= Number(currentBidData?.bidAmount || currentBidData?.currentBid || car.startingBid)) {
                 Toast.show({
                     type: "error",
-                    text1: "Error:",
-                    text2: "Bid amount should be greater than the current bid"
+                    text1: t("error"),
+                    text2: t("bid_amount_greater_than_current")
                 })
                 return;
             }
@@ -102,8 +103,8 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
         } else {
             Toast.show({
                 type: "error",
-                text1: "Error:",
-                text2: "Socket not connected or invalid data"
+                text1: t("error"),
+                text2: t("Socket_not_connected_or_invalid_data")
             }
             );
         }
@@ -144,8 +145,8 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
         if (!token) {
             Toast.show({
                 type: "error",
-                text1: "Login Required",
-                text2: "Please login to purchase."
+                text1: t("login_required"),
+                text2: t("Please_login_to_purchase")
             });
             navigation.navigate("Login");
             return;
@@ -165,7 +166,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
             if (response.ok) {
                 Toast.show({
                     type: "success",
-                    text1: "Success",
+                    text1: t("success"),
                     text2: res_data.message
                 })
                 await getCarDetails();
@@ -173,15 +174,15 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
             } else {
                 Toast.show({
                     type: "error",
-                    text1: "Error",
+                    text1: t("error"),
                     text2: res_data.message
                 })
             }
         } catch (error) {
             Toast.show({
                 type: "error",
-                text1: "Error",
-                text2: "Error while buying"
+                text1: t("error"),
+                text2: t("error_while_buying")
             })
         } finally {
             setBuyLoading(false);
@@ -284,8 +285,8 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
         if (currentBalance < 1) {
             Toast.show({
                 type: "error",
-                text1: "Error:",
-                text2: "Live can't be opened due to empty wallet"
+                text1: t("error"),
+                text2: t("Live_cannot_be_opened_due_to_empty_wallet")
             })
         } else {
             setVimeoLive(!vimeoLive);
@@ -356,11 +357,11 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
             {
                 car.sellingType === "auction" ?
                     <View style={styles.modellot}>
-                        <Text style={styles.modellottext}>Lot No. {car.lotNo} | Model: {car.carModal || "No Model"}</Text>
+                        <Text style={styles.modellottext}>{t("lot_no")} {car.lotNo} | {t("model")} {car.carModal || "No Model"}</Text>
                     </View>
                     :
                     <View style={styles.modellot}>
-                        <Text style={styles.modellottext}> VIN. {car.vin} | Model: {car.carModal || "No Model"}</Text>
+                        <Text style={styles.modellottext}> {t("vin")} {car.vin} | {t("model")} {car.carModal || "No Model"}</Text>
                     </View>
             }
 
@@ -379,7 +380,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
                         <View style={styles.currentBidContainer}>
                             {car.sellingType === "auction" ? (
                                 <>
-                                    <Text style={styles.bidHeading}>Current Bid</Text>
+                                    <Text style={styles.bidHeading}>{t("current_bid")}</Text>
                                     <View
                                         style={[
                                             styles.bidAmountContainer,
@@ -400,18 +401,18 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
                                     </View>
 
                                     <Text style={styles.startingPrice}>
-                                        Bid Starting Price: {car.startingBid || "N/A"} AED
+                                        {t("bid_starting_price")} {car.startingBid || "N/A"} AED
                                     </Text>
                                 </>
                             ) : (
                                 <>
-                                    <Text style={styles.discountedText}>Discounted Price</Text>
+                                    <Text style={styles.discountedText}>{t("discounted_price")}</Text>
                                     <Text style={styles.discountedPrice}>
                                         AED {car.discountedPrice ? car.discountedPrice : car.price || "N/A"}
                                     </Text>
                                     {car.discountedPrice && (
                                         <Text style={styles.originalPrice}>
-                                            Original Price: {car.price || "N/A"} AED
+                                            {t("original_price")} {car.price || "N/A"} AED
                                         </Text>
                                     )}
                                 </>
@@ -460,7 +461,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
                                                 onPress={handlePlaceBid}
                                             >
                                                 <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>
-                                                    Place Bid
+                                                    {t("place_bid")}
                                                 </Text>
                                             </TouchableOpacity>
                                         ) : (
@@ -476,7 +477,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
                                                     opacity: 0.6,
                                                 }}
                                             >
-                                                <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>Place Bid</Text>
+                                                <Text style={{ color: "#fff", fontSize: 16, fontWeight: "bold" }}>{t("place_bid")}</Text>
                                             </View>
                                         )}
 
@@ -484,19 +485,19 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
                                     {/* LIVE BUTTON */}
                                     {currentBidData?.auctionStatus && currentBidData?.carId === car._id && (
                                         <TouchableOpacity style={styles.liveButton} onPress={openLive}>
-                                            <Text style={styles.liveText}>{vimeoLive ? "CLOSE LIVE AUCTION" : "VIEW LIVE AUCTION"}</Text>
+                                            <Text style={styles.liveText}>{vimeoLive ? t("close_live") : t("view_live")}</Text>
                                         </TouchableOpacity>
                                     )}
                                 </>
                                 :
                                 <TouchableOpacity onPress={() => setIsModalVisible(true)} style={styles.purchaseCar} disabled={buyLoading}>
-                                    <Text style={styles.purchaseText}>{buyLoading ? "Placing Order..." : "Purchase This Car"}</Text>
+                                    <Text style={styles.purchaseText}>{buyLoading ? t("Placing_Order") : t("purchase_this_car")}</Text>
                                 </TouchableOpacity>
                         }
                     </>
                     :
                     <View style={styles.soldContainer}>
-                        <Text style={styles.soldText}>Car have already been Sold</Text>
+                        <Text style={styles.soldText}>{t("car_already_sold")}</Text>
                     </View>
             }
 
@@ -511,7 +512,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
                     <>
                         {featuresData.some(data => data.features?.length > 0) && (
                             <>
-                                <Text style={{ fontSize: 30, fontWeight: "bold" }}>Features</Text>
+                                <Text style={{ fontSize: 30, fontWeight: "bold" }}>{t("features")}</Text>
                                 <View>
                                     {featuresData.map((data, index) => (
                                         <FeatureCategory
@@ -535,7 +536,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
                 <>
                     <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
                     <View style={{ marginVertical: 20 }}>
-                        <Text style={{ fontSize: 20, fontWeight: "bold" }}>Description</Text>
+                        <Text style={{ fontSize: 20, fontWeight: "bold" }}>{t("description")}</Text>
                         <Text>{car.description || ""}</Text>
                     </View>
                 </>
@@ -547,7 +548,7 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
                 <>
                     <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1, marginVertical: 10 }} />
                     <View style={{ marginBottom: 100, marginTop: 20 }}>
-                        <Text style={{ fontSize: 20, fontWeight: "bold" }}>Location</Text>
+                        <Text style={{ fontSize: 20, fontWeight: "bold" }}>{t("location")}</Text>
                         <Text>
                             {car.friendlyLocation || car.mapLocation || ""}
                         </Text>

@@ -1,28 +1,30 @@
 import React from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { useTranslation } from 'react-i18next';
 
 const CarOverview = ({ car }: any) => {
+  const { t } = useTranslation();
   const carDetails = [
-    { label: "Make", value: car.carMake?.vehicleMake || "No Vehicle Make", icon: "car" },
-    { label: "Damage", value: car.damage?.vehicleDamage || "No Vehicle Damage", icon: "car-wrench" },
-    { label: "Start Code", value: car.startCode || "No Start Code", icon: "key" },
-    { label: "Mileage", value: car.mileage || "No Mileage", icon: "speedometer" },
-    { label: "Fuel Type", value: car.fuelType?.vehicleFuelTypes || "No Fuel Type", icon: "gas-station" },
-    { label: "Year", value: car.year?.vehicleYear || "N/A", icon: "calendar" },
-    { label: "Transmission", value: car.transmission?.vehicleTransimission || "No Transmission", icon: "engine" },
-    { label: "Drive Type", value: car.driveType?.driveType || "N/A", icon: "car" },
-    { label: "Car Type", value: car.carType?.vehicleType || "No Car Type", icon: "car-estate" },
-    { label: "Engine Size", value: car.engineSize?.vehicleEngineSize || "No Engine Size", icon: "engine-outline" },
-    { label: "Doors", value: car.noOfDoors?.vehicleDoor || "No Doors", icon: "door" },
-    { label: "Cylinders", value: car.cylinders?.vehicleCylinders || "N/A", icon: "circle-outline" },
-    { label: "Color", value: car.color || "No Color", icon: "palette" },
-    { label: "VIN", value: car.vin || "No VIN", icon: "barcode" },
+    { label: t("make"), value: car.carMake?.vehicleMake || t("no_vehicle_make"), icon: "car" },
+    { label: t("damage"), value: car.damage?.vehicleDamage || t("no_vehicle_damage"), icon: "car-wrench" },
+    { label: t("start_code"), value: car.startCode || t("no_start_code"), icon: "key" },
+    { label: t("mileage"), value: car.mileage || t("no_mileage"), icon: "speedometer" },
+    { label: t("fuel_type"), value: car.fuelType?.vehicleFuelTypes || t("no_fuel_type"), icon: "gas-station" },
+    { label: t("year"), value: car.year?.vehicleYear || t("n_a"), icon: "calendar" },
+    { label: t("transmission"), value: car.transmission?.vehicleTransimission || t("no_transmission"), icon: "engine" },
+    { label: t("drive_type"), value: car.driveType?.driveType || t("n_a"), icon: "car" },
+    { label: t("car_type"), value: car.carType?.vehicleType || t("no_car_type"), icon: "car-estate" },
+    { label: t("engine_size"), value: car.engineSize?.vehicleEngineSize || t("no_engine_size"), icon: "engine-outline" },
+    { label: t("doors"), value: car.noOfDoors?.vehicleDoor || t("no_doors"), icon: "door" },
+    { label: t("cylinders"), value: car.cylinders?.vehicleCylinders || t("n_a"), icon: "circle-outline" },
+    { label: t("color"), value: car.color || t("no_color"), icon: "palette" },
+    { label: t("vin"), value: car.vin || t("no_vin"), icon: "barcode" },
   ];
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Car Overview</Text>
+      <Text style={styles.header}>{t("car_overview")}</Text>
       <FlatList
         data={carDetails}
         nestedScrollEnabled={true}
