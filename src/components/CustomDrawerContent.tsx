@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet, Modal } from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, I18nManager } from "react-native";
 import { DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
 import { useNavigationState, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -23,9 +23,9 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps & { token: string |
   const [user, setUser] = useState<any>(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const isAuthenticated = !!token;
-  const { language, setLanguage } = useLanguage();
+  const { language, direction, setLanguage } = useLanguage();
   const { t } = useTranslation();
-  const isRTL = language === "ar";
+  const isRTL = direction === "rtl";
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -104,7 +104,7 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps & { token: string |
   ];
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, flexDirection: "column", backgroundColor: "#fff" }}>
       {/* Profile Section */}
       {isAuthenticated && user ? (
         <View style={styles.profileSection}>
@@ -124,7 +124,13 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps & { token: string |
         </View>
       )}
 
-      <DrawerContentScrollView>
+      <DrawerContentScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          direction: direction,
+        }}
+        style={{ direction: direction }}
+      >
         {/* Protected Menu Items */}
         {isAuthenticated && protectedMenuItems.map((item, index) => (
           <TouchableOpacity
@@ -170,49 +176,72 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps & { token: string |
               fontWeight: "bold",
               marginBottom: 10,
               textAlign: isRTL ? "right" : "left",
+              color: "#010153",
+              fontSize: 16,
             }}
           >
             {t("language") || "Language"}
           </Text>
-          <TouchableOpacity
-            style={{
-              backgroundColor: language === "en" ? "#010153" : "#fff",
-              padding: 10,
-              borderRadius: 8,
-              marginBottom: 5,
-              borderWidth: 1,
-              borderColor: "#010153",
-            }}
-            onPress={() => setLanguage("en")}
-          >
-            <Text
+          <View style={{
+            flexDirection: "row",
+            backgroundColor: "#F2F2F7",
+            borderRadius: 10,
+            overflow: "hidden",
+            borderWidth: 1,
+            borderColor: "#E0E0E0",
+            alignSelf: "stretch",
+            marginBottom: 10,
+          }}>
+            <TouchableOpacity
               style={{
-                color: language === "en" ? "#fff" : "#010153",
-                textAlign: isRTL ? "right" : "left",
+                flex: 1,
+                backgroundColor: language === "en" ? "#010153" : "transparent",
+                paddingVertical: 12,
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: "row",
+                borderRightWidth: isRTL ? 0 : 1,
+                borderLeftWidth: isRTL ? 1 : 0,
+                borderColor: "#E0E0E0",
               }}
+              onPress={() => setLanguage("en")}
+              accessibilityLabel="Switch to English"
             >
-              English
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              backgroundColor: language === "ar" ? "#010153" : "#fff",
-              padding: 10,
-              borderRadius: 8,
-              borderWidth: 1,
-              borderColor: "#010153",
-            }}
-            onPress={() => setLanguage("ar")}
-          >
-            <Text
+              <Icon name="language" size={18} color={language === "en" ? "#fff" : "#010153"} style={{ marginRight: 6 }} />
+              <Text
+                style={{
+                  color: language === "en" ? "#fff" : "#010153",
+                  fontWeight: language === "en" ? "bold" : "normal",
+                  fontSize: 15,
+                }}
+              >
+                English
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               style={{
-                color: language === "ar" ? "#fff" : "#010153",
-                textAlign: isRTL ? "right" : "left",
+                flex: 1,
+                backgroundColor: language === "ar" ? "#010153" : "transparent",
+                paddingVertical: 12,
+                alignItems: "center",
+                justifyContent: "center",
+                flexDirection: "row",
               }}
+              onPress={() => setLanguage("ar")}
+              accessibilityLabel="Switch to Arabic"
             >
-              العربية
-            </Text>
-          </TouchableOpacity>
+              <Icon name="language" size={18} color={language === "ar" ? "#fff" : "#010153"} style={{ marginRight: 6 }} />
+              <Text
+                style={{
+                  color: language === "ar" ? "#fff" : "#010153",
+                  fontWeight: language === "ar" ? "bold" : "normal",
+                  fontSize: 15,
+                }}
+              >
+                العربية
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </DrawerContentScrollView>
 
