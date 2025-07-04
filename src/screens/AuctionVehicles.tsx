@@ -166,7 +166,7 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
             name="arrow-right-arrow-left"
             size={15}
             color="#010153"
-            style={{ transform: [{ rotate: "90deg" }] }}
+            style={{ transform: [{ rotate: "90deg" }], fontFamily: 'FontAwesome6Free-Solid' }}
           />
         </Pressable>
       </View>
@@ -401,7 +401,14 @@ const AuctionVehicles: React.FC = ({ route }: any) => {
                   <View style={styles.footer}>
                     <Text style={styles.price}>AED {item.startingBid || "N/A"}</Text>
                     <Pressable onPress={() => navigation.navigate('CarDetails', { carId: item._id })}>
-                      <Text style={styles.viewDetails}>{t("view_details")}<FontAwesome6 name="arrow-up-right-from-square" /></Text>
+                      <Text style={styles.viewDetails}>
+                        {t("view_details")}
+                        <FontAwesome6
+                          name="arrow-up-right-from-square"
+                          // Explicitly set fontFamily for iOS
+                          style={{ fontFamily: 'FontAwesome6Free-Solid' }}
+                        />
+                      </Text>
                     </Pressable>
                   </View>
                 </View>
