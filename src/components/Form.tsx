@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, TouchableOpacity, Text, View, Image, KeyboardTypeOptions, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, Text, View, Image, KeyboardTypeOptions, KeyboardAvoidingView, Platform, ScrollView, I18nManager } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import PhoneInput from 'react-native-phone-number-input';
@@ -24,6 +24,7 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) =
   const [passwordVisible, setPasswordVisible] = useState<Record<string, boolean>>({});
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const phoneInputRef = React.useRef<PhoneInput>(null);
+  const isRTL = I18nManager.isRTL;
 
   const handleChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -90,7 +91,14 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) =
             ) : (
               <TextInput
                 keyboardType={field.secureTextEntry ? 'default' : field.type}
-                style={styles.input}
+                style={[
+                  styles.input,
+                  field.secureTextEntry && {
+                    textAlign: 'left',
+                    writingDirection: 'ltr',
+                    textAlignVertical: 'center',
+                  }
+                ]}
                 placeholder={field.placeholder}
                 secureTextEntry={field.secureTextEntry && !passwordVisible[field.name]}
                 onChangeText={(value) => handleChange(field.name, value)}
@@ -98,9 +106,16 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) =
               />
             )}
 
-
             {field.secureTextEntry && (
-              <TouchableOpacity onPress={() => togglePasswordVisibility(field.name)} style={styles.eyeIcon}>
+              <TouchableOpacity
+                onPress={() => togglePasswordVisibility(field.name)}
+                style={[
+                  styles.eyeIcon,
+                  isRTL
+                    ? { left: 15, right: undefined }
+                    : { right: 15, left: undefined }
+                ]}
+              >
                 <Icon name={passwordVisible[field.name] ? "eye-off-outline" : "eye-outline"} size={22} color="#666" />
               </TouchableOpacity>
             )}
@@ -184,10 +199,13 @@ const styles = StyleSheet.create({
     height: 50,
     fontSize: 16,
     color: '#333',
+    // paddingRight and paddingLeft will be set dynamically for password fields
   },
   eyeIcon: {
     position: 'absolute',
-    right: 15,
+    // left or right will be set dynamically
+    top: 14,
+    zIndex: 1,
   },
   button: {
     width: '100%',
