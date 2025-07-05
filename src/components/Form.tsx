@@ -59,7 +59,13 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) =
 
         {/* Dynamic Inputs */}
         {fields.map((field) => (
-          <View key={field.name} style={styles.inputContainer}>
+          <View
+            key={field.name}
+            style={[
+              styles.inputContainer,
+              isRTL && { flexDirection: 'row-reverse' }
+            ]}
+          >
             {field.name === 'phone' ? (
               <PhoneInput
                 ref={phoneInputRef}
@@ -89,35 +95,35 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) =
               />
 
             ) : (
-              <TextInput
-                keyboardType={field.secureTextEntry ? 'default' : field.type}
-                style={[
-                  styles.input,
-                  field.secureTextEntry && {
-                    textAlign: 'left',
-                    writingDirection: 'ltr',
-                    textAlignVertical: 'center',
-                  }
-                ]}
-                placeholder={field.placeholder}
-                secureTextEntry={field.secureTextEntry && !passwordVisible[field.name]}
-                onChangeText={(value) => handleChange(field.name, value)}
-                placeholderTextColor="#888"
-              />
-            )}
+              <View style={{ flex: 1, position: 'relative' }}>
+                <TextInput
+                  keyboardType={field.secureTextEntry ? 'default' : field.type}
+                  style={[
+                    styles.input,
+                    field.secureTextEntry && {
+                      textAlign: isRTL ? 'right' : 'left',
+                      writingDirection: isRTL ? 'rtl' : 'ltr',
+                      textAlignVertical: 'center',
+                    }
+                  ]}
+                  placeholder={field.placeholder}
+                  secureTextEntry={field.secureTextEntry && !passwordVisible[field.name]}
+                  onChangeText={(value) => handleChange(field.name, value)}
+                  placeholderTextColor="#888"
+                />
+                {field.secureTextEntry && (
+                  <TouchableOpacity
+                    onPress={() => togglePasswordVisibility(field.name)}
+                    style={[
+                      styles.eyeIcon,
 
-            {field.secureTextEntry && (
-              <TouchableOpacity
-                onPress={() => togglePasswordVisibility(field.name)}
-                style={[
-                  styles.eyeIcon,
-                  isRTL
-                    ? { left: 15, right: undefined }
-                    : { right: 15, left: undefined }
-                ]}
-              >
-                <Icon name={passwordVisible[field.name] ? "eye-off-outline" : "eye-outline"} size={22} color="#666" />
-              </TouchableOpacity>
+                      { right: 15, left: undefined }
+                    ]}
+                  >
+                    <Icon name={passwordVisible[field.name] ? "eye-off-outline" : "eye-outline"} size={22} color="#666" />
+                  </TouchableOpacity>
+                )}
+              </View>
             )}
           </View>
         ))}
@@ -192,18 +198,17 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     paddingHorizontal: 15,
     marginBottom: 12,
-    position: 'relative',
+
   },
   input: {
     flex: 1,
     height: 50,
     fontSize: 16,
     color: '#333',
-    // paddingRight and paddingLeft will be set dynamically for password fields
+    position: 'relative',
   },
   eyeIcon: {
     position: 'absolute',
-    // left or right will be set dynamically
     top: 14,
     zIndex: 1,
   },
