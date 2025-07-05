@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, I18nManager } from "react-native";
-import { DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
-import { useNavigationState, useNavigation } from "@react-navigation/native";
+import { DrawerContentScrollView } from "@react-navigation/drawer";
+import { useNavigationState } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getToken, removeToken } from "../utils/asyncStorage";
@@ -249,10 +249,6 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps & { token: string |
       <View style={styles.bottomSection}>
         {isAuthenticated ? (
           <>
-            <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate("Profile")}>
-              <Icon name="person" size={20} color="#000" />
-              <Text style={styles.menuText}>{t("profile")}</Text>
-            </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} onPress={() => setModalVisible(true)}>
               <Icon name="exit-to-app" size={20} color="#000" />
               <Text style={styles.menuText}>{t("logout")}</Text>

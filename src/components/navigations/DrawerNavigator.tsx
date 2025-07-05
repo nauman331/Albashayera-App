@@ -29,7 +29,6 @@ import Forgot from "../../screens/Forgot";
 import Otp from "../../screens/Otp";
 import { useLanguage } from "../../context/LanguageContext";
 import { useTranslation } from "react-i18next";
-import { DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
 import { I18nManager } from "react-native";
 
 const Drawer = createDrawerNavigator();
@@ -45,27 +44,27 @@ const ScreenWrapper = ({ children, token }: { children: React.ReactNode, token: 
 
 const CustomBottomBar = () => {
   const navigation = useNavigation<DrawerNavigationProp<RootStackParamList>>();
-
+  const { t } = useTranslation();
   return (
     <View style={styles.bottomBar}>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Dashboard")}>
         <Icon name="dashboard" size={28} color="white" />
-        <Text style={styles.text}>Dashboard</Text>
+        <Text style={styles.text}>{t("dashboard")}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("AuctionVehicles", { selectedAuctionProp: "" })}>
         <Icon name="directions-car" size={28} color="white" />
-        <Text style={styles.text}>Vehicles</Text>
+        <Text style={styles.text}>{t("vehicles")}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Wallet")}>
         <Icon name="account-balance-wallet" size={28} color="white" />
-        <Text style={styles.text}>Wallet</Text>
+        <Text style={styles.text}>{t("wallet")}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("Profile")}>
         <Icon name="person" size={28} color="white" />
-        <Text style={styles.text}>Profile</Text>
+        <Text style={styles.text}>{t("profile")}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -281,7 +280,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   screenContent: {
-    flex: 1, // Ensures the screen takes the full space above the bottom bar
+    flex: 1
   },
   bottomBar: {
     flexDirection: "row",
