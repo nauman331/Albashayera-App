@@ -23,11 +23,23 @@ type CarDetailsScreenProps = {
     navigation: any; // or the correct navigation type if you have it
 };
 
+interface BidHistoryItem {
+    bidType?: string;
+    [key: string]: any;
+}
+
+interface BidItem {
+    bidType?: string;
+    [key: string]: any;
+}
+
 interface BidData {
     carId: string;
     bidAmount: number;
     auctionStatus: boolean;
     currentBid: number;
+    bidhistory?: BidHistoryItem[];
+    bids?: BidItem[];
 }
 
 interface CarColor {
@@ -323,6 +335,21 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
 
 
 
+    // Helper to get the latest bidType for the banner
+    const getLatestBidType = () => {
+        if (currentBidData?.carId === car?._id) {
+            if (Array.isArray(currentBidData?.bidhistory) && currentBidData.bidhistory.length > 0) {
+                return currentBidData.bidhistory[currentBidData.bidhistory.length - 1]?.bidType || "None";
+            }
+            if (Array.isArray(currentBidData?.bids) && currentBidData.bids.length > 0) {
+                return currentBidData.bids[currentBidData.bids.length - 1]?.bidType || "None";
+            }
+            return "None";
+        }
+        return "None";
+    };
+
+
     return (
         <ScrollView style={styles.container}>
             {
@@ -372,6 +399,16 @@ const CarDetailsScreen: React.FC<CarDetailsScreenProps> = ({ route, navigation }
                 <Text style={styles.dot}> • </Text>
                 {car.transmission?.vehicleTransimission || "No Transmission"}
             </Text>
+
+            {/* Bid Placed Banner */}
+            {car.sellingType === "auction" && (
+                <View style={styles.bidPlacedBanner}>
+                    <Text style={styles.bidPlacedBannerText}>
+                        {t("Bid_Placed")}:{" "}
+                        {getLatestBidType()}
+                    </Text>
+                </View>
+            )}
 
             {
                 !car.isSold ?
@@ -666,7 +703,22 @@ const styles = StyleSheet.create({
     soldText: {
         fontWeight: "bold",
         fontSize: 15
-    }
+    },
+    bidPlacedBanner: {
+        backgroundColor: "#cce5ff",
+        borderRadius: 10,
+        marginTop: 16,
+        marginBottom: 8,
+        padding: 12,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    bidPlacedBannerText: {
+        color: "#004085",
+        fontWeight: "bold",
+        fontSize: 16,
+        textAlign: "center",
+    },
 });
 
 export default CarDetailsScreen;
