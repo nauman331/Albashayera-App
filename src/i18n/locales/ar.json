@@ -200,5 +200,6 @@
   "no_internet_connection": "لا يوجد اتصال بالإنترنت",
   "please_check_connection": "يرجى التحقق من الاتصال وحاول مرة أخرى.",
   "retry": "إعادة المحاولة",
-  "vehicles": "المركبات"
+  "vehicles": "المركبات",
+  "Bid_Placed": "تم وضع المزايدة"
 }
