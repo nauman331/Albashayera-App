@@ -123,16 +123,6 @@ const Profile: React.FC<ProfileProps> = ({ setToken }) => {
     }
   };
 
-  const handleLogout = async () => {
-    await removeToken();
-    await removeData();
-    setToken(null);
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "AuctionVehicles" }],
-    });
-  };
-
   const handleDeleteProfile = async () => {
     if (!deletePassword) {
       Toast.show({ type: "error", text1: t("password_required") || "Password required" });

@@ -100,9 +100,9 @@ const Form: React.FC<FormProps> = ({ fields, buttonLabel, onSubmit, loading }) =
                   keyboardType={field.secureTextEntry ? 'default' : field.type}
                   style={[
                     styles.input,
-                    field.secureTextEntry && {
-                      textAlign: isRTL ? 'right' : 'left',
-                      writingDirection: isRTL ? 'rtl' : 'ltr',
+                    isRTL && {
+                      textAlign: 'right',
+                      writingDirection: 'rtl',
                       textAlignVertical: 'center',
                     }
                   ]}

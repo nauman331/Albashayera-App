@@ -23,8 +23,8 @@ const CustomDrawerContent: React.FC<CustomDrawerContentProps & { token: string |
   const [user, setUser] = useState<any>(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const isAuthenticated = !!token;
-  const { language, direction, setLanguage } = useLanguage();
   const { t } = useTranslation();
+  const { language, direction, setLanguage } = useLanguage();
   const isRTL = direction === "rtl";
 
   useEffect(() => {
