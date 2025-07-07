@@ -201,5 +201,6 @@
   "please_check_connection": "Please check your connection and try again.",
   "retry": "Retry",
   "vehicles": "Vehicles",
-  "Bid_Placed": "Bid Placed"
+  "Bid_Placed": "Bid Placed",
+  "are_you_sure_logout": "Are you sure you want to logout?"
 }
