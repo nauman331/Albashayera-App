@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   ImageBackground,
   I18nManager,
+  Platform,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { LineChart } from "react-native-chart-kit";
@@ -89,7 +90,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <ScrollView style={[styles.container, isRTL && styles.rtl]}>
-      <Text style={[styles.header, isRTL && styles.textRTL]}>{t("dashboard")}</Text>
+      <Text style={[styles.header]}>{t("dashboard")}</Text>
 
       <View style={styles.statsContainer}>
         <View style={styles.card}>
@@ -111,7 +112,7 @@ const Dashboard: React.FC = () => {
           imageStyle={{ borderRadius: 10 }}
         >
           <View style={[styles.bannerOverlay, isRTL && { gap: 100 }]}>
-            <Text style={[styles.bannerText, isRTL && styles.textRTL]}>
+            <Text style={[styles.bannerText]}>
               {t("join_live_auction_now")}
             </Text>
             <Icon name={isRTL ? "arrow-left" : "arrow-right"} size={24} color="#fff" />
@@ -124,7 +125,7 @@ const Dashboard: React.FC = () => {
       ) : (
         <View style={{ marginBottom: 110 }}>
           <View style={styles.chartContainer}>
-            <Text style={[styles.chartTitle, isRTL && styles.textRTL]}>
+            <Text style={[styles.chartTitle]}>
               {t("spending_trend")}
             </Text>
             <LineChart
@@ -148,10 +149,19 @@ const Dashboard: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f8f9fa", padding: 20 },
+  container: {
+    flex: 1,
+    backgroundColor: "#f8f9fa",
+    padding: 20,
+    paddingLeft: Platform.OS === 'ios' ? 20 : 20,
+  },
   rtl: { flexDirection: "column" },
-  header: { fontSize: 22, fontWeight: "bold", margin: 5, textAlign: "left" },
-  textRTL: { textAlign: "left" },
+  header: {
+    fontSize: 22,
+    fontWeight: "bold",
+    margin: 5,
+    textAlign: "left",
+  },
   statsContainer: { flexDirection: "row", justifyContent: "space-between", marginTop: 30 },
   card: { flex: 1, backgroundColor: "#fff", padding: 20, borderRadius: 10, alignItems: "center", marginHorizontal: 5 },
   icon: { marginBottom: 5, backgroundColor: "#e9f2ff", padding: 10, borderRadius: 100 },
@@ -160,9 +170,20 @@ const styles = StyleSheet.create({
   bannerContainer: { marginVertical: 20 },
   bannerImage: { height: 150 },
   bannerOverlay: { flexDirection: "row", alignItems: "center", padding: 20, backgroundColor: "rgba(0,0,0,0.5)", borderRadius: 10 },
-  bannerText: { color: "#fff", fontSize: 18, fontWeight: "bold", flex: 1, textAlign: "left" },
+  bannerText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+    flex: 1,
+    textAlign: "left",
+  },
   chartContainer: { backgroundColor: "#fff", borderRadius: 10, marginTop: 10 },
-  chartTitle: { fontSize: 12, fontWeight: "bold", margin: 20, textAlign: "left" },
+  chartTitle: {
+    fontSize: 12,
+    fontWeight: "bold",
+    margin: 20,
+    textAlign: "left",
+  },
   chartStyle: { borderRadius: 10 },
   loader: { marginVertical: 20, alignSelf: "center" },
 });
